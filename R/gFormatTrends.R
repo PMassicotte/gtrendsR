@@ -12,7 +12,7 @@ function(gData)
   temp  = ans[[1]]  
   ss = unlist(strsplit(colnames(temp), "[.]"))
   ss = ss[length(ss)]
-  SearchInfo = data.frame(Timespan = temp, SreachTerms = ss)
+  SearchInfo = data.frame(Timespan = temp, SearchTerms = ss)
   
   #-------------------------------------
   #Weekly hits

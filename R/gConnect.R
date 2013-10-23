@@ -32,9 +32,9 @@ gConnect = function(usr, psw)
   authenticatePage2 = getURL("http://www.google.com", curl = ch)
   
   if(getCurlInfo(ch)$response.code == 200) {
-    print("Google login successful.")
+    print("Google login successful!")
   } else {
-    print("Google login not successful. Check your login credentials!")
+    print("Google login failed!")
   }
   
   return(ch)
