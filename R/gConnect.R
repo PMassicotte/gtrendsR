@@ -1,20 +1,19 @@
 gConnect = function(usr, psw)
 {
-  loginURL <- "https://accounts.google.com/ServiceLoginBoxAuth"
-  authenticateURL <- "https://accounts.google.com/accounts/ServiceLoginAuth"
+  loginURL <- "https://accounts.google.com/accounts/ServiceLogin"
+  authenticateURL <- "https://accounts.google.com/ServiceLoginBoxAuth"
   
   require(RCurl)
   
   ch <- getCurlHandle()
   
-  curlSetOpt(curl = ch,
-             ssl.verifypeer = FALSE,
-             useragent = "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; en-US; rv:1.9.2.13) Gecko/20101203 Firefox/3.6.13",
-             timeout = 60,
-             httpheader = list(continue = "http://www.google.com/trends"),
-             followlocation = TRUE,
-             cookiejar = "./cookies",
-             cookiefile = "./cookies")
+  ans = (curlSetOpt(curl = ch,
+                    ssl.verifypeer = FALSE,
+                    useragent = getOption('HTTPUserAgent', "R"),
+                    timeout = 60,         
+                    followlocation = TRUE,
+                    cookiejar = "./cookies",
+                    cookiefile = "./cookies"))
   
   
   ## Perform Google Account login
@@ -30,6 +29,7 @@ gConnect = function(usr, psw)
   
   authenticatePage <- postForm(authenticateURL, .params=list(Email=usr, Passwd=psw, GALX = galx, PersistentCookie= "yes", continue = "http://www.google.com/trends"), curl=ch)
   
+  authenticatePage2 = getURL("http://www.google.com", curl = ch)
   
   if(getCurlInfo(ch)$response.code == 200) {
     print("Google login successful.")

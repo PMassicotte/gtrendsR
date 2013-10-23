@@ -7,6 +7,8 @@ gTrends = function(ch, geo = 'all', query)
   
   #print(resultsText)
   
+  #print(rawToChar(resultsText))
+  
   ## Sometimes we reach quota limit, in that case stop!
   if(any(grep("QUOTA", resultsText))){
     stop("Reached Google Trends quota limit! Please try again later.") 
