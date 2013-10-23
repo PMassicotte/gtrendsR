@@ -2,10 +2,10 @@ gTrends = function(ch, geo = 'all', query)
 {
   
   ## get Google Insights results CSV
-  trendsURL <- "http://www.google.co.uk/trends/viz?"
+  trendsURL <- "http://www.google.com/trends/viz?"
   resultsText <- getForm(trendsURL, .params = list(q = query, geo = geo, export = 1, hl = 'gb', content=1, graph = 'all_csv'), curl = ch, .opts = list(verbose = F))
   
-  print(resultsText)
+  #print(resultsText)
   
   #print(rawToChar(resultsText))
   

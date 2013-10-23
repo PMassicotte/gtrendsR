@@ -15,8 +15,8 @@ function(gTrendsData)
   G2 <- gvisGeoChart(temp, 'x', 'y', options=list(displayMode = "markers", region = gTrendsData$GEO, resolution = "provinces"))
   
   
-  temp = data.frame(x = gTrendsData$WeeklyHits$JulianDates, y = gTrendsData$WeeklyHits$Hits)
-  G3 = gvisLineChart(temp,'x', 'y', options=list(width = 1000, title =paste("Interest over time for keyword", (toupper(gTrendsData$SearchInfo$SreachTerms))), vAxes="[{title:'Search hits'}]", hAxes="[{title:'Date (julian day)'}]"))
+  temp = data.frame(x = gTrendsData$WeeklyHits$Dates, y = gTrendsData$WeeklyHits$Hits)
+  G3 = gvisLineChart(temp,'x', 'y', options=list(width = 1000, title = (toupper(gTrendsData$SearchInfo$SearchTerms)), vAxes="[{title:'Search hits'}]", hAxes="[{title:'Date'}]"))
   
   
   G4 = gvisMerge(gvisMerge(G3, G1), G2)
