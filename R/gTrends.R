@@ -5,7 +5,7 @@ gTrends = function(ch, geo = 'all', query)
   trendsURL <- "http://www.google.com/trends/viz?"
   resultsText <- getForm(trendsURL, .params = list(q = query, geo = geo, export = 1, hl = 'en', content=1, graph = 'all_csv'), curl = ch, .opts = list(verbose = F))
   
-  #print(resultsText)
+  print(resultsText)
   
   #print(rawToChar(resultsText))
   
