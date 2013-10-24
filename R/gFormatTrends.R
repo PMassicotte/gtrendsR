@@ -21,6 +21,9 @@ function(gData)
       
   blocks = blocks[1:6]
   
+  ## Sometimes, blocks[6] (rising) has number > 999, so replace the ","
+  blocks[6] = gsub("(\\d+)(,)(\\d+)", "\\1\\3", blocks[6], perl=T)
+  
   ans = lapply(blocks, readCSVBlock)
   
   ## Find the block where each subset is located

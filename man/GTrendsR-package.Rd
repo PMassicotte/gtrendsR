@@ -33,7 +33,7 @@ https://github.com/abelsonlive/HIScore/blob/master/InsightsAPI.R
 https://github.com/suryasev/unofficial-google-trends-api/issues/5
 https://github.com/suryasev/unofficial-google-trends-api/blob/master/pyGTrends.py
 }
-~~ Optionally other standard keywords, one per line, from file KEYWORDS in the R documentation directory ~~
+
 \keyword{ package }
 \seealso{
 %~~ Optional links to other man pages, e.g. ~~
