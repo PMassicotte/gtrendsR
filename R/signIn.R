@@ -12,7 +12,16 @@ function(curl)
   val = grep("Cookie: GALX", strsplit(tmp, "\n")[[1]], val = TRUE)
   (strsplit(val, "[:=;]")[[1]])[3]
 
+  ## Phil
   print(val)
+
+  galx.match = str_extract(string = tmp, pattern = ignore.case('name="GALX"\\s*value="([^"]+)"'))
+  galx <- str_replace(string = galx.match,
+                      pattern = ignore.case('name="GALX"\\s*value="([^"]+)"'),
+                      replacement = "\\1")
+  
+  return(galx)
+  
 }
 
 
@@ -28,6 +37,7 @@ function(login = getOption("GooglePassword"), password, service = "trends",
        login = names(login)
    }
        
+  
    ans = postForm("https://accounts.google.com/accounts/ServiceLoginAuth", 
                  Email = login,
                  Passwd = password,

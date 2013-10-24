@@ -15,7 +15,7 @@ function(gTrendsData)
   G2 <- gvisGeoChart(temp, 'x', 'y', options=list(displayMode = "markers", region = gTrendsData$GEO, resolution = "provinces"))
   
   
-  temp = data.frame(x = gTrendsData$WeeklyHits$Dates, y = gTrendsData$WeeklyHits$Hits)
+  temp = data.frame(x = gTrendsData$MonthlyHits$Dates, y = gTrendsData$MonthlyHits$Hits)
   G3 = gvisLineChart(temp,'x', 'y', options=list(width = 1000, title = (toupper(gTrendsData$SearchInfo$SearchTerms)), vAxes="[{title:'Search hits'}]", hAxes="[{title:'Date'}]"))
   
   
