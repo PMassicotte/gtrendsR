@@ -2,7 +2,8 @@ gTrendsMap <-
 function(gTrendsData)  
 {
   if(class(gTrendsData) != "gTrendsData"){
-    stop("Must be an object of class gTrendsData.")    
+    warning("Must be an object of class gTrendsData.", call. = F)    
+    return(NULL)
   }
   
   temp = data.frame(loc = gTrendsData$Regions$Regions, hits = gTrendsData$Regions$Hits)

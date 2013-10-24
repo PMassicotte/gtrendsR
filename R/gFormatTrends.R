@@ -15,11 +15,12 @@ function(gData)
   ## 6 - Rising searches
   ##-----------------------------------------------------------------------------
   if(length(blocks) != 6){
-    stop("Not enough search volume to show results.")
+    print("Not enough search volume to show results.")
+    return(NULL)
   }
   
   
-  blocks = blocks[1:5]
+  blocks = blocks[1:6]
   
   ans = lapply(blocks, readCSVBlock)
   
