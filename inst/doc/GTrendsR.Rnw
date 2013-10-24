@@ -2,13 +2,14 @@
 
 \usepackage[utf8]{inputenc} 
 \usepackage{authblk}
+\usepackage[margin = 2cm]{geometry}
 
 \title{Googling trends in conservation biology using R \\ Appendix 1}
 
 \author[1]{Raphael Proulx}
 \author[1]{Philippe Massicotte}
 \author[1]{Marc Pépino}
-\affil[1]{Department of biology, UQTR}
+\affil[1]{Department of environmental sciences, UQTR}
 
 \setlength\parindent{0pt}
 
@@ -49,17 +50,27 @@ ch = gConnect(usr, psw)
 
 A Google Trends query is simply made using the \emph{gTrends} function. The user need to provide three parameters. First, a valid Google service connection \textbf{ch} returned by the function \emph{gConnect}. The second parameter \textbf{geo} is the geographic location where the query will be performed. This argument should be a string of two characters. To obtain a list of valid country codes supported by Google Trends, the user can simply type:
 
-<<eval=FALSE>>=
-countries
+<<eval=TRUE>>=
+data(countries)
 @
 
-<<echo=FALSE, results='asis'>>=
-library(xtable)
-setwd("E:/Phil/Others/Raphe/GTrends/")
-#setwd("/media/modelisation/Philippe Massicotte/Phil/Others/Raphe/GTrends/")
-countries = read.csv('countries.csv', header = T)
-print(xtable(head(countries), caption="Example of country codes."))  
-@
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{rll}
+  \hline
+ & CODE & COUNTRY \\ 
+  \hline
+1 & AF & Afghanistan \\ 
+  2 & AL & Albania \\ 
+  3 & DZ & Algeria \\ 
+  4 & AS & American Samoa \\ 
+  5 & AD & Andorra \\ 
+  6 & AO & Angola \\ 
+   \hline
+\end{tabular}
+\caption{Example of country codes.} 
+\end{table}
 
 
 The third and last parameter \textbf{query} is a string containing the keywords to use. For example, the following query will search for \textbf{NHL} keyword in \textbf{Canada}.
@@ -72,7 +83,7 @@ data = gTrends(ch, geo = location, query = query)
 
 \subsection{Structure of returned data}
 
-<<echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE>>=
+<<echo=FALSE, message=FALSE, warning=FALSE, cache=FALSE>>=
 
 usr = "gtrendsruser@gmail.com"
 psw = "testicules"
@@ -133,7 +144,7 @@ gTrendsMap(data)
 
 \begin{center}
 \begin{figure}[ht]
-\includegraphics[scale = 0.6]{capture.pdf} 
+\includegraphics[scale =.8]{capture.pdf} 
 \caption{Distribution map for search term \emph{NHL} in \emph{Canada}.}
 \end{figure}
 \end{center}
