@@ -1,0 +1,142 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc} 
+\usepackage{authblk}
+
+\title{Googling trends in conservation biology using R \\ Appendix 1}
+
+\author[1]{Raphael Proulx}
+\author[1]{Philippe Massicotte}
+\author[1]{Marc Pépino}
+\affil[1]{Department of biology, UQTR}
+
+\setlength\parindent{0pt}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+
+
+We developed a R package named \emph{GTrendsR} that provides an interface for retrieving and displaying the information returned online by Google Trends in the R console. To install the package (hosted on CRAN repository), simply type the following command in the R console.
+
+<<eval=T, message=FALSE>>=
+library(devtools)
+install_bitbucket("GTrendsR", "persican")
+
+library("GTrendsR")
+@
+
+Basically, the package has three functions that need to be invoked in a specific order by the user.
+
+\begin{enumerate}
+\item \emph{ch = gConnect(usr, psw)} -- Create a connection with Google Trends service.
+\item \emph{data = gTrends(ch, geo = location, query = query)} -- Perform a \textbf{query} at the specified location \textbf{geo}.
+\item \emph{gTrendsMap(data)} -- Plot maps showing results of the query and the regions and cities levels.
+\end{enumerate}
+
+\section{Connecting to Google Trends service}
+In order to perform Google Trends queries, the user needs to own a free Google account. The connection to Google Trends service is then established using account information as follow.
+
+<<eval=FALSE>>=
+usr = 'username@gmail.com'
+psw = 'yourpassword'
+ch = gConnect(usr, psw)
+@
+
+\section{Perform a query}
+
+A Google Trends query is simply made using the \emph{gTrends} function. The user need to provide three parameters. First, a valid Google service connection \textbf{ch} returned by the function \emph{gConnect}. The second parameter \textbf{geo} is the geographic location where the query will be performed. This argument should be a string of two characters. To obtain a list of valid country codes supported by Google Trends, the user can simply type:
+
+<<eval=FALSE>>=
+countries
+@
+
+<<echo=FALSE, results='asis'>>=
+library(xtable)
+setwd("E:/Phil/Others/Raphe/GTrends/")
+#setwd("/media/modelisation/Philippe Massicotte/Phil/Others/Raphe/GTrends/")
+countries = read.csv('countries.csv', header = T)
+print(xtable(head(countries), caption="Example of country codes."))  
+@
+
+
+The third and last parameter \textbf{query} is a string containing the keywords to use. For example, the following query will search for \textbf{NHL} keyword in \textbf{Canada}.
+
+<<eval=FALSE>>=
+location = 'CA'
+query = 'NHL'
+data = gTrends(ch, geo = location, query = query)
+@
+
+\subsection{Structure of returned data}
+
+<<echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE>>=
+
+usr = "gtrendsruser@gmail.com"
+psw = "testicules"
+ch = gConnect(usr, psw)
+
+location = "CA"
+query = "NHL"
+data = gTrends(ch, geo = location, query = query)
+@
+
+The data returned by \emph{gTrends} is a list of seven \emph{dataframe} described as follow.\\
+
+\texttt{SearchInfo} -- Contains the date and the keyword(s) used for the query.
+
+<<>>=
+data$SearchInfo
+@
+
+
+\texttt{Weeks} -- Contains the RAW results of the query.
+
+<<>>=
+head(data$WeeklyHits)
+@
+
+
+\texttt{Regions} -- Contains the hits for the top 15 regions of the country where the query has been performed.
+
+<<>>=
+data$Regions
+@
+
+\texttt{Cities} -- Same as regions but for cities.
+
+<<>>=
+data$Cities
+@
+
+\texttt{TopSearches} -- Top searches related to the keyword(s) used for the query.
+
+<<>>=
+head(data$TopSearches)
+@
+
+\texttt{MonthlyHits} -- Contains the normalized results of the query rescaled by dividing the number of search hits obtained for a given country, or region, by the maximum number of hits obtained over the specified period. This temporal serie match the visual display provided upon a query on Google Trends web site.
+
+<<>>=
+head(data$MonthlyHits)
+@
+
+\newpage
+\section{Plot the trends and the distribution maps}
+A query to Google Trends can be rapidly visualized using the \emph{gTrendsMap} function as follow (see Figure 1):
+
+<<eval=FALSE>>=
+gTrendsMap(data)
+@
+
+\begin{center}
+\begin{figure}[ht]
+\includegraphics[scale = 0.6]{capture.pdf} 
+\caption{Distribution map for search term \emph{NHL} in \emph{Canada}.}
+\end{figure}
+\end{center}
+
+
+\end{document}

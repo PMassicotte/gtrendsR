@@ -14,15 +14,21 @@ function(gData)
   ## 5 - Top releated seraches
   ## 6 - Rising searches
   ##-----------------------------------------------------------------------------
-  if(length(blocks) != 6){
+  if(length(blocks) < 6){
     print("Not enough search volume to show results.")
     return(NULL)
   }
-  
-  
+      
   blocks = blocks[1:6]
   
   ans = lapply(blocks, readCSVBlock)
+  
+  ## Find the block where each subset is located
+  index.interest = grep("Interest.over.time", ans)
+  index.subreg = grep("Top.subregions", ans)
+  index.cities = grep("Top.cities", ans)
+  index.topsearches = grep("Top.searches", ans)
+  index.risingsearches = grep("Rising.searches", ans)
   
   
   temp  = ans[[1]] 
@@ -31,33 +37,33 @@ function(gData)
   #-------------------------------------
   #Regions
   #-------------------------------------
-  temp  = ans[[3]]
+  temp  = ans[[index.subreg]]
   Regions = data.frame(Regions = temp$row.names[2:length(temp[,1])], Hits = as.numeric(as.character(temp[2:length(temp[,1]),2])))
   
   #-------------------------------------
   #Cities
   #-------------------------------------
-  temp  = ans[[4]]
+  temp  = ans[[index.cities]]
   Cities = data.frame(Cities = temp$row.names[2:length(temp[,1])], Hits = as.numeric(as.character(temp[2:length(temp[,1]),2])))
   
   #-------------------------------------
   #Top searches
   #-------------------------------------
-  temp  = ans[[5]]
+  temp  = ans[[index.topsearches]]
   TopSearches = data.frame(Keywords = temp$row.names[2:length(temp[,1])], Hits = as.numeric(as.character(temp[2:length(temp[,1]),2])))
   
   
   #-------------------------------------
   #Weekly hits
   #-------------------------------------
-  temp  = ans[[2]]
+  temp  = ans[[index.interest]]
   Weeks = data.frame(sDates = as.character(temp$row.names[2:length(temp[,1])]), Hits = as.numeric(as.character(temp[2:length(temp[,1]),2])))
   
   ## Sometime, search volume if not enough, so Google return montly data rather than daily.
   if(nchar(as.character(Weeks$sDate[1])) > 7){
     
     Weeks$Dates = as.Date(substr(Weeks$sDates,1,10),format = "%Y-%m-%d")
-    Weeks$JulianDates = as.numeric(as.Date(Weeks$sDate)) + 2440588
+    #Weeks$JulianDates = as.numeric(as.Date(Weeks$sDate)) + 2440588
     Weeks$Months = format(Weeks$Dates,"%m")
     Weeks$Years = format(Weeks$Dates,"%Y")
     Weeks$Days = format(Weeks$Dates,"%d")
