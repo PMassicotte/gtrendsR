@@ -1,9 +1,11 @@
 gTrends = function(ch, geo = 'all', query)  
 {
+  authenticatePage2 = getURL("http://www.google.com", curl = ch)
   
   ## get Google Insights results CSV
-  trendsURL <- "http://www.google.com/trends/viz?"
-  resultsText <- getForm(trendsURL, .params = list(q = query, geo = geo, export = 1, hl = 'gb', content=1, graph = 'all_csv'), curl = ch, .opts = list(verbose = F))
+  #trendsURL <- "http://www.google.com/trends/viz?"
+  trendsURL <- "http://www.google.com/trends/TrendsRepport?"
+  resultsText <- getForm(trendsURL, .params = list(q = query, geo = geo, export = 1, hl = 'en', content=1, graph = 'all_csv'), curl = ch, .opts = list(verbose = F))
   
   #print(resultsText)
   

@@ -10,17 +10,12 @@ function(curl)
   tmp = txt$value()
   
   val = grep("Cookie: GALX", strsplit(tmp, "\n")[[1]], val = TRUE)
-  (strsplit(val, "[:=;]")[[1]])[3]
+  strsplit(val, "[:=;]")[[1]][3]
 
   ## Phil
-  print(val)
+  return(strsplit(val, "[:=;]")[[1]][3])
 
-  galx.match = str_extract(string = tmp, pattern = ignore.case('name="GALX"\\s*value="([^"]+)"'))
-  galx <- str_replace(string = galx.match,
-                      pattern = ignore.case('name="GALX"\\s*value="([^"]+)"'),
-                      replacement = "\\1")
-  
-  return(galx)
+
   
 }
 
