@@ -35,7 +35,7 @@ function(gData)
   
   
   temp  = ans[[1]] 
-  SearchInfo = data.frame(Timespan = temp, SearchTerms = gsub("\n", " " ,blocks[1]))
+  SearchInfo = data.frame(SearchTerms = str_match(blocks[1], "Search interest: (\\w+)")[1])
   
   #-------------------------------------
   #Regions

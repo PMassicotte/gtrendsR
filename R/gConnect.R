@@ -7,26 +7,17 @@ gConnect = function(usr, psw)
   
   ch <- getCurlHandle()
   
+  
+  
   ans = (curlSetOpt(curl = ch,
                     ssl.verifypeer = FALSE,
                     useragent = getOption('HTTPUserAgent', "R"),
                     timeout = 60,         
                     followlocation = TRUE,
                     cookiejar = "./cookies",
-                    cookiefile = "./cookies"))
+                    cookiefile = ""))
   
-  
-  ## Perform Google Account login
-  loginPage <- getURL(loginURL, curl=ch)
-  
-  galx.match <- str_extract(string = loginPage,
-                            pattern = ignore.case('name="GALX"\\s*value="([^"]+)"'))
-  
-
-  galx <- str_replace(string = galx.match,
-                      pattern = ignore.case('name="GALX"\\s*value="([^"]+)"'),
-                      replacement = "\\1")
-  
+  galx = getGALX(ch)
   authenticatePage <- postForm(authenticateURL, .params=list(Email=usr, Passwd=psw, GALX = galx, PersistentCookie= "yes", continue = "http://www.google.com/trends"), curl=ch)
   
   authenticatePage2 = getURL("http://www.google.com", curl = ch)
