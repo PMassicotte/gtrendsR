@@ -1,12 +1,12 @@
 ## Description here
-readBlock = function(block, col.names = NA){
+readBlock = function(block){
   con = textConnection(block)
   txt = read.csv(con, sep="\n")
   
   tt = str_split(as.character(txt[,1]), ",")
   df = data.frame(t(sapply(tt[2:length(tt)],c)))
   
-  names(df) = col.names
+  names(df) = unlist(tt[1])
   
   return(df)
   
