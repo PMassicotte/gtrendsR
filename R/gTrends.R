@@ -18,7 +18,7 @@ gTrends = function(ch, geo = 'all', query)
     stop("Reached Google Trends quota limit! Please try again later.") 
   }
     
-  resultsText = gFormatTrends(resultsText)
+  resultsText = gFormatTrends2(resultsText)
   
   resultsText$GEO = geo
   
