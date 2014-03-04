@@ -15,7 +15,7 @@ of two characters. To obtain a list of valid country codes supported by Google
 Trends, the user can type \code{data(countries)} followed by \code{countries}. The third parameter is \code{query}, the keyword string to search for.
 }
 \usage{
-gTrends(ch, geo = "all", "query")
+gTrends(ch, geo = "all", category = "0", "query")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -26,8 +26,13 @@ A valid handle returned by \emph{gConnect}.
 A two characters string containing the geographical localisation for which the query will be performed. A list of country codes supported by Google Trends can be obtained by typing \code{data(countries)}.
 }
   \item{query}{
-A keyword string.
+A keyword string. Should be separated by a comma for multiple keywords query (ex.: \code{query = "keyword1, keyword2"}).
 }
+
+  \item{category}{
+A string used to specify the category in which to search. \code{category = "0"} by default. List of supported categories can be obtained by typing \code{data(categories)}.
+}
+
 }
 \details{
 %%  ~~ If necessary, more details than the description above ~~
@@ -65,6 +70,9 @@ Philippe Massicotte \email{philippe.massicotte@uqtr.ca} with contributions from 
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
+#-----------------------------------------
+## Example 1 (single keyword)
+#-----------------------------------------
 location = "CA"
 query = "NHL"
 
@@ -72,6 +80,13 @@ data = gTrends(ch, geo = location, query = query)
 
 ## Display maps
 gTrendsMap(data)
+
+#-----------------------------------------
+## Example 2 (multiple keywords)
+#-----------------------------------------
+query = c("nhl,pool,khl") ## two keywords search
+data = gTrends(ch, geo = location, query = query)
+
 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

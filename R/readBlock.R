@@ -8,6 +8,8 @@ readBlock = function(block){
   
   names(df) = unlist(tt[1])
   
+  ## Could use names(txt) to name the data frame
+  
   return(df)
   
 }
