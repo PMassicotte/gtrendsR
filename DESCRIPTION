@@ -1,11 +1,12 @@
 Package: GTrendsR
 Type: Package
 Title: Tools to perform and display Google Trends queries.
-Version: 1.2
+Version: 1.2.1
 Date: 2014-01-21
 Author: Philippe Massicotte with contributions from Raphael Proulx and Marc Pepino
 Maintainer: <philippe.massicotte@uqtr.ca>
 Description: GTrendsR provides an interface for retrieving and displaying the information returned online by Google Trends in the R console. Trends (number of hits) over the time as well as geographic representation of the results can be displayed.
 License: Unlimited
-Depends: R (>= 3.0), googleVis, date, RCurl, stringr
+Depends: R (>= 3.0)
+Imports: googleVis, RCurl, stringr
 ZipData: no 

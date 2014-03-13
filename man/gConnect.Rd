@@ -21,9 +21,6 @@ A valid Google username (email).
 A valid password associated with \code{usr}. 
 }
 }
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
 \value{
 Upon a successful connection, returns a valid handle used to perform queries with \code{gTrends}. 
 }
@@ -34,19 +31,12 @@ Add link to the paper.
 \author{
 Philippe Massicotte \email{philippe.massicotte@uqtr.ca} with contributions from Raphaël Proulx and Marc Pépino.
 }
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
 \examples{
+\dontrun{
 usr = "yourname@gmail.com"
 psw = "yourpassword"
 ch = gConnect(usr, psw)
+}
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

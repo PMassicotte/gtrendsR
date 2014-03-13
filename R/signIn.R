@@ -9,7 +9,7 @@ function(curl)
 
   tmp = txt$value()
   
-  val = grep("Cookie: GALX", strsplit(tmp, "\n")[[1]], val = TRUE)
+  val = grep("Cookie: GALX", strsplit(tmp, "\n")[[1]], value = TRUE)
   strsplit(val, "[:=;]")[[1]][3]
 
   ## Phil
