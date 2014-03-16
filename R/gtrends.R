@@ -13,7 +13,7 @@
     return(strsplit(val, "[:=;]")[[1]][3])
 }
 
-gConnect <- function(usr, psw, verbose=FALSE) {
+gconnect <- function(usr, psw, verbose=FALSE) {
     loginURL <- "https://accounts.google.com/accounts/ServiceLogin"
     authenticateURL <- "https://accounts.google.com/ServiceLoginBoxAuth"
   
