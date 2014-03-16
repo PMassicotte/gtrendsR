@@ -45,9 +45,30 @@ gconnect <- function(usr, psw, verbose=FALSE) {
   
 }
 
-gtrends <- function(ch, query, geo = 'all', cat = "0") {
+##' Perform a Google Trends query
+##'
+##' The \code{gtrends} default method performs a Google Trends query
+##' for the \sQuote{query} argument and handle \sQuote{ch}. Optional
+##' arguments for geolocation and category can also be supplied.
+##'
+##' This function is based on the \sQuote{GTrendsR} package by
+##' Philippe Massicotte which can be found at
+##' \url{https://bitbucket.org/persican/gtrends}.
+##' @title Google Trends Query
+##' @param ch A valid handle which can be created via \code{\link{gconnect}}.
+##' @param query A character variable with the actual Google Trends query keywords.
+##' @param geo A character variable denoting a geographic region for
+##' the query, default to \dQuote{all} for global queries.
+##' @param cat A character denoting the category, defaults to \dQuote{0}.
+##' @param ... Additional parameters passed on in method dispatch.
+##' @return An object of class \sQuote{gtrends} which is list with six
+##' elements containing the results.
+##' @author Dirk Eddelbuettel
+gtrends <- function(ch, query, geo = 'all', cat = "0", ...) UseMethod("gtrends")
+
+##' @rdname gtrends
+gtrends.default <- function(ch, query, geo = 'all', cat = "0", ...) {
     authenticatePage2 <- getURL("http://www.google.com", curl = ch)
-  
     ## get Google Insights results CSV
     ##trendsURL <- "http://www.google.com/trends/viz?"
   
@@ -78,6 +99,21 @@ gtrends <- function(ch, query, geo = 'all', cat = "0") {
 
     res <- .processResults(resultsText)
     res
+}
+
+
+##' @rdname gtrends
+##' @param x A \code{\link{gtrends}} object
+plot.gtrends <- function(x, ...) {
+    x <- as.xts.gtrends(x)
+    plot(x, main=colnames(x))
+}
+
+##' @rdname gtrends
+as.xts.gtrends <- function(x) {
+    z <- xts(x[[2]][,3], order.by=x[[2]][,"end"])
+    colnames(z) <- colnames(x[[2]])[3]
+    z
 }
 
 
@@ -124,18 +160,3 @@ gtrends <- function(ch, query, geo = 'all', cat = "0") {
     class(res) <- "gtrends"
     return(res)
 }
-
-gtrends <- function(x) UseMethod("gtrends")
-gtrends.default <- function(x) {
-    plot.gtrends(x)
-}
-plot.gtrends <- function(x, ...) {
-    x <- as.xts.gtrends(x)
-    plot(x, main=colnames(x))
-}
-as.xts.gtrends <- function(res) {
-    x <- xts(res[[2]][,3], order.by=res[[2]][,"end"])
-    colnames(x) <- colnames(res[[2]])[3]
-    x
-}
-
