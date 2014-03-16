@@ -1,4 +1,7 @@
 
+## This function comes from the gtrendsr repo by Philippe Massicotte 
+## which can be found at https://bitbucket.org/persican/gtrends
+## 
 ## This gets the GALX cookie which we need to pass back in the login form we post.
 .getGALX <- function(curl) {
     txt <- basicTextGatherer()
@@ -13,6 +16,12 @@
     return(strsplit(val, "[:=;]")[[1]][3])
 }
 
+## This function comes from the gtrendsr repo by Philippe Massicotte 
+## which can be found at https://bitbucket.org/persican/gtrends
+##
+## Dirk Eddelbuettel just edited/reindented, added the verbose flag
+## and renamed it to 'gtrends' for consistency
+## 
 gconnect <- function(usr, psw, verbose=FALSE) {
     loginURL <- "https://accounts.google.com/accounts/ServiceLogin"
     authenticateURL <- "https://accounts.google.com/ServiceLoginBoxAuth"
@@ -63,8 +72,18 @@ gconnect <- function(usr, psw, verbose=FALSE) {
 ##' @param ... Additional parameters passed on in method dispatch.
 ##' @return An object of class \sQuote{gtrends} which is list with six
 ##' elements containing the results.
-##' @author Dirk Eddelbuettel
+##' @author Dirk Eddelbuettel based on the package by Philippe Massicotte 
+##' which can be found at \url{https://bitbucket.org/persican/gtrends}
+##' @seealso The original GTrendsR repository at
+##' \url{https://bitbucket.org/persican/gtrends}
 gtrends <- function(ch, query, geo = 'all', cat = "0", ...) UseMethod("gtrends")
+
+
+## This function comes from the gtrendsr repo by Philippe Massicotte 
+## which can be found at https://bitbucket.org/persican/gtrends
+##
+## Dirk Eddelbuettel added result processing and turned it into an S3
+## method for the 'gtrends' class,
 
 ##' @rdname gtrends
 gtrends.default <- function(ch, query, geo = 'all', cat = "0", ...) {
@@ -117,6 +136,8 @@ as.xts.gtrends <- function(x) {
 }
 
 
+## This function is a rewrite and extension of code by Philippe Massicotte 
+## which can be found at https://bitbucket.org/persican/gtrends
 
 .processResults <- function(resultsText) {
 
