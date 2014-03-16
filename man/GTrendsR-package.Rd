@@ -36,6 +36,7 @@ https://github.com/suryasev/unofficial-google-trends-api/blob/master/pyGTrends.p
 
 \keyword{ package }
 \examples{
+\dontrun{
 usr = "yourname@gmail.com"
 psw = "yourpassword"
 ch = gConnect(usr, psw)
@@ -46,4 +47,5 @@ query = "NHL"
 data = gTrends(ch, geo = location, query = query)
 
 gTrendsMap(data)
+}
 }

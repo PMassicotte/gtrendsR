@@ -10,7 +10,7 @@
 Create a connection to Google Trends service using personal account information. In order to perform Google Trends queries, the user needs to own a free Google account.
 }
 \usage{
-gConnect(usr, psw)
+gConnect(usr, psw, verbose=FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -20,6 +20,7 @@ A valid Google username (email).
   \item{psw}{
 A valid password associated with \code{usr}. 
 }
+  \item{verbose}{A boolean toggle selecting quiet or verbose behahviour}
 }
 \value{
 Upon a successful connection, returns a valid handle used to perform queries with \code{gTrends}. 
