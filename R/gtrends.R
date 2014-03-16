@@ -1,6 +1,6 @@
 
 ## This gets the GALX cookie which we need to pass back in the login form we post.
-getGALX <- function(curl) {
+.getGALX <- function(curl) {
     txt <- basicTextGatherer()
     curlPerform(url = "https://accounts.google.com/accounts/ServiceLogin", 
                 curl = curl, writefunction = txt$update, header = TRUE, ssl.verifypeer = FALSE)
@@ -27,7 +27,7 @@ gConnect <- function(usr, psw, verbose=FALSE) {
                        cookiejar = "./cookies",
                        cookiefile = ""))
   
-    galx <- getGALX(ch)
+    galx <- .getGALX(ch)
     authenticatePage <- postForm(authenticateURL,
                                  .params=list(Email=usr,
                                  Passwd=psw, GALX = galx,
@@ -45,7 +45,7 @@ gConnect <- function(usr, psw, verbose=FALSE) {
   
 }
 
-gTrends <- function(ch, query, geo = 'all', cat = "0") {
+gtrends <- function(ch, query, geo = 'all', cat = "0") {
     authenticatePage2 <- getURL("http://www.google.com", curl = ch)
   
     ## get Google Insights results CSV
@@ -76,16 +76,13 @@ gTrends <- function(ch, query, geo = 'all', cat = "0") {
     ##resultsText$GEO = geo
     ##return(resultsText)
 
-    res <- processResults(resultsText)
+    res <- .processResults(resultsText)
     res
 }
 
-as.xts.gTrendsData <- function(res) {
-    x <- xts(res[[2]][,3], order.by=res[[2]][,"end"])
-    x
-}
 
-processResults <- function(resultsText) {
+
+.processResults <- function(resultsText) {
 
     vec <- strsplit(resultsText, "\\\n{2,}")[[1]]
 
@@ -124,6 +121,21 @@ processResults <- function(resultsText) {
                 cities=cities,
                 searches=searches,
                 rising=rising)
-    class(res) <- "gTrendsData"
+    class(res) <- "gtrends"
     return(res)
 }
+
+gtrends <- function(x) UseMethod("gtrends")
+gtrends.default <- function(x) {
+    plot.gtrends(x)
+}
+plot.gtrends <- function(x, ...) {
+    x <- as.xts.gtrends(x)
+    plot(x, main=colnames(x))
+}
+as.xts.gtrends <- function(res) {
+    x <- xts(res[[2]][,3], order.by=res[[2]][,"end"])
+    colnames(x) <- colnames(res[[2]])[3]
+    x
+}
+
