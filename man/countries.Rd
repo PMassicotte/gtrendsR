@@ -1,11 +1,9 @@
 \name{countries}
 \alias{countries}
 \docType{data}
-\title{List of countries supported by Google
-%%   ~~ data name/kind ... ~~
-}
+\title{List of country codes supported by Google Trends}
 \description{
-Data set of countries
+A data set of countries and country codes.
 }
 \usage{data(countries)}
 \format{
