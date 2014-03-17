@@ -129,7 +129,7 @@ summary.gtrends <- function(object, ...) {
     cat(object[[1]][15])
     cat("\nRequested at: ")
     cat(object[[1]][4])
-    cat("\n\nSummary of trends:\n")
+    cat("\n\nSummary of trend:\n")
     print(summary(as.xts.gtrends(object)))
     cat("\nMain regions:\n")
     print(head(object[[3]]))
@@ -147,9 +147,9 @@ summary.gtrends <- function(object, ...) {
 ##' @param type A character variable selecting the type of plot;
 ##' permissible values are \sQuote{trends} (which is also the
 ##' default), \sQuote{regions} and \sQuote{cities}.
-plot.gtrends <- function(x, type=c("trends", "regions", "cities"), ...) {
+plot.gtrends <- function(x, type=c("trend", "regions", "cities"), ...) {
     type <- match.arg(type)
-    if (type=="trends") {
+    if (type=="trend") {
         x <- as.xts.gtrends(x)
         plot(x, main=colnames(x))
     } else if (type=="regions") {
@@ -164,7 +164,7 @@ plot.gtrends <- function(x, type=c("trends", "regions", "cities"), ...) {
 
 ##' @rdname gtrends
 as.xts.gtrends <- function(x) {
-    z <- xts(x[["trends"]][,3], order.by=x[["trends"]][,"end"])
+    z <- xts(x[["trend"]][,3], order.by=x[["trend"]][,"end"])
     colnames(z) <- colnames(x[[2]])[3]
     z
 }
