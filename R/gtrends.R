@@ -1,23 +1,6 @@
 
 ## This function comes from the gtrendsr repo by Philippe Massicotte 
 ## which can be found at https://bitbucket.org/persican/gtrends
-## 
-## This gets the GALX cookie which we need to pass back in the login form we post.
-.getGALX <- function(curl) {
-    txt <- basicTextGatherer()
-    curlPerform(url = "https://accounts.google.com/accounts/ServiceLogin", 
-                curl = curl, writefunction = txt$update, header = TRUE, ssl.verifypeer = FALSE)
-    tmp <- txt$value()
-  
-    val <- grep("Cookie: GALX", strsplit(tmp, "\n")[[1]], value = TRUE)
-    strsplit(val, "[:=;]")[[1]][3]
-
-    ## Phil
-    return(strsplit(val, "[:=;]")[[1]][3])
-}
-
-## This function comes from the gtrendsr repo by Philippe Massicotte 
-## which can be found at https://bitbucket.org/persican/gtrends
 ##
 ## Dirk Eddelbuettel just edited/reindented, added the verbose flag
 ## and renamed it to 'gtrends' for consistency
@@ -54,6 +37,24 @@ gconnect <- function(usr, psw, verbose=FALSE) {
   
 }
 
+## This function comes from the gtrendsr repo by Philippe Massicotte 
+## which can be found at https://bitbucket.org/persican/gtrends
+## 
+## This gets the GALX cookie which we need to pass back in the login form we post.
+.getGALX <- function(curl) {
+    txt <- basicTextGatherer()
+    curlPerform(url = "https://accounts.google.com/accounts/ServiceLogin", 
+                curl = curl, writefunction = txt$update, header = TRUE, ssl.verifypeer = FALSE)
+    tmp <- txt$value()
+  
+    val <- grep("Cookie: GALX", strsplit(tmp, "\n")[[1]], value = TRUE)
+    strsplit(val, "[:=;]")[[1]][3]
+
+    ## Phil
+    return(strsplit(val, "[:=;]")[[1]][3])
+}
+
+
 ##' Perform a Google Trends query
 ##'
 ##' The \code{gtrends} default method performs a Google Trends query
@@ -76,7 +77,9 @@ gconnect <- function(usr, psw, verbose=FALSE) {
 ##' which can be found at \url{https://bitbucket.org/persican/gtrends}
 ##' @seealso The original GTrendsR repository at
 ##' \url{https://bitbucket.org/persican/gtrends}
-gtrends <- function(ch, query, geo = 'all', cat = "0", ...) UseMethod("gtrends")
+gtrends <- function(ch, query, geo = 'all', cat = "0", ...) {
+    UseMethod("gtrends")
+}
 
 
 ## This function comes from the gtrendsr repo by Philippe Massicotte 
@@ -103,7 +106,6 @@ gtrends.default <- function(ch, query, geo = 'all', cat = "0", ...) {
     
   
     ##print(resultsText)
-  
     ##print(rawToChar(resultsText))
   
     ## Sometimes we reach quota limit, in that case stop!
@@ -120,17 +122,49 @@ gtrends.default <- function(ch, query, geo = 'all', cat = "0", ...) {
     res
 }
 
+##' @rdname gtrends
+##' @param object A \code{\link{gtrends}} object
+summary.gtrends <- function(object, ...) {
+    cat("Google Trends results for:\n")
+    cat(object[[1]][15])
+    cat("\nRequested at: ")
+    cat(object[[1]][4])
+    cat("\n\nSummary of trends:\n")
+    print(summary(as.xts.gtrends(object)))
+    cat("\nMain regions:\n")
+    print(head(object[[3]]))
+    cat("\nMain cities:\n")
+    print(head(object[[4]]))
+    cat("\nTop searches cities:\n")
+    print(head(object[[5]]))
+    cat("\nRising searches:\n")
+    print(head(object[[6]]))
+    invisible(NULL)
+}
 
 ##' @rdname gtrends
 ##' @param x A \code{\link{gtrends}} object
-plot.gtrends <- function(x, ...) {
-    x <- as.xts.gtrends(x)
-    plot(x, main=colnames(x))
+##' @param type A character variable selecting the type of plot;
+##' permissible values are \sQuote{trends} (which is also the
+##' default), \sQuote{regions} and \sQuote{cities}.
+plot.gtrends <- function(x, type=c("trends", "regions", "cities"), ...) {
+    type <- match.arg(type)
+    if (type=="trends") {
+        x <- as.xts.gtrends(x)
+        plot(x, main=colnames(x))
+    } else if (type=="regions") {
+        df <- data.frame(loc=x$regions[,1], hits=x$regions[,1])
+        plot(gvisGeoChart(df, 'loc', 'hits'))
+    } else if (type=="cities") {
+        df <- data.frame(loc=x$cities[,1], hits=x$cities[,1])
+        plot(gvisGeoChart(df, 'loc', 'hits', options=list(displayMode="markers")))
+    }
+    invisible(NULL)
 }
 
 ##' @rdname gtrends
 as.xts.gtrends <- function(x) {
-    z <- xts(x[[2]][,3], order.by=x[[2]][,"end"])
+    z <- xts(x[["trends"]][,3], order.by=x[["trends"]][,"end"])
     colnames(z) <- colnames(x[[2]])[3]
     z
 }
@@ -144,7 +178,7 @@ as.xts.gtrends <- function(x) {
     vec <- strsplit(resultsText, "\\\n{2,}")[[1]]
 
     ## block 1: meta data
-    meta  <- strsplit(vec[1], "\\\r\\\n")
+    meta  <- strsplit(vec[1], "\\\r\\\n")[[1]]
     
     ## block 2: trend
     trend <- read.csv(textConnection(strsplit(vec[2], "\\\n")[[1]]),

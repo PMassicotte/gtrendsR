@@ -7,7 +7,7 @@
   GTrendsR: Performs Google Trends queries
 }
 \description{
-  Performs and display Google Trends queries using this sequence:\cr  
+  Performs and display Google Trends queries using this sequence:
   \cr 1) gConnect
   \cr 2) gTrends
   \cr 3) gTrendsMap

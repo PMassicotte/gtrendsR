@@ -3,13 +3,16 @@
 \alias{gtrends}
 \alias{gtrends.default}
 \alias{plot.gtrends}
+\alias{summary.gtrends}
 \title{Google Trends Query}
 \usage{
 gtrends(ch, query, geo = "all", cat = "0", ...)
 
 \method{gtrends}{default}(ch, query, geo = "all", cat = "0", ...)
 
-\method{plot}{gtrends}(x, ...)
+\method{summary}{gtrends}(object, ...)
+
+\method{plot}{gtrends}(x, type = c("trends", "regions", "cities"), ...)
 
 \method{as.xts}{gtrends}(x)
 }
@@ -30,7 +33,13 @@ gtrends(ch, query, geo = "all", cat = "0", ...)
   \item{...}{Additional parameters passed on in method
   dispatch.}
 
+  \item{object}{A \code{\link{gtrends}} object}
+
   \item{x}{A \code{\link{gtrends}} object}
+
+  \item{type}{A character variable selecting the type of
+  plot; permissible values are \sQuote{trends} (which is
+  also the default), \sQuote{regions} and \sQuote{cities}.}
 }
 \value{
 An object of class \sQuote{gtrends} which is list with six
@@ -50,6 +59,12 @@ Philippe Massicotte which can be found at
 \url{https://bitbucket.org/persican/gtrends}.
 }
 \author{
-Dirk Eddelbuettel
+Dirk Eddelbuettel based on the package by Philippe
+Massicotte which can be found at
+\url{https://bitbucket.org/persican/gtrends}
+}
+\seealso{
+The original GTrendsR repository at
+\url{https://bitbucket.org/persican/gtrends}
 }
 
