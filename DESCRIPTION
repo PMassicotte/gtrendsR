@@ -13,4 +13,5 @@ Description: GTrendsR provides an interface for retrieving and displaying the
   This version by Dirk Eddelbuettel is a fork of the package by Philippe
   Massicotte et al which can be found at https://bitbucket.org/persican/gtrendsr.
 License: GPL (>= 2)
-Depends: R (>= 3.0), RCurl, googleVis, xts
+Depends: R (>= 3.0)
+Imports: RCurl, googleVis, xts
