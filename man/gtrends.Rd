@@ -12,9 +12,9 @@ gtrends(ch, query, geo = "all", cat = "0", ...)
 
 \method{summary}{gtrends}(object, ...)
 
-\method{plot}{gtrends}(x, type = c("trends", "regions", "cities"), ...)
+\method{plot}{gtrends}(x, type = c("trend", "regions", "cities"), ...)
 
-\method{as.xts}{gtrends}(x)
+\method{as.xts}{gtrends}(x, ...)
 }
 \arguments{
   \item{ch}{A valid handle which can be created via

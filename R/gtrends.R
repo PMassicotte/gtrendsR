@@ -103,7 +103,6 @@ gtrends.default <- function(ch, query, geo = 'all', cat = "0", ...) {
     pp <- list(q = query, geo = geo, cat = cat, content = 1, export = 1, graph = 'all_csv')
   
     resultsText <- getForm(trendsURL, .params = pp, curl = ch)
-    
   
     ##print(resultsText)
     ##print(rawToChar(resultsText))
@@ -163,7 +162,7 @@ plot.gtrends <- function(x, type=c("trend", "regions", "cities"), ...) {
 }
 
 ##' @rdname gtrends
-as.xts.gtrends <- function(x) {
+as.xts.gtrends <- function(x, ...) {
     z <- xts(x[["trend"]][,3], order.by=x[["trend"]][,"end"])
     colnames(z) <- colnames(x[[2]])[3]
     z
@@ -203,7 +202,12 @@ as.xts.gtrends <- function(x) {
                          stringsAsFactors=FALSE)
 
     ## block 6: rising searches
-    rising <- read.csv(textConnection(strsplit(vec[6], "\\\n")[[1]]),
+    ## broken by design: not a csv when a field can be "+1,900%" with a comma as
+    ## a decimal separator -- so subst out the first comma into a semicolon
+    tt <- sub(",", ";", strsplit(vec[6], "\\\n")[[1]])
+    rising <- read.csv(textConnection(tt),
+                       sep=";", skip=1, header=FALSE,
+                       col.names=c("term", "change"),
                        stringsAsFactors=FALSE)
 
     res <- list(meta=meta,

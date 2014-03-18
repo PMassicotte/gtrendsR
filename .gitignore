@@ -2,3 +2,4 @@
 .Rhistory
 .RData
 inst/testdata
+inst/localTests
