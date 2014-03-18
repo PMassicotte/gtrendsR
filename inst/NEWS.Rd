@@ -2,12 +2,12 @@
 \title{News for Package 'GTrendsR'}
 \newcommand{\cpkg}{\href{http://CRAN.R-project.org/package=#1}{\pkg{#1}}}
 
-\section{Changes in GTrendsR version 1.3.0 (2014-03-17)}{
+\section{Changes in RGoogleTrends version 0.1.0 (2014-03-17)}{
   \itemize{
-    \item This version was created by Dirk Eddelbuettel as a fork of the
-    original project by Philippe Massicotte with contributions from
-    Raphael Proulx and Marc Pepino which can be found at
-    \url{https://bitbucket.org/persican/gtrendsr}.
+    \item This package was created by Dirk Eddelbuettel as a fork of the
+    GTrendsR project, version 1.2.0, by Philippe Massicotte with
+    contributions from Raphael Proulx and Marc Pepino which can be found at
+    \url{https://bitbucket.org/persican/gtrendsr}. 
     \item The resulting object is now a generic S3 class of type \code{gtrends}
     \item The default method executes the Google Trends query, and
     returns the result objects.
