@@ -19,19 +19,6 @@ gTrendsMap(gTrendsData)
 A list of data returned by gTrends.
 }
 }
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
-\value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-}
-\references{
-%% ~put references to the literature/web site here ~
-}
 \author{
 %%  ~~who you are~~
 Philippe Massicotte \email{philippe.massicotte@uqtr.ca} with contributions from Raphaël Proulx and Marc Pépino.
@@ -43,10 +30,8 @@ Note that the \code{gTrendsMap} produces a \emph{html} file which will be automa
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
 \examples{
+\dontrun{
 usr = "yourname@gmail.com"
 psw = "yourpassword"
 ch = gConnect(usr, psw)
@@ -57,6 +42,7 @@ query = "NHL"
 data = gTrends(ch, geo = location, query = query)
 
 gTrendsMap(data)
+}
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

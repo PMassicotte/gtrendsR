@@ -3,8 +3,6 @@ gConnect = function(usr, psw)
   loginURL <- "https://accounts.google.com/accounts/ServiceLogin"
   authenticateURL <- "https://accounts.google.com/ServiceLoginBoxAuth"
   
-  require(RCurl)
-  
   ch <- getCurlHandle()
   
   

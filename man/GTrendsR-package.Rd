@@ -35,10 +35,6 @@ https://github.com/suryasev/unofficial-google-trends-api/blob/master/pyGTrends.p
 }
 
 \keyword{ package }
-\seealso{
-%~~ Optional links to other man pages, e.g. ~~
-%~~ \code{\link[<pkg>:<pkg>-package]{<pkg>}} ~~
-}
 \examples{
 usr = "yourname@gmail.com"
 psw = "yourpassword"
