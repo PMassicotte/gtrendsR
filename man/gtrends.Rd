@@ -1,3 +1,4 @@
+\encoding{UTF-8}
 \name{gtrends}
 \alias{as.xts.gtrends}
 \alias{gtrends}
