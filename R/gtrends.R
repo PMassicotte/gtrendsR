@@ -1,10 +1,9 @@
+##-----------------------------------------------------------------------------
+##  Authors:        Philippe Massicotte and Dirk Eddelbuettel
+##  Date modified:  20-03-2014
+##  Description:    TODO
+##-----------------------------------------------------------------------------
 
-## This function comes from the gtrendsr repo by Philippe Massicotte 
-## which can be found at https://bitbucket.org/persican/gtrends
-##
-## Dirk Eddelbuettel just edited/reindented, added the verbose flag
-## and renamed it to 'gtrends' for consistency
-## 
 gconnect <- function(usr, psw, verbose=FALSE) {
     loginURL <- "https://accounts.google.com/accounts/ServiceLogin"
     authenticateURL <- "https://accounts.google.com/ServiceLoginBoxAuth"
@@ -37,9 +36,6 @@ gconnect <- function(usr, psw, verbose=FALSE) {
   
 }
 
-## This function comes from the gtrendsr repo by Philippe Massicotte 
-## which can be found at https://bitbucket.org/persican/gtrends
-## 
 ## This gets the GALX cookie which we need to pass back in the login form we post.
 .getGALX <- function(curl) {
     txt <- basicTextGatherer()
@@ -49,8 +45,7 @@ gconnect <- function(usr, psw, verbose=FALSE) {
   
     val <- grep("Cookie: GALX", strsplit(tmp, "\n")[[1]], value = TRUE)
     strsplit(val, "[:=;]")[[1]][3]
-
-    ## Phil
+  
     return(strsplit(val, "[:=;]")[[1]][3])
 }
 
@@ -82,24 +77,25 @@ gtrends <- function(ch, query, geo = 'all', cat = "0", ...) {
 }
 
 
-## This function comes from the gtrendsr repo by Philippe Massicotte 
-## which can be found at https://bitbucket.org/persican/gtrends
-##
 ## Dirk Eddelbuettel added result processing and turned it into an S3
-## method for the 'gtrends' class,
+## method for the 'gtrends' class.
+
+## TODO: Add support for category.
 
 ##' @rdname gtrends
 gtrends.default <- function(ch, query, geo = 'all', cat = "0", ...) {
+  
+    ## Make sure a valide country code has been specified.
+    data(countries)
+    
+    if(!geo %in% countries$CODE){
+      stop("Country code not valide. Please use 'data(countries)' to retreive valid codes.", call. = FALSE)
+    }
+  
     authenticatePage2 <- getURL("http://www.google.com", curl = ch)
-    ## get Google Insights results CSV
-    ##trendsURL <- "http://www.google.com/trends/viz?"
-  
-    ##trendsURL <- "http://www.google.com/trends/TrendsRepport?"
+    
     trendsURL <- "http://www.google.com/trends/?"
-    ## resultsText <- getForm(trendsURL, .params = list(q = query, geo = geo, export = 1,
-    ##                                   hl = 'en', content=1, graph = 'all_csv'), curl = ch,
-    ##                        .opts = list(verbose = F))
-  
+
     pp <- list(q = query, geo = geo, cat = cat, content = 1, export = 1, graph = 'all_csv')
   
     resultsText <- getForm(trendsURL, .params = pp, curl = ch)
@@ -111,11 +107,6 @@ gtrends.default <- function(ch, query, geo = 'all', cat = "0", ...) {
     if (any(grep("QUOTA", resultsText))) {
         stop("Reached Google Trends quota limit! Please try again later.") 
     }
-    
-    ##resultsText = gFormatTrends2(resultsText)
-    ##
-    ##resultsText$GEO = geo
-    ##return(resultsText)
 
     res <- .processResults(resultsText)
     res
@@ -169,12 +160,18 @@ as.xts.gtrends <- function(x, ...) {
 }
 
 
-## This function is a rewrite and extension of code by Philippe Massicotte 
-## which can be found at https://bitbucket.org/persican/gtrends
+## This function has been rewrite and improuved by Dirk Eddelbuettel.
+
+## TODO: If geo is "US" there will be 7 blocs and they won't match the current structure. This happen because block 4 is "Top metros" which is only available when geo = "US".
 
 .processResults <- function(resultsText) {
 
     vec <- strsplit(resultsText, "\\\n{2,}")[[1]]
+    
+    ## Make sure there some results have been returned.
+    if(length(vec) < 6){
+      stop("Not enough search volume. Please change your search terms.", call. = FALSE)
+    }
 
     ## block 1: meta data
     meta  <- strsplit(vec[1], "\\\r\\\n")[[1]]
@@ -187,7 +184,6 @@ as.xts.gtrends <- function(x, ...) {
                         end=as.Date(weeks[,2]),
                         trend)
     trend <- trend[is.finite(trend[,4]), -3]
-
    
     ## block 3: top regions
     regions <- read.csv(textConnection(strsplit(vec[3], "\\\n")[[1]]),
