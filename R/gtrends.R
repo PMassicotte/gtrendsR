@@ -4,6 +4,13 @@
 ##  Description:    TODO
 ##-----------------------------------------------------------------------------
 
+## TODO: 
+# - better authentication success checks
+# - better query result checks
+# - adding category code (as you mentioned)
+# - restoring ability to plot regions (ahem, I broke that...)
+# - plot googleVis in PDF. Hint: cat(unlist(G1$html), file="tmp.html") -----> print to PDF using system(...)
+
 gconnect <- function(usr, psw, verbose=FALSE) {
     loginURL <- "https://accounts.google.com/accounts/ServiceLogin"
     authenticateURL <- "https://accounts.google.com/ServiceLoginBoxAuth"
