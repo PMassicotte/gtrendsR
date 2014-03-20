@@ -8,33 +8,26 @@
 }
 \description{
   Performs and display Google Trends queries using this sequence:
-  \cr 1) gConnect
-  \cr 2) gTrends
-  \cr 3) gTrendsMap
-
-  NB: gTrendsMap currently disabled.
+  \cr 1) gconnect
+  \cr 2) gtrends
+  \cr 3) plot
 }
 \details{
   \tabular{ll}{
     Package: \tab GTrendsR\cr
     Type: \tab Package\cr
-    Version: \tab 1.0\cr
-    Date: \tab 2013-05-29\cr
-    License: \tab Unlimited\cr
+    Version: \tab 1.2.1\cr
+    Date: \tab 2014-03-16\cr
+    License: \tab GPL (>= 2)\cr
   }
   GTrendsR provides an interface for retrieving and displaying the
   information returned online by Google Trends in the R console. Trends
   (number of hits) over the time as well as geographic representation of
   the results can be displayed.
-
-  This version of the package is based on a fork by Dirk Eddelbuettel,
-  which was based on version 1.2 of the package above.
-}
+  }
 \author{
-  Philippe Massicotte \email{philippe.massicotte@uqtr.ca} with
-  contributions from Raphaël Proulx and Marc Pépino.
-
-  The package was forked by Dirk Eddelbuettel who changed the result
+  Philippe Massicotte \email{philippe.massicotte@uqtr.ca} and Dirk Eddelbuettel \email{edd@debian.org} with
+  contributions from Raphaël Proulx and Marc Pépino. Dirk Eddelbuettel changed the result
   parsing, added \code{\link[xts]{xts}} support to trends as a time
   series, and added some S3 methods and generics.
 }
@@ -58,8 +51,8 @@ ch = gConnect(usr, psw)
 location = "CA"
 query = "NHL"
 
-data = gTrends(ch, geo = location, query = query)
+data = gtrends(ch, geo = location, query = query)
 
-gTrendsMap(data)
+plot(data)
 }
 }

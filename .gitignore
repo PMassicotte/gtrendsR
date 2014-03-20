@@ -3,3 +3,6 @@
 .RData
 inst/testdata
 inst/localTests
+test
+cookies
+gTrends2.Rproj

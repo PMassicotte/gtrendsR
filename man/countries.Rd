@@ -50,7 +50,7 @@ A data set of countries and country codes.
       \code{UK} \code{UM} \code{US} \code{UY} \code{UZ} \code{VA}
       \code{VC} \code{VE} \code{VG} \code{VI} \code{VN} \code{VU}
       \code{WF} \code{WS} \code{YE} \code{YT} \code{ZA} \code{ZM}
-      \code{ZR} \code{ZW} \code{ZW-Zimbabwe}} 
+      \code{ZR} \code{ZW}} 
    \item{COUNTRY}{A character vector with country name for the
      corresponding code} 
 }}

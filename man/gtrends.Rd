@@ -59,12 +59,22 @@ Philippe Massicotte which can be found at
 \url{https://bitbucket.org/persican/gtrends}.
 }
 \author{
-Dirk Eddelbuettel based on the package by Philippe
-Massicotte which can be found at
-\url{https://bitbucket.org/persican/gtrends}
+Philippe Massicotte \email{philippe.massicotte@uqtr.ca} and Dirk Eddelbuettel \email{edd@debian.org} with contributions from Raphaël Proulx and Marc Pépino. 
 }
-\seealso{
-The original GTrendsR repository at
-\url{https://bitbucket.org/persican/gtrends}
+\examples{
+\dontrun{
+usr = "yourname@gmail.com"
+psw = "yourpassword"
+ch = gconnect(usr, psw)
+
+## Search for NHL keyword in Canada.
+data = gtrends(ch = ch, query = "NHL", geo = "CA")
+
+## Plot the results
+plot(data, type = c("trend"))
+plot(data, type = c("regions"))
+plot(data, type = c("cities"))
+
+}
 }
 

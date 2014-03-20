@@ -20,13 +20,13 @@
   queries with \code{gtrends}.  
 }
 \author{
-  Philippe Massicotte \email{philippe.massicotte@uqtr.ca} with
+  Philippe Massicotte \email{philippe.massicotte@uqtr.ca} and Dirk Eddelbuettel \email{edd@debian.org} with
   contributions from Raphaël Proulx and Marc Pépino. 
 }
 \examples{
 \dontrun{
 usr = "yourname@gmail.com"
 psw = "yourpassword"
-ch = gConnect(usr, psw)
+ch = gconnect(usr, psw)
 }
 }
