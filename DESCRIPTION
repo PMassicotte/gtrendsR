@@ -11,4 +11,4 @@ Description: GTrendsR provides an interface for retrieving and displaying the in
   parsing, added \code{\link[xts]{xts}} support to trends as a time series, and added some S3 methods and generics.
 License: GPL (>= 2)
 Depends: R (>= 3.0)
-Imports: RCurl, googleVis, xts
+Imports: RCurl, googleVis, xts, zoo, RColorBrewer
