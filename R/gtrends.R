@@ -148,7 +148,9 @@ plot.gtrends <- function(x, type=c("trend", "regions", "cities"), ...) {
     type <- match.arg(type)
     if (type=="trend") {
         x <- as.xts.gtrends(x)
-        plot(x, main=colnames(x))
+        #plot(x, main=colnames(x))
+        plot(as.zoo(x), plot.type="single", col=brewer.pal(n = 9, name = "Set1"), xlab = "Date", ylab = "Search hits", main = "Interest over time")
+        legend("topleft", colnames(x), lty = 1, col = brewer.pal(n = 9, name = "Set1"), bty = "n")
     } else if (type=="regions") {
         df <- data.frame(loc=x$regions[,1], hits=x$regions[,1])
         plot(gvisGeoChart(df, 'loc', 'hits'))
@@ -161,8 +163,8 @@ plot.gtrends <- function(x, type=c("trend", "regions", "cities"), ...) {
 
 ##' @rdname gtrends
 as.xts.gtrends <- function(x, ...) {
-    z <- xts(x[["trend"]][,3], order.by=x[["trend"]][,"end"])
-    colnames(z) <- colnames(x[[2]])[3]
+    z <- xts(x[["trend"]][,3:ncol(x$trend)], order.by=x[["trend"]][,"end"])
+    colnames(z) <- colnames(x[[2]])[3:ncol(x$trend)]
     z
 }
 
@@ -201,8 +203,7 @@ as.xts.gtrends <- function(x, ...) {
                         skip=1, stringsAsFactors=FALSE)
 
     ## block 5: top searches
-    searches <- read.csv(textConnection(strsplit(vec[5], "\\\n")[[1]]),
-                         stringsAsFactors=FALSE)
+    searches <- read.csv(textConnection(strsplit(vec[5], "\\\n")[[1]][2:length(strsplit(vec[5], "\\\n")[[1]])]), stringsAsFactors=FALSE)
 
     ## block 6: rising searches
     ## broken by design: not a csv when a field can be "+1,900%" with a comma as

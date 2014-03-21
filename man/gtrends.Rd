@@ -22,7 +22,7 @@ gtrends(ch, query, geo = "all", cat = "0", ...)
   \code{\link{gconnect}}.}
 
   \item{query}{A character variable with the actual Google
-  Trends query keywords.}
+  Trends query keywords. Keywords should be separated using a coma \code{"keyword1, keyword2"}.}
 
   \item{geo}{A character variable denoting a geographic
   region for the query, default to \dQuote{all} for global
@@ -75,6 +75,10 @@ data = gtrends(ch = ch, query = "NHL", geo = "CA")
 plot(data, type = c("trend"))
 plot(data, type = c("regions"))
 plot(data, type = c("cities"))
+
+## Search using multiple keywords.
+data = gtrends(ch = ch, query = "nhl, pool", geo = "CA")
+plot(data)
 
 }
 }
