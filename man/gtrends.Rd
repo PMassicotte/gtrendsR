@@ -1,4 +1,3 @@
-\encoding{UTF-8}
 \name{gtrends}
 \alias{as.xts.gtrends}
 \alias{gtrends}
@@ -22,7 +21,7 @@ gtrends(ch, query, geo = "all", cat = "0", ...)
   \code{\link{gconnect}}.}
 
   \item{query}{A character variable with the actual Google
-  Trends query keywords. Keywords should be separated using a coma \code{"keyword1, keyword2"}.}
+  Trends query keywords.}
 
   \item{geo}{A character variable denoting a geographic
   region for the query, default to \dQuote{all} for global
@@ -60,26 +59,12 @@ Philippe Massicotte which can be found at
 \url{https://bitbucket.org/persican/gtrends}.
 }
 \author{
-Philippe Massicotte \email{philippe.massicotte@uqtr.ca} and Dirk Eddelbuettel \email{edd@debian.org} with contributions from Raphaël Proulx and Marc Pépino. 
+Dirk Eddelbuettel based on the package by Philippe
+Massicotte which can be found at
+\url{https://bitbucket.org/persican/gtrends}
 }
-\examples{
-\dontrun{
-usr = "yourname@gmail.com"
-psw = "yourpassword"
-ch = gconnect(usr, psw)
-
-## Search for NHL keyword in Canada.
-data = gtrends(ch = ch, query = "NHL", geo = "CA")
-
-## Plot the results
-plot(data, type = c("trend"))
-plot(data, type = c("regions"))
-plot(data, type = c("cities"))
-
-## Search using multiple keywords.
-data = gtrends(ch = ch, query = "nhl, pool", geo = "CA")
-plot(data)
-
-}
+\seealso{
+The original GTrendsR repository at
+\url{https://bitbucket.org/persican/gtrends}
 }
 

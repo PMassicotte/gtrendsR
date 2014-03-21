@@ -91,12 +91,15 @@ gtrends <- function(ch, query, geo = 'all', cat = "0", ...) {
 
 ##' @rdname gtrends
 gtrends.default <- function(ch, query, geo = 'all', cat = "0", ...) {
-  
-    ## Make sure a valide country code has been specified.
+
+    countries <- NULL   ## silly, but needed to make R CMD check happy...
+
+    ## Make sure a valid country code has been specified.
     data(countries)
-    
-    if(!geo %in% countries$CODE){
-      stop("Country code not valide. Please use 'data(countries)' to retreive valid codes.", call. = FALSE)
+
+    if (geo != "all" && !geo %in% countries$CODE) {
+      stop("Country code not valid. Please use 'data(countries)' to retreive valid codes.",
+           call. = FALSE) 
     }
   
     authenticatePage2 <- getURL("http://www.google.com", curl = ch)

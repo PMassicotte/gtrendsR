@@ -2,13 +2,13 @@ Package: GTrendsR
 Type: Package
 Title: R functions to perform and display Google Trends queries
 Version: 1.2.1
-Date: 2014-03-16
-Author: Philippe Massicotte and Dirk Eddelbuettel with contributions from Raphael Proulx, Marc Pepino 
+Date: 2014-03-21
+Author: Philippe Massicotte and Dirk Eddelbuettel with contributions 
+  from Raphael Proulx and Marc Pepino 
 Maintainer: Philippe Massicotte <philippe.massicotte@uqtr.ca>
-Description: GTrendsR provides an interface for retrieving and displaying the information returned online by 
-  Google Trends. Trends (number of hits) over the time as well as geographic representation of the results can 
-  be displayed. This version has been improved by Dirk Eddelbuettel <edd@debian.org>.  Dirk Eddelbuettel changed the result
-  parsing, added \code{\link[xts]{xts}} support to trends as a time series, and added some S3 methods and generics.
+Description: GTrendsR provides an interface for retrieving and displaying the
+  information returned online by Google Trends. Trends (number of hits) over
+  the time as well as geographic representation of the results can be displayed. 
 License: GPL (>= 2)
 Depends: R (>= 3.0)
 Imports: RCurl, googleVis, xts, zoo, RColorBrewer
