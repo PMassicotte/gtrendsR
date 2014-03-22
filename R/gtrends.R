@@ -130,7 +130,7 @@ summary.gtrends <- function(object, ...) {
     cat("\nRequested at: ")
     cat(object[[1]][4])
     cat("\n\nSummary of trend:\n")
-    print(summary(as.xts.gtrends(object)))
+    print(summary(as.zoo.gtrends(object)))
     cat("\nMain regions:\n")
     print(head(object[[3]]))
     cat("\nMain cities:\n")
@@ -150,39 +150,44 @@ summary.gtrends <- function(object, ...) {
 plot.gtrends <- function(x, type=c("trend", "regions", "cities"), ...) {
     type <- match.arg(type)
     if (type=="trend") {
-        x <- as.xts.gtrends(x)
+        x <- as.zoo.gtrends(x)
         #plot(x, main=colnames(x))
-        plot(as.zoo(x), plot.type="single", col=brewer.pal(n = 9, name = "Set1"), xlab = "Date", ylab = "Search hits", main = "Interest over time")
-        legend("topleft", colnames(x), lty = 1, col = brewer.pal(n = 9, name = "Set1"), bty = "n")
+        plot(x, plot.type="single", col=brewer.pal(n = 9, name = "Set1"),
+             xlab = "Date", ylab = "Search hits", main = "Interest over time")
+        legend("topleft", colnames(x), lty = 1, col = brewer.pal(n = 9, name = "Set1"),
+               bty = "n")
     } else if (type=="regions") {
-        df <- data.frame(loc=x$regions[,1], hits=x$regions[,1])
+        df <- data.frame(loc=x$regions[,1], hits=x$regions[,2])
         plot(gvisGeoChart(df, 'loc', 'hits'))
     } else if (type=="cities") {
-        df <- data.frame(loc=x$cities[,1], hits=x$cities[,1])
+        df <- data.frame(loc=x$cities[,1], hits=x$cities[,2])
         plot(gvisGeoChart(df, 'loc', 'hits', options=list(displayMode="markers")))
     }
     invisible(NULL)
 }
 
 ##' @rdname gtrends
-as.xts.gtrends <- function(x, ...) {
-    z <- xts(x[["trend"]][,3:ncol(x$trend)], order.by=x[["trend"]][,"end"])
-    colnames(z) <- colnames(x[[2]])[3:ncol(x$trend)]
+as.zoo.gtrends <- function(x, ...) {
+    z <- zoo(x[["trend"]][,3:ncol(x$trend)], order.by=x[["trend"]][,"end"])
+    colnames(z) <- colnames(x[[2]])[-(1:2)]
     z
 }
 
 
-## This function has been rewrite and improuved by Dirk Eddelbuettel.
+## This function has been rewritten and improved by Dirk Eddelbuettel.
 
-## TODO: If geo is "US" there will be 7 blocs and they won't match the current structure. This happen because block 4 is "Top metros" which is only available when geo = "US".
+## TODO: If geo is "US" there will be 7 blocs and they won't match the current structure.
+##       This happen because block 4 is "Top metros" which is only available when geo = "US".
+## 
 
 .processResults <- function(resultsText) {
 
     vec <- strsplit(resultsText, "\\\n{2,}")[[1]]
     
     ## Make sure there some results have been returned.
-    if(length(vec) < 6){
-      stop("Not enough search volume. Please change your search terms.", call. = FALSE)
+    ## TODO: make test for length to be 6 or 7 ?
+    if (length(vec) < 6) {
+        stop("Not enough search volume. Please change your search terms.", call. = FALSE)
     }
 
     ## block 1: meta data

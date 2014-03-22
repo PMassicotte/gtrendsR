@@ -11,4 +11,4 @@ Description: GTrendsR provides an interface for retrieving and displaying the
   the time as well as geographic representation of the results can be displayed. 
 License: GPL (>= 2)
 Depends: R (>= 3.0)
-Imports: RCurl, googleVis, xts, zoo, RColorBrewer
+Imports: RCurl, googleVis, zoo, RColorBrewer

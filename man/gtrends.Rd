@@ -1,5 +1,5 @@
 \name{gtrends}
-\alias{as.xts.gtrends}
+\alias{as.zoo.gtrends}
 \alias{gtrends}
 \alias{gtrends.default}
 \alias{plot.gtrends}
@@ -14,7 +14,7 @@ gtrends(ch, query, geo = "all", cat = "0", ...)
 
 \method{plot}{gtrends}(x, type = c("trend", "regions", "cities"), ...)
 
-\method{as.xts}{gtrends}(x, ...)
+\method{as.zoo}{gtrends}(x, ...)
 }
 \arguments{
   \item{ch}{A valid handle which can be created via

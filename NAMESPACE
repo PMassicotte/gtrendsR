@@ -1,2 +1,2 @@
 exportPattern("^[[:alpha:]]+")
-import(RCurl, googleVis, xts, zoo, RColorBrewer)
+import(RCurl, googleVis, zoo, RColorBrewer)
