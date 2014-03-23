@@ -209,7 +209,7 @@ plot.gtrends <- function(x,
         df <- data.frame(loc=x[,1], hits=x[,2])
         plot(gvisGeoChart(df, 'loc', 'hits', options=gvisopt))
     } else if (type=="cities") {
-        x <- x[["regions"]][[ind]]
+        x <- x[["cities"]][[ind]]
         df <- data.frame(loc=x[,1], hits=x[,2])
         plot(gvisGeoChart(df, 'loc', 'hits', options=gvisopt))
     }
