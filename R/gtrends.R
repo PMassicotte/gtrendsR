@@ -104,14 +104,21 @@ gtrends <- function(ch, query, geo = 'all', cat = "0", ...) {
 ##' @rdname gtrends
 gtrends.default <- function(ch, query, geo = 'all', cat = "0", ...) {
 
-    countries <- NULL   ## silly, but needed to make R CMD check happy...
-
+    if (inherits(ch, "CURLHandle") != TRUE) {
+        stop("'ch' arguments has to be result from 'gconnect()'.", call. = FALSE)
+    }
+    
     ## Make sure a valid country code has been specified.
+    #rm(countries)
     data(countries)
-
-    if (geo != "all" && !geo %in% countries$CODE) {
-      stop("Country code not valid. Please use 'data(countries)' to retreive valid codes.",
-           call. = FALSE) 
+    ## This is such a hack ...
+    countries[,1] <- as.character(countries[,1])
+    countries[,2] <- as.character(countries[,2])
+    countries[ which(countries[,"COUNTRY"]=="Namibia"),"CODE"] <- "NA"
+    
+    if (geo != "all" && !geo %in% countries[,"CODE"]) {
+        stop("Country code not valid. Please use 'data(countries)' to retreive valid codes.",
+             call. = FALSE) 
     }
   
     authenticatePage2 <- getURL("http://www.google.com", curl = ch)
@@ -122,15 +129,18 @@ gtrends.default <- function(ch, query, geo = 'all', cat = "0", ...) {
   
     resultsText <- getForm(trendsURL, .params = pp, curl = ch)
   
-    ##print(resultsText)
-    ##print(rawToChar(resultsText))
-  
     ## Sometimes we reach quota limit, in that case stop!
     if (any(grep("QUOTA", resultsText))) {
         stop("Reached Google Trends quota limit! Please try again later.") 
     }
 
-    res <- .processResults(resultsText)
+    ## log query, geo, cat and current time
+    queryparams <- c(query=query,
+                     cat=cat,
+                     geo=geo,
+                     time=format(Sys.time()))
+
+    res <- .processResults(resultsText, queryparams)
     res
 }
 
@@ -138,19 +148,19 @@ gtrends.default <- function(ch, query, geo = 'all', cat = "0", ...) {
 ##' @param object A \code{\link{gtrends}} object
 summary.gtrends <- function(object, ...) {
     cat("Google Trends results for:\n")
-    cat(object[[1]][15])
+    cat(object[["meta"]][15])
     cat("\nRequested at: ")
-    cat(object[[1]][4])
+    cat(object[["meta"]][4])
     cat("\n\nSummary of trend:\n")
     print(summary(as.zoo.gtrends(object)))
-    cat("\nMain regions:\n")
-    print(head(object[[3]]))
-    cat("\nMain cities:\n")
-    print(head(object[[4]]))
-    cat("\nTop searches cities:\n")
-    print(head(object[[5]]))
-    cat("\nRising searches:\n")
-    print(head(object[[6]]))
+    ## cat("\nMain regions:\n")
+    ## print(head(object[["regions"]]))
+    ## cat("\nMain cities:\n")
+    ## print(head(object[["cities"]]))
+    ## cat("\nTop searches cities:\n")
+    ## print(head(object[["searches"]]))
+    ## cat("\nRising searches:\n")
+    ## print(head(object[["rising"]]))
     invisible(NULL)
 }
 
@@ -162,11 +172,11 @@ summary.gtrends <- function(object, ...) {
 plot.gtrends <- function(x, type=c("trend", "regions", "cities"), ...) {
     type <- match.arg(type)
     if (type=="trend") {
-        x <- as.zoo.gtrends(x)
+        z <- as.zoo.gtrends(x)
         #plot(x, main=colnames(x))
-        plot(x, plot.type="single", col=brewer.pal(n = 9, name = "Set1"),
+        plot(z, plot.type="single", col=brewer.pal(n = 9, name = "Set1"),
              xlab = "Date", ylab = "Search hits", main = "Interest over time")
-        legend("topleft", colnames(x), lty = 1, col = brewer.pal(n = 9, name = "Set1"),
+        legend("topleft", colnames(z), lty = 1, col = brewer.pal(n = 9, name = "Set1"),
                bty = "n")
     } else if (type=="regions") {
         df <- data.frame(loc=x$regions[,1], hits=x$regions[,2])
@@ -180,8 +190,9 @@ plot.gtrends <- function(x, type=c("trend", "regions", "cities"), ...) {
 
 ##' @rdname gtrends
 as.zoo.gtrends <- function(x, ...) {
-    z <- zoo(x[["trend"]][,3:ncol(x$trend)], order.by=x[["trend"]][,"end"])
-    colnames(z) <- colnames(x[[2]])[-(1:2)]
+    z <- zoo(x[["trend"]][,-(1:2)],     	# data is everything by time columns 1 and 2
+             order.by=x[["trend"]][,"end"])	# time-ordered by period-end time
+    colnames(z) <- colnames(x[["trend"]])[-(1:2)]
     z
 }
 
@@ -192,16 +203,18 @@ as.zoo.gtrends <- function(x, ...) {
 ##       This happen because block 4 is "Top metros" which is only available when geo = "US".
 ## 
 
-.processResults <- function(resultsText) {
+.processResults <- function(resultsText, queryparams) {
 
     vec <- strsplit(resultsText, "\\\n{2,}")[[1]]
     
-    ## Make sure there some results have been returned.
-    ## TODO: make test for length to be 6 or 7 ?
+    ## Make sure there are some results have been returned.
     if (length(vec) < 6) {
         stop("Not enough search volume. Please change your search terms.", call. = FALSE)
     }
 
+    ## results headers -- for 'geo="US"' and three terms, we get 17 results (!!)
+    headers <- unname(sapply(vec, function(v) strsplit(v, "\\\n")[[1]][1]))
+    
     ## block 1: meta data
     meta  <- strsplit(vec[1], "\\\r\\\n")[[1]]
     
@@ -212,34 +225,49 @@ as.zoo.gtrends <- function(x, ...) {
     trend <- data.frame(start=as.Date(weeks[,1]),
                         end=as.Date(weeks[,2]),
                         trend)
-    trend <- trend[is.finite(trend[,4]), -3]
+    trend <- trend[is.finite(trend[,4]), -3] # check results column for NA, exclude old (unparsed) time column
    
-    ## block 3: top regions
-    regions <- read.csv(textConnection(strsplit(vec[3], "\\\n")[[1]]),
-                        skip=1, stringsAsFactors=FALSE)
+    ## first set of blocks: top regions
+    regidx <- grep("Top subregions", headers)
+    reglist <- lapply(regidx, function(i) read.csv(textConnection(strsplit(vec[i], "\\\n")[[1]]), skip=1, stringsAsFactors=FALSE))
 
-    ## block 4: top cities
-    cities <- read.csv(textConnection(strsplit(vec[4], "\\\n")[[1]]),
-                        skip=1, stringsAsFactors=FALSE)
+    ## next (optional, if geo==US) block 
+    if (queryparams["geo"] == "US") {
+        metidx <- grep("Top metros", headers)
+        metlist <- lapply(metidx, function(i) read.csv(textConnection(strsplit(vec[i], "\\\n")[[1]]), skip=1, stringsAsFactors=FALSE))
+    } else {
+        metlist <- NULL
+    }
+    
+    ## next block: top cities
+    citidx <- grep("Top cities", headers)
+    citlist <- lapply(citidx, function(i) read.csv(textConnection(strsplit(vec[i], "\\\n")[[1]]), skip=1, stringsAsFactors=FALSE))
+    
+    ## next block: top searches
+    schidx <- grep("Top searches", headers)
+    schlist <- lapply(schidx, function(i) read.csv(textConnection(strsplit(vec[i], "\\\n")[[1]]), skip=1, stringsAsFactors=FALSE))
 
-    ## block 5: top searches
-    searches <- read.csv(textConnection(strsplit(vec[5], "\\\n")[[1]][2:length(strsplit(vec[5], "\\\n")[[1]])]), stringsAsFactors=FALSE)
+    ## nex block: rising searches
+    risidx <- grep("Rising searches", headers)
+    rislist <- lapply(risidx, function(i) {
+        ## broken by design: not a csv when a field can be "+1,900%" with a comma as
+        ## a decimal separator -- so subst out the first comma into a semicolon
+        tt <- sub(",", ";", strsplit(vec[i], "\\\n")[[1]])
+        rising <- read.csv(textConnection(tt),
+                           sep=";", skip=1, header=FALSE,
+                           col.names=c("term", "change"),
+                           stringsAsFactors=FALSE)
+        rising
+    })
 
-    ## block 6: rising searches
-    ## broken by design: not a csv when a field can be "+1,900%" with a comma as
-    ## a decimal separator -- so subst out the first comma into a semicolon
-    tt <- sub(",", ";", strsplit(vec[6], "\\\n")[[1]])
-    rising <- read.csv(textConnection(tt),
-                       sep=";", skip=1, header=FALSE,
-                       col.names=c("term", "change"),
-                       stringsAsFactors=FALSE)
-
-    res <- list(meta=meta,
+    res <- list(query=queryparams,
+                meta=meta,
                 trend=trend,
-                regions=regions,
-                cities=cities,
-                searches=searches,
-                rising=rising)
+                regions=reglist,
+                topmetrors=metlist,
+                cities=citlist,
+                searches=schlist,
+                rising=rislist)
     class(res) <- "gtrends"
     return(res)
 }
