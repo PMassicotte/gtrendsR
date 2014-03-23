@@ -169,7 +169,7 @@ summary.gtrends <- function(object, ...) {
 ##' @param type A character variable selecting the type of plot;
 ##' permissible values are \sQuote{trends} (which is also the
 ##' default), \sQuote{regions} and \sQuote{cities}.
-plot.gtrends <- function(x, type=c("trend", "regions", "cities"), ...) {
+plot.gtrends <- function(x, type=c("trend", "regions", "topmetros", "cities"), ind=1, ...) {
     type <- match.arg(type)
     if (type=="trend") {
         z <- as.zoo.gtrends(x)
@@ -179,10 +179,16 @@ plot.gtrends <- function(x, type=c("trend", "regions", "cities"), ...) {
         legend("topleft", colnames(z), lty = 1, col = brewer.pal(n = 9, name = "Set1"),
                bty = "n")
     } else if (type=="regions") {
-        df <- data.frame(loc=x$regions[,1], hits=x$regions[,2])
+        x <- x[["regions"]][[ind]]
+        df <- data.frame(loc=x[,1], hits=x[,2])
         plot(gvisGeoChart(df, 'loc', 'hits'))
+    } else if (type=="topmetros") {
+        x <- x[["topmetros"]][[ind]]
+        df <- data.frame(loc=x[,1], hits=x[,2])
+        plot(gvisGeoChart(df, 'loc', 'hits', options=list(displayMode="markers")))
     } else if (type=="cities") {
-        df <- data.frame(loc=x$cities[,1], hits=x$cities[,2])
+        x <- x[["regions"]][[ind]]
+        df <- data.frame(loc=x[,1], hits=x[,2])
         plot(gvisGeoChart(df, 'loc', 'hits', options=list(displayMode="markers")))
     }
     invisible(NULL)
@@ -229,23 +235,27 @@ as.zoo.gtrends <- function(x, ...) {
    
     ## first set of blocks: top regions
     regidx <- grep("Top subregions", headers)
-    reglist <- lapply(regidx, function(i) read.csv(textConnection(strsplit(vec[i], "\\\n")[[1]]), skip=1, stringsAsFactors=FALSE))
+    reglist <- lapply(regidx, function(i) read.csv(textConnection(strsplit(vec[i], "\\\n")[[1]]),
+                                                   skip=1, stringsAsFactors=FALSE))
 
     ## next (optional, if geo==US) block 
     if (queryparams["geo"] == "US") {
         metidx <- grep("Top metros", headers)
-        metlist <- lapply(metidx, function(i) read.csv(textConnection(strsplit(vec[i], "\\\n")[[1]]), skip=1, stringsAsFactors=FALSE))
+        metlist <- lapply(metidx, function(i) read.csv(textConnection(strsplit(vec[i], "\\\n")[[1]]),
+                                                       skip=1, stringsAsFactors=FALSE))
     } else {
         metlist <- NULL
     }
     
     ## next block: top cities
     citidx <- grep("Top cities", headers)
-    citlist <- lapply(citidx, function(i) read.csv(textConnection(strsplit(vec[i], "\\\n")[[1]]), skip=1, stringsAsFactors=FALSE))
+    citlist <- lapply(citidx, function(i) read.csv(textConnection(strsplit(vec[i], "\\\n")[[1]]),
+                                                   skip=1, stringsAsFactors=FALSE))
     
     ## next block: top searches
     schidx <- grep("Top searches", headers)
-    schlist <- lapply(schidx, function(i) read.csv(textConnection(strsplit(vec[i], "\\\n")[[1]]), skip=1, stringsAsFactors=FALSE))
+    schlist <- lapply(schidx, function(i) read.csv(textConnection(strsplit(vec[i], "\\\n")[[1]]),
+                                                   skip=1, stringsAsFactors=FALSE))
 
     ## nex block: rising searches
     risidx <- grep("Rising searches", headers)
@@ -264,10 +274,11 @@ as.zoo.gtrends <- function(x, ...) {
                 meta=meta,
                 trend=trend,
                 regions=reglist,
-                topmetrors=metlist,
+                topmetros=metlist,
                 cities=citlist,
                 searches=schlist,
-                rising=rislist)
+                rising=rislist,
+                headers=headers)
     class(res) <- "gtrends"
     return(res)
 }
