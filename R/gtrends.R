@@ -87,8 +87,7 @@ gconnect <- function(usr=NULL, psw=NULL, verbose=FALSE) {
 ##' @param ... Additional parameters passed on in method dispatch.
 ##' @return An object of class \sQuote{gtrends} which is list with six
 ##' elements containing the results.
-##' @author Dirk Eddelbuettel based on the package by Philippe Massicotte 
-##' which can be found at \url{https://bitbucket.org/persican/gtrends}
+##' @author Philippe Massicotte and Dirk Eddelbuettel
 ##' @seealso The original GTrendsR repository at
 ##' \url{https://bitbucket.org/persican/gtrends}
 gtrends <- function(ch, query, geo = 'all', cat = "0", ...) {

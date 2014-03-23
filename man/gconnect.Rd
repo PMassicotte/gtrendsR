@@ -26,7 +26,7 @@
   queries with \code{gtrends}.  
 }
 \author{
-  Philippe Massicotte \email{philippe.massicotte@uqtr.ca} and Dirk Eddelbuettel \email{edd@debian.org} with
+  Philippe Massicotte and Dirk Eddelbuettel with 
   contributions from Raphaël Proulx and Marc Pépino. 
 }
 \seealso{

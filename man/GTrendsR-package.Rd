@@ -44,15 +44,16 @@
 \keyword{package}
 \examples{
 \dontrun{
-usr = "yourname@gmail.com"
-psw = "yourpassword"
-ch = gConnect(usr, psw)
+usr <- "yourname@gmail.com"
+psw <- "yourpassword"
+ch <- gConnect(usr, psw)  # or use env.var or options 
 
-location = "CA"
-query = "NHL"
+location <- "CA"
+query <- "NHL"
 
-data = gtrends(ch, geo = location, query = query)
+data = gtrends(ch, query = query, geo = location)
 
 plot(data)
 }
 }
+

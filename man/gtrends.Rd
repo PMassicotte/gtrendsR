@@ -81,9 +81,7 @@ Philippe Massicotte which can be found at
 \url{https://bitbucket.org/persican/gtrends}.
 }
 \author{
-Dirk Eddelbuettel based on the package by Philippe
-Massicotte which can be found at
-\url{https://bitbucket.org/persican/gtrends}
+Philippe Massicotte and Dirk Eddelbuettel
 }
 \seealso{
 The original GTrendsR repository at
