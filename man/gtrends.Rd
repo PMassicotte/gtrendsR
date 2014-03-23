@@ -12,7 +12,9 @@ gtrends(ch, query, geo = "all", cat = "0", ...)
 
 \method{summary}{gtrends}(object, ...)
 
-\method{plot}{gtrends}(x, type = c("trend", "regions", "cities"), ...)
+\method{plot}{gtrends}(x, type = c("trend", "regions", "topmetros", "cities"),
+  region = "world", resolution = c("countries", "provinces", "metros"),
+  displaymode = c("auto", "regions", "markers"), ind = 1L, ...)
 
 \method{as.zoo}{gtrends}(x, ...)
 }
@@ -40,6 +42,26 @@ gtrends(ch, query, geo = "all", cat = "0", ...)
   \item{type}{A character variable selecting the type of
   plot; permissible values are \sQuote{trends} (which is
   also the default), \sQuote{regions} and \sQuote{cities}.}
+
+  \item{region}{A character variable with default
+  \sQuote{world}. Oher permissible value are country codes
+  like \sQuote{CA} or \sQuote{GB}, a US Metro code such as
+  \sQuote{US-IL} or a three-digit code for a continent or
+  sub-continent; see the help for
+  \link[googleVis]{gvisGeoChart} for details.}
+
+  \item{resolution}{A character variable selecting the
+  granularity of the plot; permissble values are
+  \sQuote{countries}, \sQuote{provinces} or
+  \sQuote{metros}.}
+
+  \item{displaymode}{A character variable indicating the
+  mode of display, with values \sQuote{auto},
+  \sQuote{regions} or \sQuote{markers} with latter
+  preferable for cities.}
+
+  \item{ind}{A integer selecting the result set in case of
+  multiple search terms.}
 }
 \value{
 An object of class \sQuote{gtrends} which is list with six
