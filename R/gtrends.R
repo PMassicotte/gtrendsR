@@ -256,7 +256,7 @@ as.zoo.gtrends <- function(x, ...) {
     trend <- trend[is.finite(trend[,4]), -3] # check results column for NA, exclude old (unparsed) time column
    
     ## first set of blocks: top regions
-    regidx <- grep("Top subregions", headers)
+    regidx <- grep("Top (sub)?regions", headers)
     reglist <- lapply(regidx, function(i) read.csv(textConnection(strsplit(vec[i], "\\\n")[[1]]),
                                                    skip=1, stringsAsFactors=FALSE))
 
