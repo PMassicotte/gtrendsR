@@ -11,26 +11,38 @@
 # - restoring ability to plot regions (ahem, I broke that...)
 # - plot googleVis in PDF. Hint: cat(unlist(G1$html), file="tmp.html") -----> print to PDF using system(...)
 
-gconnect <- function(usr, psw, verbose=FALSE) {
+gconnect <- function(usr=NULL, psw=NULL, verbose=FALSE) {
     loginURL <- "https://accounts.google.com/accounts/ServiceLogin"
     authenticateURL <- "https://accounts.google.com/ServiceLoginBoxAuth"
-  
+
+    if (is.null(usr)) {
+        if (Sys.getenv("GOOGLE_USER") != "") usr <- Sys.getenv("GOOGLE_USER")
+        if (getOption("google.user") != "") usr <- getOption("google.user")
+        if (is.null(usr)) stop("No Google Username / account supplied.", call. = FALSE)
+    }
+    if (is.null(psw)) {
+        if (Sys.getenv("GOOGLE_PASSWORD") != "") psw <- Sys.getenv("GOOGLE_PASSWORD")
+        if (getOption("google.password") != "") psw <- getOption("google.password")
+        if (is.null(psw)) stop("No Google password supplied.", call. = FALSE)
+    }
+    
     ch <- getCurlHandle()
     
-    ans <- (curlSetOpt(curl = ch,
-                       ssl.verifypeer = FALSE,
-                       useragent = getOption('HTTPUserAgent', "R"),
-                       timeout = 60,         
-                       followlocation = TRUE,
-                       cookiejar = "./cookies",
-                       cookiefile = ""))
+    ans <- curlSetOpt(curl = ch,
+                      ssl.verifypeer = FALSE,
+                      useragent = getOption('HTTPUserAgent', "R"),
+                      timeout = 60,         
+                      followlocation = TRUE,
+                      cookiejar = "./cookies",
+                      cookiefile = "")
   
     galx <- .getGALX(ch)
-    authenticatePage <- postForm(authenticateURL,
-                                 .params=list(Email=usr,
-                                 Passwd=psw, GALX = galx,
-                                 PersistentCookie= "yes",
-                                 continue = "http://www.google.com/trends"), curl=ch)
+    formparams <-list(Email=usr,
+                      Passwd=psw,
+                      GALX = galx,
+                      PersistentCookie= "yes",
+                      continue = "http://www.google.com/trends")
+    authenticatePage <- postForm(authenticateURL, .params=formparams, curl=ch)
   
     authenticatePage2 <- getURL("http://www.google.com", curl = ch)
   
