@@ -169,8 +169,30 @@ summary.gtrends <- function(object, ...) {
 ##' @param type A character variable selecting the type of plot;
 ##' permissible values are \sQuote{trends} (which is also the
 ##' default), \sQuote{regions} and \sQuote{cities}.
-plot.gtrends <- function(x, type=c("trend", "regions", "topmetros", "cities"), ind=1, ...) {
+##' @param region A character variable with default
+##' \sQuote{world}. Oher permissible value are country codes like
+##' \sQuote{CA} or \sQuote{GB}, a US Metro code such as \sQuote{US-IL}
+##' or a three-digit code for a continent or sub-continent; see the
+##' help for \link[googleVis]{gvisGeoChart} for details.
+##' @param resolution A character variable selecting the granularity
+##' of the plot; permissble values are \sQuote{countries},
+##' \sQuote{provinces} or \sQuote{metros}.
+##' @param displaymode A character variable indicating the mode of
+##' display, with values \sQuote{auto}, \sQuote{regions} or
+##' \sQuote{markers} with latter preferable for cities.
+##' @param ind A integer selecting the result set in case of multiple
+##' search terms.
+plot.gtrends <- function(x,
+                         type=c("trend", "regions", "topmetros", "cities"),
+                         region="world",
+                         resolution=c("countries", "provinces", "metros"),
+                         displaymode=c("auto", "regions", "markers"),
+                         ind=1L, ...) {
     type <- match.arg(type)
+    resolution <- match.arg(resolution)
+    gvisopt <- list(region=region,
+                    displayMode="markers",
+                    resolution=resolution)
     if (type=="trend") {
         z <- as.zoo.gtrends(x)
         #plot(x, main=colnames(x))
@@ -181,15 +203,15 @@ plot.gtrends <- function(x, type=c("trend", "regions", "topmetros", "cities"), i
     } else if (type=="regions") {
         x <- x[["regions"]][[ind]]
         df <- data.frame(loc=x[,1], hits=x[,2])
-        plot(gvisGeoChart(df, 'loc', 'hits'))
+        plot(gvisGeoChart(df, 'loc', 'hits', options=gvisopt))
     } else if (type=="topmetros") {
         x <- x[["topmetros"]][[ind]]
         df <- data.frame(loc=x[,1], hits=x[,2])
-        plot(gvisGeoChart(df, 'loc', 'hits', options=list(displayMode="markers")))
+        plot(gvisGeoChart(df, 'loc', 'hits', options=gvisopt))
     } else if (type=="cities") {
         x <- x[["regions"]][[ind]]
         df <- data.frame(loc=x[,1], hits=x[,2])
-        plot(gvisGeoChart(df, 'loc', 'hits', options=list(displayMode="markers")))
+        plot(gvisGeoChart(df, 'loc', 'hits', options=gvisopt))
     }
     invisible(NULL)
 }
