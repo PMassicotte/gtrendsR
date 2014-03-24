@@ -275,8 +275,15 @@ as.zoo.gtrends <- function(x, ...) {
     ## next block: top searches
     schidx <- grep("Top searches", headers)
     schlist <- lapply(schidx, function(i) read.csv(textConnection(strsplit(vec[i], "\\\n")[[1]]),
-                                                   skip=1, stringsAsFactors=FALSE))
-
+                                                   skip=1, stringsAsFactors=FALSE, header=FALSE))
+  
+    ## Set columns names
+    schlist <- lapply(1:length(schidx), function(i) {
+      names(schlist[[i]]) = c(headers[schidx][i], "Hits") 
+      schlist[[i]]
+    })
+    
+    
     ## nex block: rising searches
     risidx <- grep("Rising searches", headers)
     rislist <- lapply(risidx, function(i) {
