@@ -217,9 +217,8 @@ plot.gtrends <- function(x,
 
 ##' @rdname gtrends
 as.zoo.gtrends <- function(x, ...) {
-    z <- zoo(x[["trend"]][,-(1:2)],     	# data is everything by time columns 1 and 2
+    z <- zoo(x[["trend"]][,-(1:2),drop=FALSE], 	# data is everything by time columns 1 and 2
              order.by=x[["trend"]][,"end"])	# time-ordered by period-end time
-    colnames(z) <- colnames(x[["trend"]])[-(1:2)]
     z
 }
 
