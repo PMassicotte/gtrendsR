@@ -2,7 +2,13 @@
 \title{News for Package 'GTrendsR'}
 \newcommand{\cpkg}{\href{http://CRAN.R-project.org/package=#1}{\pkg{#1}}}
 
-\section{Changes in GTrendsR version 1.3 (2014-xx-yy)}{
+\section{Changes in GTrendsR version 1.3.1 (2014-03-24)}{
+  \itemize{
+    \item Fixed a bug with the top search results.
+  }
+}
+
+\section{Changes in GTrendsR version 1.3 (2014-03-23)}{
   \itemize{
     \item The resulting object is now a generic S3 class of type \code{gtrends}.
     \item The default method executes the Google Trends query, and
@@ -17,8 +23,8 @@
   }
 }
 
-\section{Changes in GTrendsR version 1.2 (2014-xx-yy)}{
+\section{Changes in GTrendsR version 1.2 (2014-03-21)}{
   \itemize{
-    \item Can you write something here, Philippe?
+    \item Now allows to search for multiple keywords. See \code{?gtrends}.
   }
 }
