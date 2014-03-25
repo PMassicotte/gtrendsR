@@ -4,7 +4,7 @@
 
 \section{Changes in [UNRELEASED/UNFINISHED] GTrendsR version 1.3 (2014-03-25)}{
   \itemize{
-    \item Searches now allow for multiple for multiple keywords, see
+    \item Searches now allow for multiple keywords, see
     \code{?gtrends}. 
     \item The resulting object is now a generic S3 class of type \code{gtrends}.
     \item The default method executes the Google Trends query, and
