@@ -2,7 +2,7 @@
 % Please edit documentation in R/gtrends.R
 \name{gconnect}
 \alias{gconnect}
-\title{Connect to Goolge account}
+\title{Connect to Google account}
 \usage{
 gconnect(usr = NULL, psw = NULL, verbose = FALSE)
 }

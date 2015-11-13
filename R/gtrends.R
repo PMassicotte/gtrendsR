@@ -11,7 +11,7 @@
 # - restoring ability to plot regions (ahem, I broke that...)
 # - plot googleVis in PDF. Hint: cat(unlist(G1$html), file="tmp.html") -----> print to PDF using system(...)
 
-#' Connect to Goolge account
+#' Connect to Google account
 #'
 #' @param usr Username (ex.: yourmail@gmail.com)
 #' @param psw Account password
@@ -113,7 +113,7 @@ gtrends.default <- function(ch, query, geo = 'all', cat = "0", ...) {
     stop("'ch' arguments has to be result from 'gconnect()'.", 
          call. = FALSE)
   }
-  data(countries)
+  data(countries, envir=environment())
   countries[, 1] <- as.character(countries[, 1])
   countries[, 2] <- as.character(countries[, 2])
   countries[which(countries[, "COUNTRY"] == "Namibia"), "CODE"] <- "NA"
