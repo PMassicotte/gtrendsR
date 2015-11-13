@@ -1,4 +1,4 @@
-Package: GTrendsR
+Package: gtrendsR
 Type: Package
 Title: R functions to perform and display Google Trends queries
 Version: 0.0.0.9000
