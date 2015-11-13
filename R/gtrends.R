@@ -85,19 +85,21 @@ gconnect <- function(usr=NULL, psw=NULL, verbose=FALSE) {
 
 
 #' Google Trends Query
-#'
-#' The \code{gtrends} default method performs a Google Trends query
-#' for the \sQuote{query} argument and handle \sQuote{ch}. Optional
-#' arguments for geolocation and category can also be supplied.
-#'
+#' 
+#' The \code{gtrends} default method performs a Google Trends query for the 
+#' \sQuote{query} argument and handle \sQuote{ch}. Optional arguments for 
+#' geolocation and category can also be supplied.
+#' 
 #' @param ch A valid handle which can be created via \code{\link{gconnect}}.
-#' @param query A character variable with the actual Google Trends query keywords.
-#' @param geo A character variable denoting a geographic region for
-#' the query, default to \dQuote{all} for global queries.
+#' @param query A character variable with the actual Google Trends query 
+#'   keywords. Multiple keywords are possible using \code{gtrends(ch, "nhl,
+#'   khl")}.
+#' @param geo A character variable denoting a geographic region for the query, 
+#'   default to \dQuote{all} for global queries.
 #' @param cat A character denoting the category, defaults to \dQuote{0}.
 #' @param ... Additional parameters passed on in method dispatch.
-#' @return An object of class \sQuote{gtrends} which is list with six
-#' elements containing the results.
+#' @return An object of class \sQuote{gtrends} which is list with six elements 
+#'   containing the results.
 #' @export
 gtrends <- function(ch, query, geo = "all", cat = "0", ...){
   

@@ -23,10 +23,12 @@ gtrends(ch, query, geo = "all", cat = "0", ...)
 \arguments{
 \item{ch}{A valid handle which can be created via \code{\link{gconnect}}.}
 
-\item{query}{A character variable with the actual Google Trends query keywords.}
+\item{query}{A character variable with the actual Google Trends query 
+keywords. Multiple keywords are possible using \code{gtrends(ch, "nhl,
+khl")}.}
 
-\item{geo}{A character variable denoting a geographic region for
-the query, default to \dQuote{all} for global queries.}
+\item{geo}{A character variable denoting a geographic region for the query, 
+default to \dQuote{all} for global queries.}
 
 \item{cat}{A character denoting the category, defaults to \dQuote{0}.}
 
@@ -58,12 +60,12 @@ display, with values \sQuote{auto}, \sQuote{regions} or
 search terms.}
 }
 \value{
-An object of class \sQuote{gtrends} which is list with six
-elements containing the results.
+An object of class \sQuote{gtrends} which is list with six elements 
+  containing the results.
 }
 \description{
-The \code{gtrends} default method performs a Google Trends query
-for the \sQuote{query} argument and handle \sQuote{ch}. Optional
-arguments for geolocation and category can also be supplied.
+The \code{gtrends} default method performs a Google Trends query for the 
+\sQuote{query} argument and handle \sQuote{ch}. Optional arguments for 
+geolocation and category can also be supplied.
 }
 
