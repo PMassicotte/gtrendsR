@@ -10,7 +10,7 @@ Authors@R: c(person("Philippe",
   person("Dirk",
          "Eddelbuettel",
          email = "edd@debian.org",
-         role = c("ctb")))
+         role = c("aut")))
 Description: Provides an interface for retrieving and displaying the
     information returned online by Google Trends. Trends (number of hits) over the
     time as well as geographic representation of the results can be displayed.
