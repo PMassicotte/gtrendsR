@@ -25,17 +25,27 @@
 #' gconnect("myouremail@gmail.com", "mysuperpassword")
 #' }
 gconnect <- function(usr=NULL, psw=NULL, verbose=FALSE) {
+  
   loginURL <- "https://accounts.google.com/accounts/ServiceLogin"
+  
   authenticateURL <- "https://accounts.google.com/ServiceLoginBoxAuth"
   
   if (is.null(usr)) {
+    
     if (Sys.getenv("GOOGLE_USER") != "") usr <- Sys.getenv("GOOGLE_USER")
+    
     if (getOption("google.user") != "") usr <- getOption("google.user")
-    if (is.null(usr)) stop("No Google Username / account supplied.", call. = FALSE)
+    
+    if (is.null(usr)) stop("No Google Username / account supplied.", 
+                           call. = FALSE)
   }
+  
   if (is.null(psw)) {
+    
     if (Sys.getenv("GOOGLE_PASSWORD") != "") psw <- Sys.getenv("GOOGLE_PASSWORD")
+    
     if (getOption("google.password") != "") psw <- getOption("google.password")
+    
     if (is.null(psw)) stop("No Google password supplied.", call. = FALSE)
   }
   
@@ -50,39 +60,53 @@ gconnect <- function(usr=NULL, psw=NULL, verbose=FALSE) {
                     cookiefile = "")
   
   galx <- .getGALX(ch)
+  
   formparams <-list(Email=usr,
                     Passwd=psw,
                     GALX = galx,
                     PersistentCookie= "yes",
                     continue = "http://www.google.com/trends")
+  
   authenticatePage <- postForm(authenticateURL, .params=formparams, curl=ch)
   
   authenticatePage2 <- getURL("http://www.google.com", curl = ch)
   
   if (getCurlInfo(ch)$response.code == 200) {
+    
     if (verbose) cat("Google login successful!\n")
+  
   } else {
+    
     if (verbose) cat("Google login failed!")
+  
   }
+  
   return(ch)
   
 }
 
 
-## This gets the GALX cookie which we need to pass back in the login form we post.
+#---------------------------------------------------------------------
+# This gets the GALX cookie which we need to pass back in the login 
+# form we post.
+#---------------------------------------------------------------------
 .getGALX <- function(curl) {
   txt <- basicTextGatherer()
+  
   curlPerform(url = "https://accounts.google.com/accounts/ServiceLogin", 
-              curl = curl, writefunction = txt$update, header = TRUE, ssl.verifypeer = FALSE)
+              curl = curl, 
+              writefunction = txt$update, 
+              header = TRUE, 
+              ssl.verifypeer = FALSE)
+  
   tmp <- txt$value()
   
   val <- grep("Cookie: GALX", strsplit(tmp, "\n")[[1]], value = TRUE)
+  
   strsplit(val, "[:=;]")[[1]][3]
   
   return(strsplit(val, "[:=;]")[[1]][3])
 }
-
-
 
 #' Google Trends Query
 #' 
@@ -91,13 +115,18 @@ gconnect <- function(usr=NULL, psw=NULL, verbose=FALSE) {
 #' geolocation and category can also be supplied.
 #' 
 #' @param ch A valid handle which can be created via \code{\link{gconnect}}.
+#' 
 #' @param query A character variable with the actual Google Trends query 
 #'   keywords. Multiple keywords are possible using \code{gtrends(ch, "nhl,
 #'   khl")}.
+#' 
 #' @param geo A character variable denoting a geographic region for the query, 
 #'   default to \dQuote{all} for global queries.
+#' 
 #' @param cat A character denoting the category, defaults to \dQuote{0}.
+#' 
 #' @param ... Additional parameters passed on in method dispatch.
+#' 
 #' @return An object of class \sQuote{gtrends} which is list with six elements 
 #'   containing the results.
 #' @export
@@ -115,24 +144,43 @@ gtrends.default <- function(ch, query, geo = 'all', cat = "0", ...) {
     stop("'ch' arguments has to be result from 'gconnect()'.", 
          call. = FALSE)
   }
+  
   data(countries)
+  
   countries[, 1] <- as.character(countries[, 1])
   countries[, 2] <- as.character(countries[, 2])
   countries[which(countries[, "COUNTRY"] == "Namibia"), "CODE"] <- "NA"
+  
   if (geo != "all" && !geo %in% countries[, "CODE"]) {
-    stop("Country code not valid. Please use 'data(countries)' to retreive valid codes.", 
+    stop("Country code not valid. Please use 'data(countries)' to retreive valid codes.",
          call. = FALSE)
   }
+  
   authenticatePage2 <- getURL("http://www.google.com", curl = ch)
+  
   trendsURL <- "http://www.google.com/trends/?"
-  pp <- list(q = query, geo = geo, cat = cat, content = 1, 
-             export = 1, graph = "all_csv")
+  
+  pp <- list(q = query, 
+             geo = geo, 
+             cat = cat, 
+             content = 1, 
+             export = 1, 
+             graph = "all_csv")
+  
   resultsText <- getForm(trendsURL, .params = pp, curl = ch)
+  
   if (any(grep("QUOTA", resultsText))) {
+  
     stop("Reached Google Trends quota limit! Please try again later.")
+  
   }
-  queryparams <- c(query = query, cat = cat, geo = geo, time = format(Sys.time()))
+  queryparams <- c(query = query, 
+                   cat = cat, 
+                   geo = geo, 
+                   time = format(Sys.time()))
+  
   res <- .processResults(resultsText, queryparams)
+  
   res
 }
 
@@ -178,6 +226,8 @@ summary.gtrends <- function(object, ...) {
 #' search terms.
 #' @import googleVis
 #' @import RColorBrewer
+#' @import ggplot2
+#' @importFrom tidyr gather_
 #' @export
 plot.gtrends <- function(x,
                          type = c("trend", "regions", "topmetros", "cities"),
@@ -195,25 +245,20 @@ plot.gtrends <- function(x,
                   resolution = resolution)
   
   if (type == "trend") {
-    z <- as.zoo.gtrends(x)
-    plot(
-      z,
-      plot.type = "single",
-      col = brewer.pal(n = 9, name = "Set1"),
-      xlab = "Date",
-      ylab = "Search hits",
-      main = "Interest over time"
-    )
+    #z <- as.zoo.gtrends(x)
     
-    legend(
-      "topleft",
-      colnames(z),
-      lty = 1,
-      col = brewer.pal(n = 9, name = "Set1"),
-      bty = "n"
-    )
+    df <- x$trend
+    df <- gather_(df, "keyword", "hit", -start, -end)
+    
+    ggplot(df, aes_string(x = "end", y = "hit", color = "keyword")) +
+      geom_line() +
+      xlab("Date") +
+      ylab("Search hits") +
+      ggtitle("Interest over time") +
+      theme_bw()
     
   } else if (type == "regions") {
+    
     x <- x[["regions"]][[ind]]
     
     df <- data.frame(loc = x[, 1], hits = x[, 2])
@@ -221,6 +266,7 @@ plot.gtrends <- function(x,
     plot(gvisGeoChart(df, 'loc', 'hits', options = gvisopt))
     
   } else if (type == "topmetros") {
+    
     x <- x[["topmetros"]][[ind]]
     
     df <- data.frame(loc = x[, 1], hits = x[, 2])
@@ -228,6 +274,7 @@ plot.gtrends <- function(x,
     plot(gvisGeoChart(df, 'loc', 'hits', options = gvisopt))
     
   } else if (type == "cities") {
+    
     x <- x[["cities"]][[ind]]
     
     df <- data.frame(loc = x[, 1], hits = x[, 2])
