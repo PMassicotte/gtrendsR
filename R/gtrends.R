@@ -246,14 +246,16 @@ plot.gtrends <- function(x,
     #z <- as.zoo.gtrends(x)
     
     df <- x$trend
-    df <- gather_(df, "keyword", "hit", -start, -end)
+    df <- tidyr::gather_(df, "keyword", "hit", names(df)[3:ncol(df)])
     
-    ggplot(df, aes_string(x = "end", y = "hit", color = "keyword")) +
+    p <- ggplot(df, aes_string(x = "end", y = "hit", color = "keyword")) +
       geom_line() +
       xlab("Date") +
       ylab("Search hits") +
       ggtitle("Interest over time") +
       theme_bw()
+    
+    print(p)
     
   } else if (type == "regions") {
     

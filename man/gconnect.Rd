@@ -17,7 +17,7 @@ gconnect(usr = NULL, psw = NULL, verbose = FALSE)
 A libcurl handle
 }
 \description{
-Connect to Goolge account
+Connect to Google account
 }
 \examples{
 \dontrun{
