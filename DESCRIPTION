@@ -1,11 +1,16 @@
 Package: gtrendsR
 Type: Package
 Title: R functions to perform and display Google Trends queries
-Version: 0.0.0.9000
-Date: 2015-11-13
-Author: Philippe Massicotte and Dirk Eddelbuettel with contributions
-    from Raphael Proulx and Marc Pepino
-Maintainer: Philippe Massicotte <philippe.massicotte@uqtr.ca>
+Version: 1.3.0
+Date: 2015-11-14
+Authors@R: c(person("Philippe", 
+         "Massicotte", 
+         email = "pmassicotte@hotmail.com",
+         role = c("aut", "cre")),
+  person("Dirk",
+         "Eddelbuettel",
+         email = "edd@debian.org",
+         role = c("aut", "ctb")))
 Description: GTrendsR provides an interface for retrieving and displaying the
     information returned online by Google Trends. Trends (number of hits) over the
     time as well as geographic representation of the results can be displayed.
