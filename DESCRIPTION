@@ -11,7 +11,7 @@ Authors@R: c(person("Philippe",
          "Eddelbuettel",
          email = "edd@debian.org",
          role = c("aut", "ctb")))
-Description: GTrendsR provides an interface for retrieving and displaying the
+Description: Provides an interface for retrieving and displaying the
     information returned online by Google Trends. Trends (number of hits) over the
     time as well as geographic representation of the results can be displayed.
 License: GPL (>= 2)
