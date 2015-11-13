@@ -1,6 +1,6 @@
 Package: gtrendsR
 Type: Package
-Title: R functions to perform and display Google Trends queries
+Title: R Functions to Perform and Display Google Trends Queries
 Version: 1.3.0
 Date: 2015-11-14
 Authors@R: c(person("Philippe", 
@@ -11,16 +11,15 @@ Authors@R: c(person("Philippe",
          "Eddelbuettel",
          email = "edd@debian.org",
          role = "ctb"))
-Description: GTrendsR provides an interface for retrieving and displaying the
-    information returned online by Google Trends. Trends (number of hits) over the
+Description: An interface for retrieving and displaying the information
+    returned online by Google Trends is provided. Trends (number of hits) over the 
     time as well as geographic representation of the results can be displayed.
 License: GPL (>= 2)
-Depends: 
+Depends:
     R (>= 3.0)
-Imports: 
+Imports:
     RCurl,
     googleVis,
     zoo,
-    RColorBrewer,
-    curl
-RoxygenNote: 5.0.0
+    RColorBrewer
+RoxygenNote: 5.0.1
