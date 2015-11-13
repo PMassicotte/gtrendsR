@@ -62,22 +62,8 @@ An object of class \sQuote{gtrends} which is list with six
 elements containing the results.
 }
 \description{
-Perform a Google Trends query
-}
-\details{
 The \code{gtrends} default method performs a Google Trends query
 for the \sQuote{query} argument and handle \sQuote{ch}. Optional
 arguments for geolocation and category can also be supplied.
-
-This function is based on the \sQuote{GTrendsR} package by
-Philippe Massicotte which can be found at
-\url{https://bitbucket.org/persican/gtrends}.
-}
-\author{
-Philippe Massicotte and Dirk Eddelbuettel
-}
-\seealso{
-The original GTrendsR repository at
-\url{https://bitbucket.org/persican/gtrends}
 }
 

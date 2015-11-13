@@ -15,11 +15,12 @@ Description: GTrendsR provides an interface for retrieving and displaying the
     information returned online by Google Trends. Trends (number of hits) over the
     time as well as geographic representation of the results can be displayed.
 License: GPL (>= 2)
-Depends:
+Depends: 
     R (>= 3.0)
-Imports:
+Imports: 
     RCurl,
     googleVis,
     zoo,
-    RColorBrewer
+    RColorBrewer,
+    curl
 RoxygenNote: 5.0.0
