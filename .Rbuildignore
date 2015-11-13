@@ -4,3 +4,5 @@ inst/testdata
 inst/localTests
 ^README\.Rmd$
 ^README-.*\.png$
+^\.travis\.yml$
+^appveyor\.yml$
