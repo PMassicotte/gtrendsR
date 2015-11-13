@@ -2,3 +2,5 @@
 ^\.Rproj\.user$
 inst/testdata
 inst/localTests
+^README\.Rmd$
+^README-.*\.png$
