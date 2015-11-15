@@ -11,9 +11,9 @@ Authors@R: c(person("Philippe",
          "Eddelbuettel",
          email = "edd@debian.org",
          role = "aut"))
-Description: An interface for retrieving and displaying the information
-    returned online by Google Trends is provided. Trends (number of hits) over the 
-    time as well as geographic representation of the results can be displayed.
+Description: An interface for retrieving and displaying the information returned
+    online by Google Trends is provided. Trends (number of hits) over the time as
+    well as geographic representation of the results can be displayed.
 License: GPL (>= 2)
 BugReports: https://github.com/PMassicotte/gtrendsR/issues
 URL: https://github.com/PMassicotte/gtrendsR

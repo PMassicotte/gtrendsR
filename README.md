@@ -6,4 +6,4 @@
 gtrendsR
 --------
 
-TODO
+Provides an interface for retrieving and displaying the information returned online by Google Trends. Trends (number of hits) over the time as well as geographic representation of the results can be displayed.
