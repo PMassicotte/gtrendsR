@@ -22,7 +22,7 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' gconnect("myouremail@gmail.com", "mysuperpassword")
+#' ch <- gconnect("usr@gmail.com", "psw")
 #' }
 gconnect <- function(usr=NULL, psw=NULL, verbose=FALSE) {
   
@@ -129,6 +129,11 @@ gconnect <- function(usr=NULL, psw=NULL, verbose=FALSE) {
 #' 
 #' @return An object of class \sQuote{gtrends} which is list with six elements 
 #'   containing the results.
+#' @examples 
+#' \dontrun{
+#' ch <- gconnect("usr@gmail.com", "psw")
+#' sport_trend <- gtrends(ch, "nhl, nba, nfl")
+#' }
 #' @export
 gtrends <- function(ch, query, geo = "all", cat = "0", ...){
   
@@ -226,6 +231,14 @@ summary.gtrends <- function(object, ...) {
 #' @import RColorBrewer
 #' @import ggplot2
 #' @importFrom tidyr gather_
+#' @examples 
+#' \dontrun{
+#' #' ch <- gconnect("usr@gmail.com", "psw")
+#' sport_trend <- gtrends(ch, "nhl, nba, nfl")
+#' }
+#' 
+#' data("sport_trend")
+#' plot(sport_trend)
 #' @export
 plot.gtrends <- function(x,
                          type = c("trend", "regions", "topmetros", "cities"),

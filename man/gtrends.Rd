@@ -68,4 +68,17 @@ The \code{gtrends} default method performs a Google Trends query for the
 \sQuote{query} argument and handle \sQuote{ch}. Optional arguments for 
 geolocation and category can also be supplied.
 }
+\examples{
+\dontrun{
+ch <- gconnect("usr@gmail.com", "psw")
+sport_trend <- gtrends(ch, "nhl, nba, nfl")
+}
+\dontrun{
+#' ch <- gconnect("usr@gmail.com", "psw")
+sport_trend <- gtrends(ch, "nhl, nba, nfl")
+}
+
+data("sport_trend")
+plot(sport_trend)
+}
 

@@ -21,7 +21,7 @@ Connect to Google account
 }
 \examples{
 \dontrun{
-gconnect("myouremail@gmail.com", "mysuperpassword")
+ch <- gconnect("usr@gmail.com", "psw")
 }
 }
 
