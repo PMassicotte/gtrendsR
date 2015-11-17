@@ -23,9 +23,9 @@ gtrends(ch, query, geo = "all", cat = "0", ...)
 \arguments{
 \item{ch}{A valid handle which can be created via \code{\link{gconnect}}.}
 
-\item{query}{A character variable with the actual Google Trends query 
-keywords. Multiple keywords are possible using \code{gtrends(ch, "nhl,
-khl")}.}
+\item{query}{A character vector with the actual Google Trends query keywords.
+Multiple keywords are possible using \code{gtrends(ch, c("NHL", "NBA",
+"MLB", "MLS"))}.}
 
 \item{geo}{A character variable denoting a geographic region for the query, 
 default to \dQuote{all} for global queries.}
@@ -71,11 +71,11 @@ geolocation and category can also be supplied.
 \examples{
 \dontrun{
 ch <- gconnect("usr@gmail.com", "psw")
-sport_trend <- gtrends(ch, "nhl, nba, nfl")
+sport_trend <- gtrends(ch, c("NHL", "NBA", "MLB", "MLS"))
 }
 \dontrun{
 #' ch <- gconnect("usr@gmail.com", "psw")
-sport_trend <- gtrends(ch, "nhl, nba, nfl")
+sport_trend <- gtrends(ch, c("nhl", "nba", "nfl"))
 }
 
 data("sport_trend")

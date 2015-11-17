@@ -24,7 +24,7 @@
 #' @examples
 #' \dontrun{
 #' ch <- gconnect("usr@gmail.com", "psw")
-#' sport_trend <- gtrends(ch, "nhl, nba, nfl")
+#' sport_trend <- gtrends(ch, c("nhl", "nba", "nfl"))
 #' }
 #' 
 #' data("sport_trend")

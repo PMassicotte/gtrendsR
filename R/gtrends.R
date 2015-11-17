@@ -24,7 +24,7 @@
 #' \dontrun{
 #' ch <- gconnect("usr@gmail.com", "psw")
 #' }
-gconnect <- function(usr=NULL, psw=NULL, verbose=FALSE) {
+gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
   
   loginURL <- "https://accounts.google.com/accounts/ServiceLogin"
   
@@ -115,24 +115,24 @@ gconnect <- function(usr=NULL, psw=NULL, verbose=FALSE) {
 #' geolocation and category can also be supplied.
 #' 
 #' @param ch A valid handle which can be created via \code{\link{gconnect}}.
-#' 
-#' @param query A character variable with the actual Google Trends query 
-#'   keywords. Multiple keywords are possible using \code{gtrends(ch, "nhl,
-#'   khl")}.
-#' 
+#'   
+#' @param query A character vector with the actual Google Trends query keywords.
+#'   Multiple keywords are possible using \code{gtrends(ch, c("NHL", "NBA",
+#'   "MLB", "MLS"))}.
+#'   
 #' @param geo A character variable denoting a geographic region for the query, 
 #'   default to \dQuote{all} for global queries.
-#' 
+#'   
 #' @param cat A character denoting the category, defaults to \dQuote{0}.
-#' 
+#'   
 #' @param ... Additional parameters passed on in method dispatch.
-#' 
+#'   
 #' @return An object of class \sQuote{gtrends} which is list with six elements 
 #'   containing the results.
 #' @examples 
 #' \dontrun{
 #' ch <- gconnect("usr@gmail.com", "psw")
-#' sport_trend <- gtrends(ch, "nhl, nba, nfl")
+#' sport_trend <- gtrends(ch, c("NHL", "NBA", "MLB", "MLS"))
 #' }
 #' @export
 gtrends <- function(ch, query, geo = "all", cat = "0", ...){
@@ -145,10 +145,16 @@ gtrends <- function(ch, query, geo = "all", cat = "0", ...){
 #' @rdname gtrends
 gtrends.default <- function(ch, query, geo = 'all', cat = "0", ...) {
     
+  stopifnot(is.character(query),
+            is.vector(query))
+  
+  query <- paste(query, collapse = ",")
+  
   if (inherits(ch, "CURLHandle") != TRUE) {
     stop("'ch' arguments has to be result from 'gconnect()'.", 
          call. = FALSE)
   }
+  
   data(countries, envir=environment())
   countries[, 1] <- as.character(countries[, 1])
   countries[, 2] <- as.character(countries[, 2])
@@ -158,6 +164,7 @@ gtrends.default <- function(ch, query, geo = 'all', cat = "0", ...) {
     stop("Country code not valid. Please use 'data(countries)' to retreive valid codes.",
          call. = FALSE)
   }
+  
   
   authenticatePage2 <- getURL("http://www.google.com", curl = ch)
   
@@ -234,7 +241,7 @@ summary.gtrends <- function(object, ...) {
 #' @examples 
 #' \dontrun{
 #' #' ch <- gconnect("usr@gmail.com", "psw")
-#' sport_trend <- gtrends(ch, "nhl, nba, nfl")
+#' sport_trend <- gtrends(ch, c("nhl", "nba", "nfl"))
 #' }
 #' 
 #' data("sport_trend")
