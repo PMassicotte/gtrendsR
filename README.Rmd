@@ -43,9 +43,9 @@ library(gtrendsR)
 usr <- "user@gmail.com"
 psw <- "password"
 
-ch <- gconnect(usr, psw)
+gconnect(usr, psw)                      # stores handle in environment
 
-sport_trend <- gtrends(ch, c("nlh", "nba", "nfl")
+sport_trend <- gtrends(c("nlh", "nba", "nfl")
 ```
 
 ## Plot the data
