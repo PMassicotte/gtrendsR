@@ -14,10 +14,12 @@ gconnect(usr = NULL, psw = NULL, verbose = FALSE)
 \item{verbose}{Logical for displaying additional information}
 }
 \value{
-A libcurl handle
+A libcurl handle is returned (invisibly).
 }
 \description{
-Connect to Google account
+The resulting connection object is also stored in the package-local
+environment from which the helper function \code{.getConnection()}
+retrieves it as needed.
 }
 \examples{
 \dontrun{

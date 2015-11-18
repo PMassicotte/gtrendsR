@@ -8,9 +8,9 @@
 \alias{summary.gtrends}
 \title{Google Trends Query}
 \usage{
-gtrends(ch, query, geo = "all", cat = "0", ...)
+gtrends(query, geo, cat, ch, ...)
 
-\method{gtrends}{default}(ch, query, geo = "all", cat = "0", ...)
+\method{gtrends}{default}(query, geo, cat, ch, ...)
 
 \method{summary}{gtrends}(object, ...)
 
@@ -21,16 +21,20 @@ gtrends(ch, query, geo = "all", cat = "0", ...)
 \method{as.zoo}{gtrends}(x, ...)
 }
 \arguments{
-\item{ch}{A valid handle which can be created via \code{\link{gconnect}}.}
-
 \item{query}{A character vector with the actual Google Trends query keywords.
-Multiple keywords are possible using \code{gtrends(ch, c("NHL", "NBA",
+Multiple keywords are possible using \code{gtrends(c("NHL", "NBA",
 "MLB", "MLS"))}.}
 
 \item{geo}{A character variable denoting a geographic region for the query, 
 default to \dQuote{all} for global queries.}
 
 \item{cat}{A character denoting the category, defaults to \dQuote{0}.}
+
+\item{ch}{A valid handle which can be created via
+\code{\link{gconnect}}. Users can either supply an explicit
+handle, or rely on the helper function
+\code{getDefaultConnection()} to retrieve the current
+connection handle.}
 
 \item{...}{Additional parameters passed on in method dispatch.}
 
@@ -71,11 +75,11 @@ geolocation and category can also be supplied.
 \examples{
 \dontrun{
 ch <- gconnect("usr@gmail.com", "psw")
-sport_trend <- gtrends(ch, c("NHL", "NBA", "MLB", "MLS"))
+sport_trend <- gtrends(c("NHL", "NBA", "MLB", "MLS"))
 }
 \dontrun{
 #' ch <- gconnect("usr@gmail.com", "psw")
-sport_trend <- gtrends(ch, c("nhl", "nba", "nfl"))
+sport_trend <- gtrends(c("nhl", "nba", "nfl"))
 }
 
 data("sport_trend")
