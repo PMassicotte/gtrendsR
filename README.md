@@ -15,7 +15,7 @@ There are two main functions in the package: `gconnect()` to connect to Google u
 ``` r
 library(gtrendsR)
 ls("package:gtrendsR")
-#> [1] "gconnect" "gtrends"
+#> [1] "gconnect"             "getDefaultConnection" "gtrends"
 ```
 
 Examples
@@ -32,9 +32,9 @@ library(gtrendsR)
 usr <- "user@gmail.com"
 psw <- "password"
 
-ch <- gconnect(usr, psw)
+gconnect(usr, psw)                      # stores handle in environment
 
-sport_trend <- gtrends(ch, c("nlh", "nba", "nfl")
+sport_trend <- gtrends(c("nlh", "nba", "nfl")
 ```
 
 Plot the data
