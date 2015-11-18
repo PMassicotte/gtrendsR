@@ -21,7 +21,7 @@
 #' @param psw Account password
 #' @param verbose Logical for displaying additional information
 #'
-#' @return A libcurl handle is returned (insisibly).
+#' @return A libcurl handle is returned (invisibly).
 #' @import RCurl
 #' @export
 #' @examples

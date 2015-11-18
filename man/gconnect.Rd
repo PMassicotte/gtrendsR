@@ -14,7 +14,7 @@ gconnect(usr = NULL, psw = NULL, verbose = FALSE)
 \item{verbose}{Logical for displaying additional information}
 }
 \value{
-A libcurl handle is returned (insisibly).
+A libcurl handle is returned (invisibly).
 }
 \description{
 The resulting connection object is also stored in the package-local
