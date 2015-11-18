@@ -13,11 +13,15 @@
 
 #' Connect to Google account
 #'
+#' The resulting connection object is also stored in the package-local
+#' environment from which the helper function \code{.getConnection()}
+#' retrieves it as needed.
+#' 
 #' @param usr Username (ex.: yourmail@gmail.com)
 #' @param psw Account password
 #' @param verbose Logical for displaying additional information
 #'
-#' @return A libcurl handle
+#' @return A libcurl handle is returned (insisibly).
 #' @import RCurl
 #' @export
 #' @examples
@@ -80,8 +84,11 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
     if (verbose) cat("Google login failed!")
   
   }
-  
-  return(ch)
+
+  ## store connection handler in package-local environment
+  assign("ch", ch, envir=.pkgenv)
+    
+  invisible(ch)
   
 }
 
@@ -108,16 +115,31 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
   return(strsplit(val, "[:=;]")[[1]][3])
 }
 
+#' Retrieve the default connection object
+#'
+#' See the documentation for \code{\link{gconnect}} for the available
+#' options to store default user and password information.
+#' 
+#' @return An connection handle object as created by \code{\link{gconnect}}
+#'     and stored in the package-local environment.
+#' @seealso \code{\link{gconnect}}
+#' @export
+getDefaultConnection <- function() {
+    ch <- .pkgenv$ch
+    if (is.null(ch))
+        stop("No connection object has been created. Use 'gconnect()' first.",
+             call.=FALSE)
+    ch
+}
+
 #' Google Trends Query
 #' 
 #' The \code{gtrends} default method performs a Google Trends query for the 
 #' \sQuote{query} argument and handle \sQuote{ch}. Optional arguments for 
 #' geolocation and category can also be supplied.
 #' 
-#' @param ch A valid handle which can be created via \code{\link{gconnect}}.
-#'   
 #' @param query A character vector with the actual Google Trends query keywords.
-#'   Multiple keywords are possible using \code{gtrends(ch, c("NHL", "NBA",
+#'   Multiple keywords are possible using \code{gtrends(c("NHL", "NBA",
 #'   "MLB", "MLS"))}.
 #'   
 #' @param geo A character variable denoting a geographic region for the query, 
@@ -126,25 +148,33 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
 #' @param cat A character denoting the category, defaults to \dQuote{0}.
 #'   
 #' @param ... Additional parameters passed on in method dispatch.
+#'
+#' @param ch A valid handle which can be created via
+#'     \code{\link{gconnect}}. Users can either supply an explicit
+#'     handle, or rely on the helper function
+#'     \code{getDefaultConnection()} to retrieve the current
+#'     connection handle.
 #'   
 #' @return An object of class \sQuote{gtrends} which is list with six elements 
 #'   containing the results.
 #' @examples 
 #' \dontrun{
 #' ch <- gconnect("usr@gmail.com", "psw")
-#' sport_trend <- gtrends(ch, c("NHL", "NBA", "MLB", "MLS"))
+#' sport_trend <- gtrends(c("NHL", "NBA", "MLB", "MLS"))
 #' }
 #' @export
-gtrends <- function(ch, query, geo = "all", cat = "0", ...){
+gtrends <- function(query, geo, cat, ch, ...) {
   
-  UseMethod("gtrends")
+#  UseMethod("gtrends")
+#}
+#
+# ' @ rdname gtrends
+# gtrends . default <- function(query, geo, cat, ch, ...) {
 
-}
+  if (missing(geo)) geo <- "all"
+  if (missing(cat)) cat <- "0"
+  if (missing(ch))  ch  <- getDefaultConnection()
 
-
-#' @rdname gtrends
-gtrends.default <- function(ch, query, geo = 'all', cat = "0", ...) {
-    
   stopifnot(is.character(query),
             is.vector(query))
   
@@ -241,7 +271,7 @@ summary.gtrends <- function(object, ...) {
 #' @examples 
 #' \dontrun{
 #' #' ch <- gconnect("usr@gmail.com", "psw")
-#' sport_trend <- gtrends(ch, c("nhl", "nba", "nfl"))
+#' sport_trend <- gtrends(c("nhl", "nba", "nfl"))
 #' }
 #' 
 #' data("sport_trend")
