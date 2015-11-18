@@ -3,11 +3,14 @@
 \name{gtrends}
 \alias{as.zoo.gtrends}
 \alias{gtrends}
+\alias{gtrends.default}
 \alias{plot.gtrends}
 \alias{summary.gtrends}
 \title{Google Trends Query}
 \usage{
 gtrends(query, geo, cat, ch, ...)
+
+\method{gtrends}{default}(query, geo, cat, ch, ...)
 
 \method{summary}{gtrends}(object, ...)
 

@@ -165,11 +165,13 @@ getDefaultConnection <- function() {
 #' @export
 gtrends <- function(query, geo, cat, ch, ...) {
   
-#  UseMethod("gtrends")
-#}
-#
-# ' @ rdname gtrends
-# gtrends . default <- function(query, geo, cat, ch, ...) {
+  UseMethod("gtrends")
+    
+}
+
+#' @rdname gtrends
+#' @export
+gtrends.default <- function(query, geo, cat, ch, ...) {
 
   if (missing(geo)) geo <- "all"
   if (missing(cat)) cat <- "0"
@@ -220,7 +222,9 @@ gtrends <- function(query, geo, cat, ch, ...) {
                    time = format(Sys.time()))
   
   res <- .processResults(resultsText, queryparams)
-  
+
+  class(res) <- c("gtrends", "list")
+    
   res
 }
 
