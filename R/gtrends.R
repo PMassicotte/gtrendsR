@@ -14,8 +14,8 @@
 #' Connect to Google account
 #'
 #' The resulting connection object is also stored in the package-local
-#' environment from which the helper function \code{.getConnection()}
-#' retrieves it as needed.
+#' environment from which the (internal) helper function
+#' \code{.getDefaultConnection()} retrieves it as needed.
 #' 
 #' @param usr Username (ex.: yourmail@gmail.com)
 #' @param psw Account password
@@ -115,16 +115,8 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
   return(strsplit(val, "[:=;]")[[1]][3])
 }
 
-#' Retrieve the default connection object
-#'
-#' See the documentation for \code{\link{gconnect}} for the available
-#' options to store default user and password information.
-#' 
-#' @return An connection handle object as created by \code{\link{gconnect}}
-#'     and stored in the package-local environment.
-#' @seealso \code{\link{gconnect}}
-#' @export
-getDefaultConnection <- function() {
+#' @rdname gconnect
+.getDefaultConnection <- function() {
     ch <- .pkgenv$ch
     if (is.null(ch))
         stop("No connection object has been created. Use 'gconnect()' first.",
@@ -152,7 +144,7 @@ getDefaultConnection <- function() {
 #' @param ch A valid handle which can be created via
 #'     \code{\link{gconnect}}. Users can either supply an explicit
 #'     handle, or rely on the helper function
-#'     \code{getDefaultConnection()} to retrieve the current
+#'     \code{.getDefaultConnection()} to retrieve the current
 #'     connection handle.
 #'   
 #' @return An object of class \sQuote{gtrends} which is list with six elements 
@@ -175,7 +167,7 @@ gtrends.default <- function(query, geo, cat, ch, ...) {
 
   if (missing(geo)) geo <- "all"
   if (missing(cat)) cat <- "0"
-  if (missing(ch))  ch  <- getDefaultConnection()
+  if (missing(ch))  ch  <- .getDefaultConnection()
 
   stopifnot(is.character(query),
             is.vector(query))

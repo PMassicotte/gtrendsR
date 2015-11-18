@@ -33,7 +33,7 @@ default to \dQuote{all} for global queries.}
 \item{ch}{A valid handle which can be created via
 \code{\link{gconnect}}. Users can either supply an explicit
 handle, or rely on the helper function
-\code{getDefaultConnection()} to retrieve the current
+\code{.getDefaultConnection()} to retrieve the current
 connection handle.}
 
 \item{...}{Additional parameters passed on in method dispatch.}
