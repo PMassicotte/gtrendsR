@@ -1,4 +1,7 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
+
+
 gtrendsR [![Travis-CI Build Status](https://travis-ci.org/PMassicotte/gtrendsR.svg?branch=master)](https://travis-ci.org/PMassicotte/gtrendsR) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/PMassicotte/gtrendsR?branch=master&svg=true)](https://ci.appveyor.com/project/PMassicotte/gtrendsR) [![Package-License](https://img.shields.io/badge/license-GPL%20%28%3E=%202%29-brightgreen.svg?style=flat)](http://www.gnu.org/licenses/gpl-2.0.html)
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -6,16 +9,16 @@ gtrendsR [![Travis-CI Build Status](https://travis-ci.org/PMassicotte/gtrendsR.s
 
 The package can be installed using the following command:
 
-``` r
+``` {.r}
 devtools::install_github("PMassicotte/gtrendsR")
 ```
 
 There are two main functions in the package: `gconnect()` to connect to Google using your credentials and `gtrends()` to perform actual queries.
 
-``` r
+``` {.r}
 library(gtrendsR)
 ls("package:gtrendsR")
-#> [1] "gconnect"             "getDefaultConnection" "gtrends"
+#> [1] "gconnect" "gtrends"
 ```
 
 Examples
@@ -26,7 +29,7 @@ In this simple example, Googling trends for keywords `nhl`, `nba` and `nfl` are 
 Get the data
 ------------
 
-``` r
+``` {.r}
 library(gtrendsR)
 
 usr <- "user@gmail.com"
@@ -40,7 +43,7 @@ sport_trend <- gtrends(c("nhl", "nba", "nfl"))
 Plot the data
 -------------
 
-``` r
+``` {.r}
 data("sport_trend")
 
 plot(sport_trend)
@@ -50,7 +53,7 @@ plot(sport_trend)
 
 It is also possible to plot geographical data using `googleVis` as follow.
 
-``` r
+``` {.r}
 plot(sport_trend, type = "region")
 plot(sport_trend, type = "cities")
 ```
