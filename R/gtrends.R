@@ -313,7 +313,6 @@ summary.gtrends <- function(object, ...) {
 #' @import RColorBrewer
 #' @import ggplot2
 #' @importFrom tidyr gather_
-#' @importFrom scales date_format
 #' @examples 
 #' \dontrun{
 #' #' ch <- gconnect("usr@gmail.com", "psw")
@@ -351,8 +350,7 @@ plot.gtrends <- function(x,
       xlab("Date") +
       ylab("Search hits") +
       ggtitle("Interest over time") +
-      theme_bw() +
-      scale_x_datetime(labels = scales::date_format("%Y-%m-%d"))
+      theme_bw()
     
     print(p)
     

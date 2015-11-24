@@ -25,6 +25,5 @@ Imports:
     zoo,
     RColorBrewer,
     ggplot2,
-    tidyr,
-    scales
+    tidyr
 RoxygenNote: 5.0.1
