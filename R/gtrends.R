@@ -423,7 +423,9 @@ as.zoo.gtrends <- function(x, ...) {
     
     trend <- data.frame(start = as.Date(weeks[, 1]),
                         end = as.Date(weeks[, 2]),
-                        trend)
+                        trend[, 2:ncol(trend)])
+      
+    names(trend)[3:ncol(trend)] <- unlist(strsplit(queryparams[1], ","))
   }
   
   
