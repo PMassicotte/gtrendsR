@@ -188,21 +188,19 @@ gtrends.default <- function(query,
             all(res %in% c("week", "day")),
             length(res) == 1)
   
-  ## Verify the date
-  regex <- "^(19|20)\\d\\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$"
-
-  if(!grepl(regex, start_date)){
+  ## Verify the dates
+  start_date <- as.Date(start_date, "%Y-%m-%d")  
+  end_date <- as.Date(end_date, "%Y-%m-%d")  
+  
+  if (any(is.na(start_date))){
     stop("start_date is not a valide date. Please use yyyy-mm-dd format.",
          call. = FALSE)
   } 
   
-  if(!grepl(regex, end_date)){
+  if (any(is.na(end_date))){
     stop("end_date is not a valide date. Please use yyyy-mm-dd format.",
          call. = FALSE)
   } 
-  
-  start_date <- as.Date(start_date)
-  end_date <- as.Date(end_date)
   
   # date verification
   stopifnot(start_date < end_date, 
