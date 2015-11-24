@@ -17,13 +17,14 @@ Description: An interface for retrieving and displaying the information returned
 License: GPL (>= 2)
 BugReports: https://github.com/PMassicotte/gtrendsR/issues
 URL: https://github.com/PMassicotte/gtrendsR
-Depends:
+Depends: 
     R (>= 3.0)
-Imports:
+Imports: 
     RCurl,
     googleVis,
     zoo,
     RColorBrewer,
     ggplot2,
-    tidyr
+    tidyr,
+    scales
 RoxygenNote: 5.0.1
