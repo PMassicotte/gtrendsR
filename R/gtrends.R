@@ -131,8 +131,8 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
 #' geolocation and category can also be supplied.
 #' 
 #' @param query A character vector with the actual Google Trends query keywords.
-#'   Multiple keywords are possible using \code{gtrends(c("NHL", "NBA",
-#'   "MLB", "MLS"))}.
+#'   Multiple keywords are possible using \code{gtrends(c("NHL", "NBA", "MLB", 
+#'   "MLS"))}.
 #'   
 #' @param geo A character variable denoting a geographic region for the query, 
 #'   default to \dQuote{all} for global queries.
@@ -140,12 +140,19 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
 #' @param cat A character denoting the category, defaults to \dQuote{0}.
 #'   
 #' @param ... Additional parameters passed on in method dispatch.
-#'
-#' @param ch A valid handle which can be created via
-#'     \code{\link{gconnect}}. Users can either supply an explicit
-#'     handle, or rely on the helper function
-#'     \code{.getDefaultConnection()} to retrieve the current
-#'     connection handle.
+#'   
+#' @param res Resolution of the trending data to be returned. Either \code{week}
+#'   for weekly data or \code{day} for daily data.
+#'   
+#' @param start_date Starting date using yyyy-mm-dd format. Must be breater than
+#'   2004-01-01.
+#'   
+#' @param end_date Starting date using yyyy-mm-dd format. Must be before than 
+#'   current date.
+#'   
+#' @param ch A valid handle which can be created via \code{\link{gconnect}}. 
+#'   Users can either supply an explicit handle, or rely on the helper function 
+#'   \code{.getDefaultConnection()} to retrieve the current connection handle.
 #'   
 #' @return An object of class \sQuote{gtrends} which is list with six elements 
 #'   containing the results.
@@ -163,14 +170,49 @@ gtrends <- function(query, geo, cat, ch, ...) {
 
 #' @rdname gtrends
 #' @export
-gtrends.default <- function(query, geo, cat, ch, ...) {
+gtrends.default <- function(query, 
+                            geo, 
+                            cat, 
+                            ch, 
+                            res = "week",
+                            start_date = as.Date("2004-01-01"),
+                            end_date = as.Date(Sys.time()),
+                            ...){
 
-  if (missing(geo)) geo <- "all"
+  if (missing(geo)) geo <- ""
   if (missing(cat)) cat <- "0"
   if (missing(ch))  ch  <- .getDefaultConnection()
 
   stopifnot(is.character(query),
-            is.vector(query))
+            is.vector(query),
+            all(res %in% c("week", "day")),
+            length(res) == 1)
+  
+  ## Verify the dates
+  start_date <- as.Date(start_date, "%Y-%m-%d")  
+  end_date <- as.Date(end_date, "%Y-%m-%d")  
+  
+  if (any(is.na(start_date))){
+    stop("start_date is not a valide date. Please use yyyy-mm-dd format.",
+         call. = FALSE)
+  } 
+  
+  if (any(is.na(end_date))){
+    stop("end_date is not a valide date. Please use yyyy-mm-dd format.",
+         call. = FALSE)
+  } 
+  
+  # date verification
+  stopifnot(start_date < end_date, 
+            start_date >= as.Date("2004-01-01"), # cant be earlier than 2004
+            end_date <= as.Date(Sys.time())) # cant be more than current date
+  
+  # if resolution is day then maximum date difference must be less than 3 months
+  nmonth <- length(seq(from = start_date, to = end_date, by = "month"))
+  
+  if(res == "day" & nmonth > 3){
+    stop("Maximum of 3 months allowed with daily resolution.", call. = FALSE)
+  }
   
   query <- paste(query, collapse = ",")
   
@@ -179,12 +221,13 @@ gtrends.default <- function(query, geo, cat, ch, ...) {
          call. = FALSE)
   }
   
-  data(countries, envir=environment())
+  data(countries, envir = environment())
+  
   countries[, 1] <- as.character(countries[, 1])
   countries[, 2] <- as.character(countries[, 2])
   countries[which(countries[, "COUNTRY"] == "Namibia"), "CODE"] <- "NA"
   
-  if (geo != "all" && !geo %in% countries[, "CODE"]) {
+  if (geo != "" && !geo %in% countries[, "CODE"]) {
     stop("Country code not valid. Please use 'data(countries)' to retreive valid codes.",
          call. = FALSE)
   }
@@ -192,14 +235,20 @@ gtrends.default <- function(query, geo, cat, ch, ...) {
   
   authenticatePage2 <- getURL("http://www.google.com", curl = ch)
   
-  trendsURL <- "http://www.google.com/trends/?"
+  trendsURL <- "http://www.google.com/trends/trendsReport?"
+
+  
+  res <- paste(nmonth, "m", sep = "")
   
   pp <- list(q = query, 
-             geo = geo, 
-             cat = cat, 
+             cmpt = "q",
              content = 1, 
-             export = 1, 
-             graph = "all_csv")
+             export = 1,
+             date = paste(format(start_date, "%m/%Y"), res),
+             geo = geo)
+  
+  
+  #http://www.google.com/trends/trendsReport?&q=%2Cfoo%2Cbar%2Cbaz%2Cfoo&cmpt=q&content=1&export=1&date=1%2F2015%202m
   
   resultsText <- getForm(trendsURL, .params = pp, curl = ch)
   
@@ -289,12 +338,14 @@ plot.gtrends <- function(x,
                   resolution = resolution)
   
   if (type == "trend") {
-    #z <- as.zoo.gtrends(x)
     
     df <- x$trend
-    df <- tidyr::gather_(df, "keyword", "hit", names(df)[3:ncol(df)])
+    df <- tidyr::gather_(df, "keyword", "hit", na.omit(names(df)[3:ncol(df)]), 
+                         convert = TRUE)
     
-    p <- ggplot(df, aes_string(x = "end", y = "hit", color = "keyword")) +
+    df$start <- as.POSIXct(df$start)
+    
+    p <- ggplot(df, aes_string(x = "start", y = "hit", color = "keyword")) +
       geom_line() +
       xlab("Date") +
       ylab("Search hits") +
@@ -359,12 +410,25 @@ as.zoo.gtrends <- function(x, ...) {
   trend <- read.csv(textConnection(strsplit(vec[2], "\\\n")[[1]]),
                     skip = 1,
                     stringsAsFactors = FALSE)
+  
   weeks <- do.call(rbind, strsplit(trend[, 1], " - "))
-  trend <- data.frame(start = as.Date(weeks[, 1]),
-                      end = as.Date(weeks[, 2]),
-                      trend)
-  trend <-
-    trend[is.finite(trend[, 4]), -3] # check results column for NA, exclude old (unparsed) time column
+  
+  ## 1 column means resolution is day
+  if(ncol(weeks) == 1){
+    
+    names(trend)[1] <- "start"
+    trend$start <- as.Date(trend$start)
+  
+    }else{ ## week resolution
+    
+    trend <- data.frame(start = as.Date(weeks[, 1]),
+                        end = as.Date(weeks[, 2]),
+                        trend)
+  }
+  
+  
+  # check results column for NA, exclude old (unparsed) time column
+  trend <- na.omit(trend)
   
   ## first set of blocks: top regions
   regidx <- grep("Top (sub)?regions", headers)

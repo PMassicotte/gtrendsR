@@ -10,7 +10,8 @@
 \usage{
 gtrends(query, geo, cat, ch, ...)
 
-\method{gtrends}{default}(query, geo, cat, ch, ...)
+\method{gtrends}{default}(query, geo, cat, ch, res = "week",
+  start_date = as.Date("2004-01-01"), end_date = as.Date(Sys.time()), ...)
 
 \method{summary}{gtrends}(object, ...)
 
@@ -22,21 +23,28 @@ gtrends(query, geo, cat, ch, ...)
 }
 \arguments{
 \item{query}{A character vector with the actual Google Trends query keywords.
-Multiple keywords are possible using \code{gtrends(c("NHL", "NBA",
-"MLB", "MLS"))}.}
+Multiple keywords are possible using \code{gtrends(c("NHL", "NBA", "MLB", 
+"MLS"))}.}
 
 \item{geo}{A character variable denoting a geographic region for the query, 
 default to \dQuote{all} for global queries.}
 
 \item{cat}{A character denoting the category, defaults to \dQuote{0}.}
 
-\item{ch}{A valid handle which can be created via
-\code{\link{gconnect}}. Users can either supply an explicit
-handle, or rely on the helper function
-\code{.getDefaultConnection()} to retrieve the current
-connection handle.}
+\item{ch}{A valid handle which can be created via \code{\link{gconnect}}. 
+Users can either supply an explicit handle, or rely on the helper function 
+\code{.getDefaultConnection()} to retrieve the current connection handle.}
 
 \item{...}{Additional parameters passed on in method dispatch.}
+
+\item{res}{Resolution of the trending data to be returned. Either \code{week}
+for weekly data or \code{day} for daily data.}
+
+\item{start_date}{Starting date using yyyy-mm-dd format. Must be breater than
+2004-01-01.}
+
+\item{end_date}{Starting date using yyyy-mm-dd format. Must be before than 
+current date.}
 
 \item{object}{A \code{\link{gtrends}} object}
 
