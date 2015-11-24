@@ -186,7 +186,8 @@ gtrends.default <- function(query,
   stopifnot(is.character(query),
             is.vector(query),
             all(res %in% c("week", "day")),
-            length(res) == 1)
+            length(res) == 1,
+            length(query) <= 5)
   
   ## Verify the dates
   start_date <- as.Date(start_date, "%Y-%m-%d")  
