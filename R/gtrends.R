@@ -352,7 +352,7 @@ plot.gtrends <- function(x,
       ylab("Search hits") +
       ggtitle("Interest over time") +
       theme_bw() +
-      scale_x_datetime(labels = scales::date_format("%Y/%m/%d"))
+      scale_x_datetime(labels = scales::date_format("%Y-%m-%d"))
     
     print(p)
     
