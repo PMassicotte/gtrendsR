@@ -1,11 +1,16 @@
 .pkgenv <- new.env(parent=emptyenv())
 
 .onAttach <- function(libname, pkgname) {
-    ## we could auto-connect here just like Rblpapi
-    ## we already respect two env.vars and options
-    ## so why not add another pair for autoconecct?
+    ## check the R option, as well as an environment variable
+    if (getOption("google.autoconnect", FALSE) ||
+        tolower(Sys.getenv("GOOGLE_AUTOCONNECT")) == "true") {
+        ## get connection, gconnect will deal with user and password
+        ch <- gconnect(verbose=FALSE)   # flip to TRUE to see message
+    } else {
+        ## store a fallback value
+        ch <- NULL
+    }
 
-    ## store a fallback value
-    assign("ch", NULL, envir=.pkgenv)
-
+    ## assign connection here for retrieval later
+    assign("ch", ch, envir=.pkgenv)
 }
