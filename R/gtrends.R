@@ -332,7 +332,6 @@ summary.gtrends <- function(object, ...) {
 #' @import googleVis
 #' @import RColorBrewer
 #' @import ggplot2
-#' @importFrom tidyr gather_
 #' @examples 
 #' \dontrun{
 #' #' ch <- gconnect("usr@gmail.com", "psw")
@@ -360,8 +359,24 @@ plot.gtrends <- function(x,
   if (type == "trend") {
     
     df <- x$trend
-    df <- tidyr::gather_(df, "keyword", "hit", na.omit(names(df)[3:ncol(df)]), 
-                         convert = TRUE)
+    
+    df <- reshape(df,
+                  varying = grep("start|end|day", 
+                               names(df), 
+                               ignore.case = TRUE, 
+                               invert = TRUE),
+                  v.names = "hit",
+                  idvar = grep("start|end|day", 
+                               names(df), 
+                               ignore.case = TRUE, 
+                               invert = FALSE),
+                  direction = "long",
+                  times = grep("start|end|day", 
+                               names(df), 
+                               ignore.case = TRUE, 
+                               invert = TRUE,
+                               value = TRUE),
+                  timevar = "keyword")
     
     df$start <- as.POSIXct(df$start)
     
