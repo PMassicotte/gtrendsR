@@ -212,12 +212,12 @@ gtrends.default <- function(query,
   start_date <- as.Date(start_date, "%Y-%m-%d")  
   end_date <- as.Date(end_date, "%Y-%m-%d")  
   
-  if (any(is.na(start_date))){
+  if (is.na(start_date)) {
     stop("start_date is not a valide date. Please use yyyy-mm-dd format.",
          call. = FALSE)
   } 
   
-  if (any(is.na(end_date))){
+  if (is.na(end_date)) {
     stop("end_date is not a valide date. Please use yyyy-mm-dd format.",
          call. = FALSE)
   } 
