@@ -360,22 +360,15 @@ plot.gtrends <- function(x,
     
     df <- x$trend
     
+    keywords <- unlist(strsplit(tolower(x$query[1]), ","))
+    idvar <- names(df)[1:(ncol(df) - length(keywords))]
+    
     df <- reshape(df,
-                  varying = grep("^start|^end|^day", 
-                                 names(df), 
-                                 ignore.case = TRUE, 
-                                 invert = TRUE),
+                  varying = list((length(idvar) +1):ncol(df)),
                   v.names = "hit",
-                  idvar = names(df)[grep("^start|^end|^day", 
-                                         names(df), 
-                                         ignore.case = TRUE, 
-                                         invert = FALSE)],
+                  idvar = idvar,
                   direction = "long",
-                  times = grep("^start|^end|^day", 
-                               names(df), 
-                               ignore.case = TRUE, 
-                               invert = TRUE,
-                               value = TRUE),
+                  times = unlist(keywords),
                   timevar = "keyword")
     
     df$start <- as.POSIXct(df$start)
