@@ -24,6 +24,5 @@ Imports:
     googleVis,
     zoo,
     RColorBrewer,
-    ggplot2,
-    tidyr
+    ggplot2
 RoxygenNote: 5.0.1
