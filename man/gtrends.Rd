@@ -85,11 +85,6 @@ geolocation and category can also be supplied.
 ch <- gconnect("usr@gmail.com", "psw")
 sport_trend <- gtrends(c("NHL", "NBA", "MLB", "MLS"))
 }
-\dontrun{
-#' ch <- gconnect("usr@gmail.com", "psw")
-sport_trend <- gtrends(c("nhl", "nba", "nfl"))
-}
-
 data("sport_trend")
 plot(sport_trend)
 }

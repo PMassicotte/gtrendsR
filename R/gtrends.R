@@ -333,11 +333,6 @@ summary.gtrends <- function(object, ...) {
 #' @import RColorBrewer
 #' @import ggplot2
 #' @examples 
-#' \dontrun{
-#' #' ch <- gconnect("usr@gmail.com", "psw")
-#' sport_trend <- gtrends(c("nhl", "nba", "nfl"))
-#' }
-#' 
 #' data("sport_trend")
 #' plot(sport_trend)
 #' @export
