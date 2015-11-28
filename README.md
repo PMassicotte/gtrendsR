@@ -31,9 +31,17 @@ plot(sport_trend, type = "cities")
 
 ### Installation
 
-The package can be installed using the following command:
+Since release 1.3.0, the package is on [CRAN](http://cran.r-project.org) and
+can be installed via
 
 ``` {.r}
+install.packages("gtrendsR")
+```
+
+Pre-release versions can be install directly from this repository via
+
+``` {.r}
+if (!require("devtools")) install.packages("devtools")
 devtools::install_github("PMassicotte/gtrendsR")
 ```
 
