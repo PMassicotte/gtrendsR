@@ -6,3 +6,4 @@ inst/localTests
 ^README-.*\.png$
 ^\.travis\.yml$
 ^appveyor\.yml$
+^cran-comments\.md$
