@@ -295,9 +295,9 @@ gtrends.default <- function(query,
 #' @export
 summary.gtrends <- function(object, ...) {
   cat("Google Trends results for:\n")
-  cat(object[["meta"]][15])
+  cat(unlist(strsplit(object$query[1], ",")))
   cat("\nRequested at: ")
-  cat(object[["meta"]][4])
+  cat(object$query[4])
   cat("\n\nSummary of trend:\n")
   print(summary(as.zoo.gtrends(object)))
   ## cat("\nMain regions:\n")
