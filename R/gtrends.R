@@ -94,16 +94,16 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
   
   authenticatePage2 <- getURL("http://www.google.com", curl = ch)
   
-  if (grepl("The email or password you entered is incorrect.", authenticatePage)) {
-    
-    if (verbose) cat("Google login failed!")
-    
-    return(NULL)
-  
-  } else {
+  #if SID is set, then the connection was successfull
+  if (grepl("SetSID", authenticatePage)) {
     
     if (verbose) cat("Google login successful!\n")
   
+  } else {
+    
+    cat("Google login failed!")
+  
+    return(NULL)
   }
 
   ## store connection handler in package-local environment
