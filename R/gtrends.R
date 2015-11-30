@@ -241,6 +241,9 @@ gtrends.default <- function(query,
   
   query <- paste(query, collapse = ",")
   
+  ## Change encoding to utf-8
+  query <- iconv(query, "latin1", "utf-8", sub = "byte")
+  
   if (inherits(ch, "CURLHandle") != TRUE) {
     stop("'ch' arguments has to be result from 'gconnect()'.", 
          call. = FALSE)
@@ -418,6 +421,11 @@ as.zoo.gtrends <- function(x, ...) {
 }
 
 .processResults <- function(resultsText, queryparams) {
+  
+  #get back to latin1 encoding
+  
+  queryparams[1] <- iconv(queryparams[1], "utf-8", "latin1", sub = "byte")
+  
   vec <- strsplit(resultsText, "\\\n{2,}")[[1]]
   
   ## Make sure there are some results have been returned.
