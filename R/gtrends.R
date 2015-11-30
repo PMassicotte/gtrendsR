@@ -94,13 +94,15 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
   
   authenticatePage2 <- getURL("http://www.google.com", curl = ch)
   
-  if (getCurlInfo(ch)$response.code == 200) {
+  if (grepl("The email or password you entered is incorrect.", authenticatePage)) {
     
-    if (verbose) cat("Google login successful!\n")
+    if (verbose) cat("Google login failed!")
+    
+    return(NULL)
   
   } else {
     
-    if (verbose) cat("Google login failed!")
+    if (verbose) cat("Google login successful!\n")
   
   }
 
@@ -208,6 +210,9 @@ gtrends.default <- function(query,
             length(res) == 1,
             length(query) <= 5)
   
+  if(is.null(ch)) stop("You are not signed in. Please log in using gconnect().",
+                       call. = FALSE)
+  
   ## Verify the dates
   start_date <- as.Date(start_date, "%Y-%m-%d")  
   end_date <- as.Date(end_date, "%Y-%m-%d")  
@@ -235,6 +240,9 @@ gtrends.default <- function(query,
   }
   
   query <- paste(query, collapse = ",")
+  
+  ## Change encoding to utf-8
+  query <- iconv(query, "latin1", "utf-8", sub = "byte")
   
   if (inherits(ch, "CURLHandle") != TRUE) {
     stop("'ch' arguments has to be result from 'gconnect()'.", 
@@ -413,6 +421,11 @@ as.zoo.gtrends <- function(x, ...) {
 }
 
 .processResults <- function(resultsText, queryparams) {
+  
+  #get back to latin1 encoding
+  
+  queryparams[1] <- iconv(queryparams[1], "utf-8", "latin1", sub = "byte")
+  
   vec <- strsplit(resultsText, "\\\n{2,}")[[1]]
   
   ## Make sure there are some results have been returned.
