@@ -97,6 +97,8 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
   if (grepl("The email or password you entered is incorrect.", authenticatePage)) {
     
     if (verbose) cat("Google login failed!")
+    
+    return(NULL)
   
   } else {
     
@@ -207,6 +209,9 @@ gtrends.default <- function(query,
             all(res %in% c("week", "day")),
             length(res) == 1,
             length(query) <= 5)
+  
+  if(is.null(ch)) stop("You are not signed in. Please log in using gconnect().",
+                       call. = FALSE)
   
   ## Verify the dates
   start_date <- as.Date(start_date, "%Y-%m-%d")  
