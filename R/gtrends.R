@@ -94,13 +94,13 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
   
   authenticatePage2 <- getURL("http://www.google.com", curl = ch)
   
-  if (getCurlInfo(ch)$response.code == 200) {
+  if (grepl("The email or password you entered is incorrect.", authenticatePage)) {
     
-    if (verbose) cat("Google login successful!\n")
+    if (verbose) cat("Google login failed!")
   
   } else {
     
-    if (verbose) cat("Google login failed!")
+    if (verbose) cat("Google login successful!\n")
   
   }
 
