@@ -103,8 +103,7 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
   
   } else {
     
-    cat("Google login failed!")
-  
+    cat("Google login failed! Check your login information.")
     return(NULL)
   }
 
