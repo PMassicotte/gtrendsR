@@ -84,30 +84,31 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
   
   galx <- .getGALX(ch)
   
-  formparams <-list(Email=usr,
-                    Passwd=psw,
-                    GALX = galx,
-                    PersistentCookie= "yes",
-                    continue = "http://www.google.com/trends")
+  formparams <- list(Email = usr,
+                     Passwd = psw,
+                     GALX = galx,
+                     PersistentCookie = "yes",
+                     continue = "http://www.google.com/trends")
   
-  authenticatePage <- postForm(authenticateURL, .params=formparams, curl=ch)
+  authenticatePage <- postForm(authenticateURL, .params = formparams, curl = ch)
+  #print(getCurlInfo(ch)$response.code)
   
-  authenticatePage2 <- getURL("http://www.google.com", curl = ch)
+  authenticatePage2 <- getURL("https://www.google.com/accounts/CheckCookie?chtml=LoginDoneHtml", curl = ch)
+  #print(getCurlInfo(ch)$response.code)
   
-  #if SID is set, then the connection was successfull
-  if (grepl("SetSID", authenticatePage)) {
+  #if http answer is 200 then login was ok
+  if (getCurlInfo(ch)$response.code == 200) {
     
     if (verbose) cat("Google login successful!\n")
   
   } else {
     
-    cat("Google login failed!")
-  
+    cat("Google login failed! Check your login information.")
     return(NULL)
   }
 
   ## store connection handler in package-local environment
-  assign("ch", ch, envir=.pkgenv)
+  assign("ch", ch, envir = .pkgenv)
     
   invisible(ch)
   
