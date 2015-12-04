@@ -38,6 +38,12 @@ is set to (the text string) \sQuote{TRUE}, or the the R option
 \code{options("google.autoconnect")} is set to \sQuote{TRUE} then
 the connection is automatically made at package load.
 }
+\note{
+Should you have trouble connecting, and also use two-factor authentication on
+your Google Account, then consider creating another Google account (without
+two-factor authentication) which should allow automated (i.e. programmatic)
+connection here.
+}
 \examples{
 \dontrun{
 # use with explicit arguments
