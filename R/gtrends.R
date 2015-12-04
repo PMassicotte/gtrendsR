@@ -392,6 +392,9 @@ plot.gtrends <- function(x,
     
     x <- x[["regions"]][[ind]]
     
+    if(is.na(x)) stop("Not enough search volume to show results.", 
+                      call. = FALSE)
+    
     df <- data.frame(loc = x[, 1], hits = x[, 2])
     
     plot(gvisGeoChart(df, 'loc', 'hits', options = gvisopt))
@@ -400,6 +403,9 @@ plot.gtrends <- function(x,
     
     x <- x[["topmetros"]][[ind]]
     
+    if(is.na(x)) stop("Not enough search volume to show results.", 
+                      call. = FALSE)
+    
     df <- data.frame(loc = x[, 1], hits = x[, 2])
     
     plot(gvisGeoChart(df, 'loc', 'hits', options = gvisopt))
@@ -407,6 +413,9 @@ plot.gtrends <- function(x,
   } else if (type == "cities") {
     
     x <- x[["cities"]][[ind]]
+    
+    if(is.na(x)) stop("Not enough search volume to show results.", 
+                      call. = FALSE)
     
     df <- data.frame(loc = x[, 1], hits = x[, 2])
     
@@ -432,7 +441,7 @@ as.zoo.gtrends <- function(x, ...) {
   vec <- strsplit(resultsText, "\\\n{2,}")[[1]]
   
   ## Make sure there are some results have been returned.
-  if (length(vec) < 6) {
+  if (length(vec) < 2) {
     stop("Not enough search volume. Please change your search terms.",
          call. = FALSE)
   }
@@ -452,17 +461,26 @@ as.zoo.gtrends <- function(x, ...) {
   
   weeks <- do.call(rbind, strsplit(trend[, 1], " - "))
   
-  ## 1 column means resolution is day
+  ## 1 column means resolution is day or monthly data
   if(ncol(weeks) == 1){
     
     names(trend)[1] <- "start"
-    trend$start <- as.Date(trend$start)
-  
-    }else{ ## week resolution
+    
+    # date seems to be in yyyy-mm-dd format
+    if(all(grepl("\\d{4}-\\d{2}-\\d{2}", trend$start))){
+      trend$start <- as.Date(trend$start)
+    }else{
+      trend$start <- as.Date(paste(trend$start,"-01",sep="")) # Just cheated!
+      
+      message("Search volume was too low. Data was returning aggregated monthly.")
+    }
+    
+  }else{ ## week resolution
     
     trend <- data.frame(start = as.Date(weeks[, 1]),
                         end = as.Date(weeks[, 2]),
-                        trend[, 2:ncol(trend)])
+                        trend[, 2:ncol(trend), drop = FALSE])
+    
   }
   
   # check results column for NA, exclude old (unparsed) time column
@@ -471,7 +489,7 @@ as.zoo.gtrends <- function(x, ...) {
   # Verify that all requested keywords have been recevied. Sometimes not
   # enough data for some requested kw. If that happen, Google will not 
   # return data.
-  wanted_kw <- tolower(unlist(strsplit(queryparams[1], ",")))
+  wanted_kw <- make.names(tolower(unlist(strsplit(queryparams[1], ","))))
   received_kw <- names(trend)[mapply(is.numeric, trend)]
   
   if(length(setdiff(wanted_kw, received_kw) != 0)){
@@ -525,11 +543,12 @@ as.zoo.gtrends <- function(x, ...) {
       ))
   
   ## Set columns names
-  schlist <- lapply(1:length(schidx), function(i) {
-    names(schlist[[i]]) = c(headers[schidx][i], "Hits")
-    schlist[[i]]
-  })
-  
+  if(length(schidx) != 0){
+    schlist <- lapply(1:length(schidx), function(i) {
+      names(schlist[[i]]) = c(headers[schidx][i], "Hits")
+      schlist[[i]]
+    })
+  }
   
   ## nex block: rising searches
   risidx <- grep("Rising searches", headers)
@@ -559,6 +578,10 @@ as.zoo.gtrends <- function(x, ...) {
     rising = rislist,
     headers = headers
   )
+  
+  # if data was returned monthly, it will not be possible to plot maps
+  res[lapply(res, length) ==0]  <- NA
+  
   class(res) <- "gtrends"
   return(res)
 }
