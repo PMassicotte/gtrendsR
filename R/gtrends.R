@@ -369,15 +369,12 @@ plot.gtrends <- function(x,
     
     df <- x$trend
     
-    keywords <- unlist(strsplit(tolower(x$query[1]), ","))
-    idvar <- names(df)[1:(ncol(df) - length(keywords))]
-    
     df <- reshape(df,
-                  varying = list((length(idvar) +1):ncol(df)),
+                  varying = names(df)[mapply(is.numeric, x$trend)],
                   v.names = "hit",
-                  idvar = idvar,
+                  idvar = names(df)[!mapply(is.numeric, x$trend)],
                   direction = "long",
-                  times = unlist(keywords),
+                  times = names(df)[mapply(is.numeric, x$trend)],
                   timevar = "keyword")
     
     df$start <- as.POSIXct(df$start)
@@ -466,13 +463,21 @@ as.zoo.gtrends <- function(x, ...) {
     trend <- data.frame(start = as.Date(weeks[, 1]),
                         end = as.Date(weeks[, 2]),
                         trend[, 2:ncol(trend)])
-      
-    names(trend)[3:ncol(trend)] <- unlist(strsplit(queryparams[1], ","))
   }
-  
   
   # check results column for NA, exclude old (unparsed) time column
   trend <- na.omit(trend)
+  
+  # Verify that all requested keywords have been recevied. Sometimes not
+  # enough data for some requested kw. If that happen, Google will not 
+  # return data.
+  wanted_kw <- tolower(unlist(strsplit(queryparams[1], ",")))
+  received_kw <- names(trend)[mapply(is.numeric, trend)]
+  
+  if(length(setdiff(wanted_kw, received_kw) != 0)){
+    message(paste("Not enough data for ", setdiff(wanted_kw, received_kw), 
+                  " keyword(s).", sep = "'"))
+  }
   
   ## first set of blocks: top regions
   regidx <- grep("Top (sub)?regions", headers)
