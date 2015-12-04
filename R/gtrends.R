@@ -392,7 +392,7 @@ plot.gtrends <- function(x,
     
     x <- x[["regions"]][[ind]]
     
-    if(is.na(x)) stop("Not enough search volume to show results.", 
+    if(all(is.na(x))) stop("Not enough search volume to show results.", 
                       call. = FALSE)
     
     df <- data.frame(loc = x[, 1], hits = x[, 2])
@@ -403,7 +403,7 @@ plot.gtrends <- function(x,
     
     x <- x[["topmetros"]][[ind]]
     
-    if(is.na(x)) stop("Not enough search volume to show results.", 
+    if(all(is.na(x))) stop("Not enough search volume to show results.", 
                       call. = FALSE)
     
     df <- data.frame(loc = x[, 1], hits = x[, 2])
@@ -414,7 +414,7 @@ plot.gtrends <- function(x,
     
     x <- x[["cities"]][[ind]]
     
-    if(is.na(x)) stop("Not enough search volume to show results.", 
+    if(all(is.na(x))) stop("Not enough search volume to show results.", 
                       call. = FALSE)
     
     df <- data.frame(loc = x[, 1], hits = x[, 2])
