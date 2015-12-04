@@ -29,6 +29,11 @@ plot(sport_trend, type = "region")
 plot(sport_trend, type = "cities")
 ```
 
+Should you have trouble connecting, and also use two-factor authentication on
+your Google Account, then consider creating another Google account (without
+two-factor authentication) which should allow automated (_i.e._ programmatic)
+connection here.
+
 ### Installation
 
 Since release 1.3.0, the package is on [CRAN](http://cran.r-project.org) and
