@@ -451,6 +451,9 @@ as.zoo.gtrends <- function(x, ...) {
     unname(sapply(vec, function(v)
       strsplit(v, "\\\n")[[1]][1]))
   
+  #print(length(headers))
+  #print(headers)
+  
   ## block 1: meta data
   meta  <- strsplit(vec[1], "\\\r\\\n")[[1]]
   
@@ -472,7 +475,8 @@ as.zoo.gtrends <- function(x, ...) {
     }else{
       trend$start <- as.Date(paste(trend$start,"-01",sep="")) # Just cheated!
       
-      message("Search volume was too low. Data was returning aggregated monthly.")
+      message("The number of hits was too low for daily (weekly) resolution.\n
+              Results were returned using weekly (monthly) resolution instead.")
     }
     
   }else{ ## week resolution
