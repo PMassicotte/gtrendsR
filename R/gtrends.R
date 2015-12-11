@@ -462,33 +462,30 @@ as.zoo.gtrends <- function(x, ...) {
                     skip = 1,
                     stringsAsFactors = FALSE)
   
-  weeks <- do.call(rbind, strsplit(trend[, 1], " - "))
+  weeks <- data.frame(do.call(rbind, strsplit(trend[, 1], " - ")))
   
-  ## 1 column means resolution is day or monthly data
-  if(ncol(weeks) == 1){
+  trend <- trend[, mapply(is.numeric, trend), drop = FALSE]
+  
+  is_weekly <- all(do.call(c, 
+                           lapply(weeks, 
+                                  grepl, 
+                                  pattern = "\\d{4}-\\d{2}-\\d{2}")))
+  
+  if(is_weekly){
     
-    names(trend)[1] <- "start"
+    weeks <- lapply(weeks, as.Date, SIMPLIFY = FALSE)
+    weeks <- do.call(cbind.data.frame, weeks)
+    names(weeks) <- c("start", "end")
+  
+  }else{
     
-    # date seems to be in yyyy-mm-dd format
-    if(all(grepl("\\d{4}-\\d{2}-\\d{2}", trend$start))){
-      trend$start <- as.Date(trend$start)
-    }else{
-      trend$start <- as.Date(paste(trend$start,"-01",sep="")) # Just cheated!
-      
-      message("The number of hits was too low for daily (weekly) resolution.\n
-              Results were returned using weekly (monthly) resolution instead.")
-    }
+    weeks <- paste(weeks[, 1], "-01", sep = "")
+    weeks <- data.frame(start = weeks)
     
-  }else{ ## week resolution
-    
-    trend <- data.frame(start = as.Date(weeks[, 1]),
-                        end = as.Date(weeks[, 2]),
-                        trend[, 2:ncol(trend), drop = FALSE])
-    
+    message("The number of hits was too low for daily (weekly) resolution. Results were returned using weekly (monthly) resolution instead.")
   }
   
-  # check results column for NA, exclude old (unparsed) time column
-  trend <- na.omit(trend)
+  trend <- cbind(weeks, trend)
   
   # Verify that all requested keywords have been recevied. Sometimes not
   # enough data for some requested kw. If that happen, Google will not 
