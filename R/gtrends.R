@@ -480,7 +480,7 @@ as.zoo.gtrends <- function(x, ...) {
     
     weeks <- lapply(weeks, as.Date, SIMPLIFY = FALSE)
     weeks <- do.call(cbind.data.frame, weeks)
-    names(weeks) <- c("start", "end")
+    names(weeks) <- c("start", "end")[1:ncol(weeks)]
   
   }else{
     
