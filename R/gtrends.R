@@ -510,12 +510,8 @@ as.zoo.gtrends <- function(x, ...) {
   
   ## results headers -- for 'geo="US"' and three terms, we get 17 results (!!)
   headers <- unname(sapply(vec, function(v) strsplit(v, "\\\n")[[1]][1]))
-  
-  print(length(headers))
-  print(headers)
-  
-  
-  hit_sum <- colSums(trend[, mapply(is.numeric, trend)])
+
+  #hit_sum <- colSums(trend[, mapply(is.numeric, trend)])
   
   nkw <- length(received_kw)
   ## first set of blocks: top regions
