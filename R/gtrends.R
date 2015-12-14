@@ -345,6 +345,8 @@ summary.gtrends <- function(object, ...) {
 #' search terms.
 #' @import googleVis
 #' @import ggplot2
+#' @importFrom graphics plot
+#' @importFrom stats reshape
 #' @examples 
 #' data("sport_trend")
 #' plot(sport_trend)
@@ -431,6 +433,7 @@ as.zoo.gtrends <- function(x, ...) {
   z
 }
 
+#' @importFrom utils read.csv
 .processResults <- function(resultsText, queryparams) {
   
   #get back to latin1 encoding
