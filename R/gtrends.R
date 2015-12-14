@@ -344,7 +344,6 @@ summary.gtrends <- function(object, ...) {
 #' @param ind A integer selecting the result set in case of multiple
 #' search terms.
 #' @import googleVis
-#' @import RColorBrewer
 #' @import ggplot2
 #' @examples 
 #' data("sport_trend")
