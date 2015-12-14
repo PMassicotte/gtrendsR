@@ -1,16 +1,3 @@
-##-----------------------------------------------------------------------------
-##  Authors:        Philippe Massicotte and Dirk Eddelbuettel
-##  Date modified:  20-03-2014
-##  Description:    TODO
-##-----------------------------------------------------------------------------
-
-## TODO:
-# - better authentication success checks
-# - better query result checks
-# - adding category code (as you mentioned)
-# - restoring ability to plot regions (ahem, I broke that...)
-# - plot googleVis in PDF. Hint: cat(unlist(G1$html), file="tmp.html") -----> print to PDF using system(...)
-
 #' Connect to Google account
 #'
 #' The resulting connection object is also stored in the package-local
