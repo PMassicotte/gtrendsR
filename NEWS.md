@@ -1,3 +1,7 @@
+# grtrends 1.3.2 (unreleased)
+
+- Fixing issue #51 allowing UK-based queries via `geo="GB"`
+
 # gtrendsR 1.3.1
 
 - Fixing issue #34 where connection verification was not done properly.
