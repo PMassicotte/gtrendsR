@@ -26,8 +26,9 @@ gtrends(query, geo, cat, ch, ...)
 Multiple keywords are possible using \code{gtrends(c("NHL", "NBA", "MLB", 
 "MLS"))}.}
 
-\item{geo}{A character variable denoting a geographic region for the query, 
-default to \dQuote{all} for global queries.}
+\item{geo}{A character vector denoting geographic regions for the query,
+default to \dQuote{all} for global queries. Multiple regions are possible
+using \code{gtrends("NHL", c("CA", "US"))}.}
 
 \item{cat}{A character denoting the category, defaults to \dQuote{0}.}
 
@@ -84,6 +85,8 @@ geolocation and category can also be supplied.
 \dontrun{
 ch <- gconnect("usr@gmail.com", "psw")
 sport_trend <- gtrends(c("NHL", "NBA", "MLB", "MLS"))
+
+sport_trend <- gtrends("NHL", geo = c("CA", "US"))
 }
 data("sport_trend")
 plot(sport_trend)

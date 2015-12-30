@@ -148,8 +148,9 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
 #'   Multiple keywords are possible using \code{gtrends(c("NHL", "NBA", "MLB", 
 #'   "MLS"))}.
 #'   
-#' @param geo A character variable denoting a geographic region for the query, 
-#'   default to \dQuote{all} for global queries.
+#' @param geo A character vector denoting geographic regions for the query,
+#'   default to \dQuote{all} for global queries. Multiple regions are possible
+#'   using \code{gtrends("NHL", c("CA", "US"))}.
 #'   
 #' @param cat A character denoting the category, defaults to \dQuote{0}.
 #'   
@@ -174,6 +175,8 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
 #' \dontrun{
 #' ch <- gconnect("usr@gmail.com", "psw")
 #' sport_trend <- gtrends(c("NHL", "NBA", "MLB", "MLS"))
+#' 
+#' sport_trend <- gtrends("NHL", geo = c("CA", "US"))
 #' }
 #' @export
 gtrends <- function(query, geo, cat, ch, ...) {
@@ -201,7 +204,8 @@ gtrends.default <- function(query,
             is.vector(query),
             all(res %in% c("week", "day")),
             length(res) == 1,
-            length(query) <= 5)
+            length(query) <= 5, 
+            length(geo) <= 5)
   
   if(length(query) > 1 & length(geo) > 1){
     stop("Can not specify multiple keywords and geo at the same time.", 
@@ -492,18 +496,6 @@ as.zoo.gtrends <- function(x, ...) {
   
   trend <- cbind(weeks, trend)
   
-  # Verify that all requested keywords have been recevied. Sometimes not
-  # enough data for some requested kw. If that happen, Google will not 
-  # return data.
-  wanted_kw <- make.names(tolower(unlist(strsplit(queryparams[1], ","))))
-  received_kw <- names(trend)[mapply(is.numeric, trend)]
-  
-  if(length(setdiff(wanted_kw, received_kw) != 0)){
-    message(paste("Not enough data for ", setdiff(wanted_kw, received_kw), 
-                  " keyword(s).", sep = "'"))
-  }
-  
-  
   #---------------------------------------------------------------------
   # Section to deal with geographical data
   #---------------------------------------------------------------------
@@ -512,6 +504,8 @@ as.zoo.gtrends <- function(x, ...) {
   headers <- unname(sapply(vec, function(v) strsplit(v, "\\\n")[[1]][1]))
 
   #hit_sum <- colSums(trend[, mapply(is.numeric, trend)])
+  
+  received_kw <- names(trend)[mapply(is.numeric, trend)]
   
   nkw <- length(received_kw)
   ## first set of blocks: top regions

@@ -1,5 +1,6 @@
 # grtrends 1.3.2 (unreleased)
 
+- Now able to specify up to five countries (#53) via `gtrends("NHL", geo = c("CA", "US"))`
 - Fixing issue #51 allowing UK-based queries via `geo="GB"`
 
 # gtrendsR 1.3.1
