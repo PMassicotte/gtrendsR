@@ -148,8 +148,9 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
 #'   Multiple keywords are possible using \code{gtrends(c("NHL", "NBA", "MLB", 
 #'   "MLS"))}.
 #'   
-#' @param geo A character variable denoting a geographic region for the query, 
-#'   default to \dQuote{all} for global queries.
+#' @param geo A character vector denoting geographic regions for the query,
+#'   default to \dQuote{all} for global queries. Multiple regions are possible
+#'   using \code{gtrends("NHL", c("CA", "US"))}.
 #'   
 #' @param cat A character denoting the category, defaults to \dQuote{0}.
 #'   
@@ -174,6 +175,8 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
 #' \dontrun{
 #' ch <- gconnect("usr@gmail.com", "psw")
 #' sport_trend <- gtrends(c("NHL", "NBA", "MLB", "MLS"))
+#' 
+#' sport_trend <- gtrends("NHL", geo = c("CA", "US"))
 #' }
 #' @export
 gtrends <- function(query, geo, cat, ch, ...) {
@@ -201,10 +204,23 @@ gtrends.default <- function(query,
             is.vector(query),
             all(res %in% c("week", "day")),
             length(res) == 1,
-            length(query) <= 5)
+            length(query) <= 5, 
+            length(geo) <= 5)
+  
+  if(length(query) > 1 & length(geo) > 1){
+    stop("Can not specify multiple keywords and geo at the same time.", 
+         call. = FALSE)
+  }
+  
+  cmpt <- ifelse(length(query) > 1, "q", "geo")
   
   if(is.null(ch)) stop("You are not signed in. Please log in using gconnect().",
                        call. = FALSE)
+  
+  if (inherits(ch, "CURLHandle") != TRUE) {
+    stop("'ch' arguments has to be result from 'gconnect()'.", 
+         call. = FALSE)
+  }
   
   ## Verify the dates
   start_date <- as.Date(start_date, "%Y-%m-%d")  
@@ -237,22 +253,21 @@ gtrends.default <- function(query,
   ## Change encoding to utf-8
   query <- iconv(query, "latin1", "utf-8", sub = "byte")
   
-  if (inherits(ch, "CURLHandle") != TRUE) {
-    stop("'ch' arguments has to be result from 'gconnect()'.", 
-         call. = FALSE)
-  }
-  
   data(countries, envir = environment())
   
   countries[, 1] <- as.character(countries[, 1])
   countries[, 2] <- as.character(countries[, 2])
   countries[which(countries[, "COUNTRY"] == "Namibia"), "CODE"] <- "NA"
   
-  if (geo != "" && !geo %in% countries[, "CODE"]) {
+  if (geo != "" && !all(geo %in% countries[, "CODE"])) {
     stop("Country code not valid. Please use 'data(countries)' to retreive valid codes.",
          call. = FALSE)
   }
   
+  # https://www.google.com/trends/trendsReport?&q=nhl&geo=US%2C%20BR&cmpt=geo&content=1&export=1
+  
+  geo <- paste(geo, sep = "", collapse = ", ")
+  #geo <- URLencode(geo, reserved = TRUE)
   
   authenticatePage2 <- getURL("http://www.google.com", curl = ch)
   
@@ -262,7 +277,7 @@ gtrends.default <- function(query,
   res <- paste(nmonth, "m", sep = "")
   
   pp <- list(q = query, 
-             cmpt = "q",
+             cmpt = cmpt, 
              content = 1, 
              export = 1,
              date = paste(format(start_date, "%m/%Y"), res),
@@ -481,18 +496,6 @@ as.zoo.gtrends <- function(x, ...) {
   
   trend <- cbind(weeks, trend)
   
-  # Verify that all requested keywords have been recevied. Sometimes not
-  # enough data for some requested kw. If that happen, Google will not 
-  # return data.
-  wanted_kw <- make.names(tolower(unlist(strsplit(queryparams[1], ","))))
-  received_kw <- names(trend)[mapply(is.numeric, trend)]
-  
-  if(length(setdiff(wanted_kw, received_kw) != 0)){
-    message(paste("Not enough data for ", setdiff(wanted_kw, received_kw), 
-                  " keyword(s).", sep = "'"))
-  }
-  
-  
   #---------------------------------------------------------------------
   # Section to deal with geographical data
   #---------------------------------------------------------------------
@@ -501,6 +504,8 @@ as.zoo.gtrends <- function(x, ...) {
   headers <- unname(sapply(vec, function(v) strsplit(v, "\\\n")[[1]][1]))
 
   #hit_sum <- colSums(trend[, mapply(is.numeric, trend)])
+  
+  received_kw <- names(trend)[mapply(is.numeric, trend)]
   
   nkw <- length(received_kw)
   ## first set of blocks: top regions
