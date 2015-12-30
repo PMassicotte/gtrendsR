@@ -203,8 +203,20 @@ gtrends.default <- function(query,
             length(res) == 1,
             length(query) <= 5)
   
+  if(length(query) > 1 & length(geo) > 1){
+    stop("Can not specify multiple keywords and geo at the same time.", 
+         call. = FALSE)
+  }
+  
+  cmpt <- ifelse(length(query) > 1, "q", "geo")
+  
   if(is.null(ch)) stop("You are not signed in. Please log in using gconnect().",
                        call. = FALSE)
+  
+  if (inherits(ch, "CURLHandle") != TRUE) {
+    stop("'ch' arguments has to be result from 'gconnect()'.", 
+         call. = FALSE)
+  }
   
   ## Verify the dates
   start_date <- as.Date(start_date, "%Y-%m-%d")  
@@ -237,22 +249,21 @@ gtrends.default <- function(query,
   ## Change encoding to utf-8
   query <- iconv(query, "latin1", "utf-8", sub = "byte")
   
-  if (inherits(ch, "CURLHandle") != TRUE) {
-    stop("'ch' arguments has to be result from 'gconnect()'.", 
-         call. = FALSE)
-  }
-  
   data(countries, envir = environment())
   
   countries[, 1] <- as.character(countries[, 1])
   countries[, 2] <- as.character(countries[, 2])
   countries[which(countries[, "COUNTRY"] == "Namibia"), "CODE"] <- "NA"
   
-  if (geo != "" && !geo %in% countries[, "CODE"]) {
+  if (geo != "" && !all(geo %in% countries[, "CODE"])) {
     stop("Country code not valid. Please use 'data(countries)' to retreive valid codes.",
          call. = FALSE)
   }
   
+  # https://www.google.com/trends/trendsReport?&q=nhl&geo=US%2C%20BR&cmpt=geo&content=1&export=1
+  
+  geo <- paste(geo, sep = "", collapse = ", ")
+  #geo <- URLencode(geo, reserved = TRUE)
   
   authenticatePage2 <- getURL("http://www.google.com", curl = ch)
   
@@ -262,7 +273,7 @@ gtrends.default <- function(query,
   res <- paste(nmonth, "m", sep = "")
   
   pp <- list(q = query, 
-             cmpt = "q",
+             cmpt = cmpt, 
              content = 1, 
              export = 1,
              date = paste(format(start_date, "%m/%Y"), res),
