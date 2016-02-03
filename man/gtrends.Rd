@@ -41,7 +41,7 @@ Users can either supply an explicit handle, or rely on the helper function
 \item{res}{Resolution of the trending data to be returned. Either \code{week}
 for weekly data or \code{day} for daily data.}
 
-\item{start_date}{Starting date using yyyy-mm-dd format. Must be breater than
+\item{start_date}{Starting date using yyyy-mm-dd format. Must be greater than
 2004-01-01.}
 
 \item{end_date}{Starting date using yyyy-mm-dd format. Must be before than 
