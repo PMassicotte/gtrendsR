@@ -159,7 +159,7 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
 #' @param res Resolution of the trending data to be returned. Either \code{week}
 #'   for weekly data or \code{day} for daily data.
 #'   
-#' @param start_date Starting date using yyyy-mm-dd format. Must be breater than
+#' @param start_date Starting date using yyyy-mm-dd format. Must be greater than
 #'   2004-01-01.
 #'   
 #' @param end_date Starting date using yyyy-mm-dd format. Must be before than 
