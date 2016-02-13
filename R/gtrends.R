@@ -501,108 +501,31 @@ as.zoo.gtrends <- function(x, ...) {
   #---------------------------------------------------------------------
   # Section to deal with geographical data
   #---------------------------------------------------------------------
-  
-  ## results headers -- for 'geo="US"' and three terms, we get 17 results (!!)
   headers <- unname(sapply(vec, function(v) strsplit(v, "\\\n")[[1]][1]))
 
-  #hit_sum <- colSums(trend[, mapply(is.numeric, trend)])
-  
-  received_kw <- names(trend)[mapply(is.numeric, trend)]
-  
-  nkw <- length(received_kw)
-  ## first set of blocks: top regions
-  
   start <- 3 # Always start at index 3
   
-  start <- seq(start, start + (nkw - 1))
-  
-  reglist <-
-    lapply(start, function(i)
-      read.csv(
-        textConnection(strsplit(vec[i], "\\\n")[[1]]),
-        skip = 1,
-        stringsAsFactors = FALSE
-      ))
-  
-  ## next (optional, if geo==US) block
-  if (queryparams["geo"] == "US") {
-    
-    start <- max(start) + 1
-    start <- seq(start, start + (nkw - 1))
-    
-    #metidx <- grep("Top metros", headers)
-    metlist <-
-      lapply(start, function(i)
-        read.csv(
-          textConnection(strsplit(vec[i], "\\\n")[[1]]),
-          skip = 1,
-          stringsAsFactors = FALSE
-        ))
-  }else{
-    metlist <- NULL
-  }
-  
-  ## next block: top cities
-  start <- max(start) + 1
-  start <- seq(start, start + (nkw - 1))
-  
-  citlist <-
-    lapply(start, function(i)
-      read.csv(
-        textConnection(strsplit(vec[i], "\\\n")[[1]]),
-        skip = 1,
-        stringsAsFactors = FALSE
-      ))
-  
-  ## next block: top searches
-  start <- max(start) + 1
-  start <- seq(start, start + (nkw - 1))
-  
-  schlist <-
-    lapply(start, function(i)
-      read.csv(
-        textConnection(strsplit(vec[i], "\\\n")[[1]]),
-        skip = 1,
-        stringsAsFactors = FALSE,
-        header = FALSE
-      ))
-  
-  ## Set columns names
-  if(length(start) != 0){
-    schlist <- lapply(1:length(start), function(i) {
-      names(schlist[[i]]) = c(headers[start][i], "Hits")
-      schlist[[i]]
-    })
-  }
-  
-  ## nex block: rising searches
-  start <- max(start) + 1
-  start <- seq(start, start + (nkw - 1))
-  
-  rislist <- lapply(start, function(i) {
-    ## broken by design: not a csv when a field can be "+1,900%" with a comma as
-    ## a decimal separator -- so subst out the first comma into a semicolon
-    tt <- sub(",", ";", strsplit(vec[i], "\\\n")[[1]])
-    rising <- read.csv(
-      textConnection(tt),
-      sep = ";",
+  res <- lapply(start:length(vec), function(i)
+    read.csv(
+      textConnection(strsplit(vec[i], "\\\n")[[1]]),
       skip = 1,
-      header = FALSE,
-      col.names = c("term", "change"),
       stringsAsFactors = FALSE
-    )
-    rising
-  })
+    ))
   
-  res <- list(
-    query = queryparams,
+  data(regions, envir = environment())
+  
+  types <- unlist(lapply(res, which_type))
+  
+  res <- list(query = queryparams,
     meta = meta,
     trend = trend,
-    regions = reglist,
-    topmetros = metlist,
-    cities = citlist,
-    searches = schlist,
-    rising = rislist,
+    
+    regions = res[which(types == "State")],
+    topmetros = res[which(types == "DMA Region")],
+    cities = res[which(types == "City")],
+    
+    # searches = schlist,
+    # rising = rislist,
     headers = headers
   )
   
@@ -611,4 +534,20 @@ as.zoo.gtrends <- function(x, ...) {
   
   class(res) <- "gtrends"
   return(res)
+}
+
+which_type <- function(res){
+  
+  tmp <- regions[regions$Name %in% res[[1]], ] %>% 
+    group_by(Target.Type) %>% 
+    summarise(n = n())
+  
+  found <- tmp$n == length(res[[1]])
+  
+  if(any(found)){
+    return(tmp$Target.Type[found])
+  }else{
+    return(tmp$Target.Type[which.max(tmp$n)])
+  }
+  
 }
