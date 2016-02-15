@@ -445,6 +445,8 @@ as.zoo.gtrends <- function(x, ...) {
   
   vec <- strsplit(resultsText, "\\\n{2,}")[[1]]
   
+  headers <- unname(sapply(vec, function(v) strsplit(v, "\\\n")[[1]][1]))
+  
   ## Make sure there are some results have been returned.
   if (length(vec) < 2) {
     stop("Not enough search volume. Please change your search terms.",
@@ -498,11 +500,13 @@ as.zoo.gtrends <- function(x, ...) {
   
   trend <- cbind(weeks, trend)
   
+  trend <- na.omit(trend)
+  
   #---------------------------------------------------------------------
   # Section to deal with geographical data
   #---------------------------------------------------------------------
-  headers <- unname(sapply(vec, function(v) strsplit(v, "\\\n")[[1]][1]))
-
+  
+  ## block 3+: geographical info
   start <- 3 # Always start at index 3
   
   res <- lapply(start:length(vec), function(i)
@@ -512,20 +516,22 @@ as.zoo.gtrends <- function(x, ...) {
       stringsAsFactors = FALSE
     ))
   
-  data(regions, envir = environment())
-  
   types <- unlist(lapply(res, which_type))
   
-  res <- list(query = queryparams,
+  res <- list(
+    
+    query = queryparams,
     meta = meta,
+    
     trend = trend,
     
-    regions = res[which(types == "State")],
+    regions = res[which(types == "State" | types == "Province")],
     topmetros = res[which(types == "DMA Region")],
     cities = res[which(types == "City")],
     
     # searches = schlist,
     # rising = rislist,
+    
     headers = headers
   )
   
@@ -536,18 +542,29 @@ as.zoo.gtrends <- function(x, ...) {
   return(res)
 }
 
-which_type <- function(res){
+
+#' Guess block type
+#' 
+#' @param block A block of information returned by Google Trends.
+#'   
+#' @details Utility function that tries to determine which kind of block was
+#'   returned by Google Trends (regions, metro, city, etc.).
+#' @return The block name.
+which_type <- function(block){
   
-  tmp <- regions[regions$Name %in% res[[1]], ] %>% 
-    group_by(Target.Type) %>% 
-    summarise(n = n())
+  data(regions, envir = environment())
+  #data(countries)
   
-  found <- tmp$n == length(res[[1]])
+  tmp <- regions[regions$Name %in% block[[1]], ]
+  
+  count <- tapply(tmp$Target.Type, tmp$Target.Type, length)
+  
+  found <- count == length(block[[1]])
   
   if(any(found)){
-    return(tmp$Target.Type[found])
+    return(names(count)[found])
   }else{
-    return(tmp$Target.Type[which.max(tmp$n)])
+    return(names(count)[which.max(count)])
   }
   
 }
