@@ -548,10 +548,9 @@ as.zoo.gtrends <- function(x, ...) {
 #---------------------------------------------------------------------
 .type <- function(block){
   
-  regions <- NULL
+  data("regions", envir = environment())
   
-  data("regions")
-  #data(countries)
+  regions <- regions # Dont know why, but this is needed to fix RCMD note...
   
   tmp <- regions[regions$Name %in% block[[1]], ]
   
