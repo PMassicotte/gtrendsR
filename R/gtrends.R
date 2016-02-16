@@ -355,20 +355,9 @@ summary.gtrends <- function(object, ...) {
 #' data("sport_trend")
 #' plot(sport_trend)
 #' @export
-plot.gtrends <- function(x,
-                         type = c("trend", "regions", "topmetros", "cities"),
-                         region = "world",
-                         resolution = c("countries", "provinces", "metros"),
-                         displaymode = c("auto", "regions", "markers"),
-                         ind = 1L,
-                         ...) {
+plot.gtrends <- function(x, type = c("trend", "geo"), which = 5, ind = 1L, ...){
+  
   type <- match.arg(type)
-  
-  resolution <- match.arg(resolution)
-  
-  gvisopt <- list(region = region,
-                  displayMode = "markers",
-                  resolution = resolution)
   
   if (type == "trend") {
     
@@ -393,39 +382,40 @@ plot.gtrends <- function(x,
     
     print(p)
     
-  } else if (type == "regions") {
+  } else if (type == "geo") {
     
-    x <- x[["regions"]][[ind]]
+    stopifnot(ind <= length(x[which]),
+              ind >= 4,
+              which <= length(x))
     
-    if(all(is.na(x))) stop("Not enough search volume to show results.", 
+    block <- x[which][[ind]]
+    
+    # Try to find if the requested block contains geographic information.
+    data(countries, envir = environment())
+    
+    if(!any(grepl(names(block)[2], countries$COUNTRY, ignore.case = TRUE))){
+      
+      message("The requested block does not seems to contain geographical information. Please choose another block.")
+      
+      print(paste(1:length(x), ":", " ", names(x), sep = ""))
+      
+      stop(call. = FALSE)
+      
+    }
+    
+    if(all(is.na(block))) stop("Not enough search volume to show results.", 
                       call. = FALSE)
     
-    df <- data.frame(loc = x[, 1], hits = x[, 2])
+    df <- data.frame(loc = block[, 1], hits = block[, 2])
     
-    plot(gvisGeoChart(df, 'loc', 'hits', options = gvisopt))
-    
-  } else if (type == "topmetros") {
-    
-    x <- x[["topmetros"]][[ind]]
-    
-    if(all(is.na(x))) stop("Not enough search volume to show results.", 
-                      call. = FALSE)
-    
-    df <- data.frame(loc = x[, 1], hits = x[, 2])
-    
-    plot(gvisGeoChart(df, 'loc', 'hits', options = gvisopt))
-    
-  } else if (type == "cities") {
-    
-    x <- x[["cities"]][[ind]]
-    
-    if(all(is.na(x))) stop("Not enough search volume to show results.", 
-                      call. = FALSE)
-    
-    df <- data.frame(loc = x[, 1], hits = x[, 2])
-    
-    plot(gvisGeoChart(df, 'loc', 'hits', options = gvisopt))
-  }
+    plot(gvisGeoChart(df, 
+                      "loc",
+                      "hits",
+                      options = list(region = "world",
+                                     displayMode = "markers",
+                                     resolution = "countries")))
+  } 
+  
   
   invisible(NULL)
 }
