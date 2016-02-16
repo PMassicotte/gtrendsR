@@ -516,7 +516,7 @@ as.zoo.gtrends <- function(x, ...) {
       stringsAsFactors = FALSE
     ))
   
-  types <- unlist(lapply(res, which_type))
+  types <- unlist(lapply(res, .type))
   
   res <- list(
     
@@ -542,17 +542,15 @@ as.zoo.gtrends <- function(x, ...) {
   return(res)
 }
 
-
-#' Guess block type
-#' 
-#' @param block A block of information returned by Google Trends.
-#'   
-#' @details Utility function that tries to determine which kind of block was
-#'   returned by Google Trends (regions, metro, city, etc.).
-#' @return The block name.
-which_type <- function(block){
+#---------------------------------------------------------------------
+# Utility function that tries to determine which kind of block was
+# returned by Google Trends (regions, metro, city, etc.).
+#---------------------------------------------------------------------
+.type <- function(block){
   
-  data(regions, envir = environment())
+  regions <- NULL
+  
+  data("regions")
   #data(countries)
   
   tmp <- regions[regions$Name %in% block[[1]], ]
