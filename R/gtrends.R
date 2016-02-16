@@ -375,7 +375,7 @@ plot.gtrends <- function(x, type = c("trend", "geo"), which = 5, ind = 1L, ...){
   } else if (type == "geo") {
     
     stopifnot(ind <= length(x[which]),
-              which >= 4,
+              which >= 5,
               which <= length(x))
     
     block <- x[which][[ind]]
@@ -384,7 +384,7 @@ plot.gtrends <- function(x, type = c("trend", "geo"), which = 5, ind = 1L, ...){
     data(locations, envir = environment())
     loc <- locations
     
-    if(!any(grepl(block[1, ], loc$Name, ignore.case = TRUE))){
+    if(!any(tolower(block[1, ]) %in% tolower(loc$Name))){
       
       message("The requested block does not seems to contain geographical information. Please choose another block.")
       
