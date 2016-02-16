@@ -15,9 +15,8 @@ gtrends(query, geo, cat, ch, ...)
 
 \method{summary}{gtrends}(object, ...)
 
-\method{plot}{gtrends}(x, type = c("trend", "regions", "topmetros", "cities"),
-  region = "world", resolution = c("countries", "provinces", "metros"),
-  displaymode = c("auto", "regions", "markers"), ind = 1L, ...)
+\method{plot}{gtrends}(x, type = c("trend", "geo"), which = 5, ind = 1L,
+  ...)
 
 \method{as.zoo}{gtrends}(x, ...)
 }
@@ -53,21 +52,9 @@ current date.}
 
 \item{type}{A character variable selecting the type of plot;
 permissible values are \sQuote{trends} (which is also the
-default), \sQuote{regions} and \sQuote{cities}.}
+default), \sQuote{geo}.}
 
-\item{region}{A character variable with default
-\sQuote{world}. Oher permissible value are country codes like
-\sQuote{CA} or \sQuote{GB}, a US Metro code such as \sQuote{US-IL}
-or a three-digit code for a continent or sub-continent; see the
-help for \link[googleVis]{gvisGeoChart} for details.}
-
-\item{resolution}{A character variable selecting the granularity
-of the plot; permissble values are \sQuote{countries},
-\sQuote{provinces} or \sQuote{metros}.}
-
-\item{displaymode}{A character variable indicating the mode of
-display, with values \sQuote{auto}, \sQuote{regions} or
-\sQuote{markers} with latter preferable for cities.}
+\item{which}{Block number containing the geographical data to plot.}
 
 \item{ind}{A integer selecting the result set in case of multiple
 search terms.}

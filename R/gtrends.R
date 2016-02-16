@@ -333,18 +333,8 @@ summary.gtrends <- function(object, ...) {
 #' @param x A \code{\link{gtrends}} object
 #' @param type A character variable selecting the type of plot;
 #' permissible values are \sQuote{trends} (which is also the
-#' default), \sQuote{regions} and \sQuote{cities}.
-#' @param region A character variable with default
-#' \sQuote{world}. Oher permissible value are country codes like
-#' \sQuote{CA} or \sQuote{GB}, a US Metro code such as \sQuote{US-IL}
-#' or a three-digit code for a continent or sub-continent; see the
-#' help for \link[googleVis]{gvisGeoChart} for details.
-#' @param resolution A character variable selecting the granularity
-#' of the plot; permissble values are \sQuote{countries},
-#' \sQuote{provinces} or \sQuote{metros}.
-#' @param displaymode A character variable indicating the mode of
-#' display, with values \sQuote{auto}, \sQuote{regions} or
-#' \sQuote{markers} with latter preferable for cities.
+#' default), \sQuote{geo}.
+#' @param which Block number containing the geographical data to plot.
 #' @param ind A integer selecting the result set in case of multiple
 #' search terms.
 #' @import googleVis
@@ -385,15 +375,16 @@ plot.gtrends <- function(x, type = c("trend", "geo"), which = 5, ind = 1L, ...){
   } else if (type == "geo") {
     
     stopifnot(ind <= length(x[which]),
-              ind >= 4,
+              which >= 4,
               which <= length(x))
     
     block <- x[which][[ind]]
     
     # Try to find if the requested block contains geographic information.
-    data(countries, envir = environment())
+    data(locations, envir = environment())
+    loc <- locations
     
-    if(!any(grepl(names(block)[2], countries$COUNTRY, ignore.case = TRUE))){
+    if(!any(grepl(block[1, ], loc$Name, ignore.case = TRUE))){
       
       message("The requested block does not seems to contain geographical information. Please choose another block.")
       
