@@ -509,59 +509,48 @@ as.zoo.gtrends <- function(x, ...) {
   ## block 3+: geographical info
   start <- 3 # Always start at index 3
   
-  res <- lapply(start:length(vec), function(i)
+  blocks <- lapply(start:length(vec), function(i)
     read.csv(
       textConnection(strsplit(vec[i], "\\\n")[[1]]),
       skip = 1,
       stringsAsFactors = FALSE
     ))
   
-  types <- unlist(lapply(res, .type))
   
-  res <- list(
-    
-    query = queryparams,
-    meta = meta,
-    
-    trend = trend,
-    
-    regions = res[which(types == "State" | types == "Province")],
-    topmetros = res[which(types == "DMA Region")],
-    cities = res[which(types == "City")],
-    
-    # searches = schlist,
-    # rising = rislist,
-    
-    headers = headers
-  )
+  blocks <- Map(assign, 
+                make.names(headers[start:length(headers)]), 
+                value = blocks)
+  
+  res <- list(query = queryparams,
+              meta = meta,
+              trend = trend,
+              headers = headers)
+
+  
+  res <- append(res, blocks)
+                
+ 
+  # res <- list(
+  #   
+  #   query = queryparams,
+  #   meta = meta,
+  #   
+  #   trend = trend,
+  #   
+  #   regions = res[which(types == "State" | types == "Province")],
+  #   topmetros = res[which(types == "DMA Region")],
+  #   cities = res[which(types == "City")],
+  #   
+  #   # searches = schlist,
+  #   # rising = rislist,
+  #   
+  #   headers = headers
+  # )
   
   # if data was returned monthly, it will not be possible to plot maps
-  res[lapply(res, length) ==0]  <- NA
+  res[lapply(res, length) == 0]  <- NA
   
   class(res) <- "gtrends"
   return(res)
 }
 
-#---------------------------------------------------------------------
-# Utility function that tries to determine which kind of block was
-# returned by Google Trends (regions, metro, city, etc.).
-#---------------------------------------------------------------------
-.type <- function(block){
-  
-  data("regions", envir = environment())
-  
-  regions <- regions # Dont know why, but this is needed to fix RCMD note...
-  
-  tmp <- regions[regions$Name %in% block[[1]], ]
-  
-  count <- tapply(tmp$Target.Type, tmp$Target.Type, length)
-  
-  found <- count == length(block[[1]])
-  
-  if(any(found)){
-    return(names(count)[found])
-  }else{
-    return(names(count)[which.max(count)])
-  }
-  
-}
