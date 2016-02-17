@@ -450,6 +450,8 @@ as.zoo.gtrends <- function(x, ...) {
   
   trend <- trend[, mapply(is.numeric, trend), drop = FALSE]
   
+  names(trend) <- unlist(strsplit(queryparams[1], ","), use.names = FALSE)
+  
   is_weekly <- all(do.call(c, 
                            lapply(weeks, 
                                   grepl, 
