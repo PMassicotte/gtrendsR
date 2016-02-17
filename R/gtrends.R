@@ -333,18 +333,8 @@ summary.gtrends <- function(object, ...) {
 #' @param x A \code{\link{gtrends}} object
 #' @param type A character variable selecting the type of plot;
 #' permissible values are \sQuote{trends} (which is also the
-#' default), \sQuote{regions} and \sQuote{cities}.
-#' @param region A character variable with default
-#' \sQuote{world}. Oher permissible value are country codes like
-#' \sQuote{CA} or \sQuote{GB}, a US Metro code such as \sQuote{US-IL}
-#' or a three-digit code for a continent or sub-continent; see the
-#' help for \link[googleVis]{gvisGeoChart} for details.
-#' @param resolution A character variable selecting the granularity
-#' of the plot; permissble values are \sQuote{countries},
-#' \sQuote{provinces} or \sQuote{metros}.
-#' @param displaymode A character variable indicating the mode of
-#' display, with values \sQuote{auto}, \sQuote{regions} or
-#' \sQuote{markers} with latter preferable for cities.
+#' default), \sQuote{geo}.
+#' @param which Block number containing the geographical data to plot.
 #' @param ind A integer selecting the result set in case of multiple
 #' search terms.
 #' @import googleVis
@@ -355,20 +345,9 @@ summary.gtrends <- function(object, ...) {
 #' data("sport_trend")
 #' plot(sport_trend)
 #' @export
-plot.gtrends <- function(x,
-                         type = c("trend", "regions", "topmetros", "cities"),
-                         region = "world",
-                         resolution = c("countries", "provinces", "metros"),
-                         displaymode = c("auto", "regions", "markers"),
-                         ind = 1L,
-                         ...) {
+plot.gtrends <- function(x, type = c("trend", "geo"), which = 5, ind = 1L, ...){
+  
   type <- match.arg(type)
-  
-  resolution <- match.arg(resolution)
-  
-  gvisopt <- list(region = region,
-                  displayMode = "markers",
-                  resolution = resolution)
   
   if (type == "trend") {
     
@@ -393,39 +372,41 @@ plot.gtrends <- function(x,
     
     print(p)
     
-  } else if (type == "regions") {
+  } else if (type == "geo") {
     
-    x <- x[["regions"]][[ind]]
+    stopifnot(ind <= length(x[which]),
+              which >= 5,
+              which <= length(x))
     
-    if(all(is.na(x))) stop("Not enough search volume to show results.", 
+    block <- x[which][[ind]]
+    
+    # Try to find if the requested block contains geographic information.
+    data(locations, envir = environment())
+    loc <- locations
+    
+    if(!any(tolower(block[1, ]) %in% tolower(loc$Name))){
+      
+      message("The requested block does not seems to contain geographical information. Please choose another block.")
+      
+      print(paste(1:length(x), ":", " ", names(x), sep = ""))
+      
+      stop(call. = FALSE)
+      
+    }
+    
+    if(all(is.na(block))) stop("Not enough search volume to show results.", 
                       call. = FALSE)
     
-    df <- data.frame(loc = x[, 1], hits = x[, 2])
+    df <- data.frame(loc = block[, 1], hits = block[, 2])
     
-    plot(gvisGeoChart(df, 'loc', 'hits', options = gvisopt))
-    
-  } else if (type == "topmetros") {
-    
-    x <- x[["topmetros"]][[ind]]
-    
-    if(all(is.na(x))) stop("Not enough search volume to show results.", 
-                      call. = FALSE)
-    
-    df <- data.frame(loc = x[, 1], hits = x[, 2])
-    
-    plot(gvisGeoChart(df, 'loc', 'hits', options = gvisopt))
-    
-  } else if (type == "cities") {
-    
-    x <- x[["cities"]][[ind]]
-    
-    if(all(is.na(x))) stop("Not enough search volume to show results.", 
-                      call. = FALSE)
-    
-    df <- data.frame(loc = x[, 1], hits = x[, 2])
-    
-    plot(gvisGeoChart(df, 'loc', 'hits', options = gvisopt))
-  }
+    plot(gvisGeoChart(df, 
+                      "loc",
+                      "hits",
+                      options = list(region = "world",
+                                     displayMode = "markers",
+                                     resolution = "countries")))
+  } 
+  
   
   invisible(NULL)
 }
@@ -444,6 +425,8 @@ as.zoo.gtrends <- function(x, ...) {
   queryparams[1] <- iconv(queryparams[1], "utf-8", "latin1", sub = "byte")
   
   vec <- strsplit(resultsText, "\\\n{2,}")[[1]]
+  
+  headers <- unname(sapply(vec, function(v) strsplit(v, "\\\n")[[1]][1]))
   
   ## Make sure there are some results have been returned.
   if (length(vec) < 2) {
@@ -498,117 +481,57 @@ as.zoo.gtrends <- function(x, ...) {
   
   trend <- cbind(weeks, trend)
   
+  trend <- na.omit(trend)
+  
   #---------------------------------------------------------------------
   # Section to deal with geographical data
   #---------------------------------------------------------------------
   
-  ## results headers -- for 'geo="US"' and three terms, we get 17 results (!!)
-  headers <- unname(sapply(vec, function(v) strsplit(v, "\\\n")[[1]][1]))
-
-  #hit_sum <- colSums(trend[, mapply(is.numeric, trend)])
-  
-  received_kw <- names(trend)[mapply(is.numeric, trend)]
-  
-  nkw <- length(received_kw)
-  ## first set of blocks: top regions
-  
+  ## block 3+: geographical info
   start <- 3 # Always start at index 3
   
-  start <- seq(start, start + (nkw - 1))
-  
-  reglist <-
-    lapply(start, function(i)
-      read.csv(
-        textConnection(strsplit(vec[i], "\\\n")[[1]]),
-        skip = 1,
-        stringsAsFactors = FALSE
-      ))
-  
-  ## next (optional, if geo==US) block
-  if (queryparams["geo"] == "US") {
-    
-    start <- max(start) + 1
-    start <- seq(start, start + (nkw - 1))
-    
-    #metidx <- grep("Top metros", headers)
-    metlist <-
-      lapply(start, function(i)
-        read.csv(
-          textConnection(strsplit(vec[i], "\\\n")[[1]]),
-          skip = 1,
-          stringsAsFactors = FALSE
-        ))
-  }else{
-    metlist <- NULL
-  }
-  
-  ## next block: top cities
-  start <- max(start) + 1
-  start <- seq(start, start + (nkw - 1))
-  
-  citlist <-
-    lapply(start, function(i)
-      read.csv(
-        textConnection(strsplit(vec[i], "\\\n")[[1]]),
-        skip = 1,
-        stringsAsFactors = FALSE
-      ))
-  
-  ## next block: top searches
-  start <- max(start) + 1
-  start <- seq(start, start + (nkw - 1))
-  
-  schlist <-
-    lapply(start, function(i)
-      read.csv(
-        textConnection(strsplit(vec[i], "\\\n")[[1]]),
-        skip = 1,
-        stringsAsFactors = FALSE,
-        header = FALSE
-      ))
-  
-  ## Set columns names
-  if(length(start) != 0){
-    schlist <- lapply(1:length(start), function(i) {
-      names(schlist[[i]]) = c(headers[start][i], "Hits")
-      schlist[[i]]
-    })
-  }
-  
-  ## nex block: rising searches
-  start <- max(start) + 1
-  start <- seq(start, start + (nkw - 1))
-  
-  rislist <- lapply(start, function(i) {
-    ## broken by design: not a csv when a field can be "+1,900%" with a comma as
-    ## a decimal separator -- so subst out the first comma into a semicolon
-    tt <- sub(",", ";", strsplit(vec[i], "\\\n")[[1]])
-    rising <- read.csv(
-      textConnection(tt),
-      sep = ";",
+  blocks <- lapply(start:length(vec), function(i)
+    read.csv(
+      textConnection(strsplit(vec[i], "\\\n")[[1]]),
       skip = 1,
-      header = FALSE,
-      col.names = c("term", "change"),
       stringsAsFactors = FALSE
-    )
-    rising
-  })
+    ))
   
-  res <- list(
-    query = queryparams,
-    meta = meta,
-    trend = trend,
-    regions = reglist,
-    topmetros = metlist,
-    cities = citlist,
-    searches = schlist,
-    rising = rislist,
-    headers = headers
-  )
+  
+  blocks <- Map(assign, 
+                make.names(headers[start:length(headers)]), 
+                value = blocks)
+  
+  res <- list(query = queryparams,
+              meta = meta,
+              trend = trend,
+              headers = headers)
+
+  
+  res <- append(res, blocks)
+                
+ 
+  # res <- list(
+  #   
+  #   query = queryparams,
+  #   meta = meta,
+  #   
+  #   trend = trend,
+  #   
+  #   regions = res[which(types == "State" | types == "Province")],
+  #   topmetros = res[which(types == "DMA Region")],
+  #   cities = res[which(types == "City")],
+  #   
+  #   # searches = schlist,
+  #   # rising = rislist,
+  #   
+  #   headers = headers
+  # )
   
   # if data was returned monthly, it will not be possible to plot maps
-  res[lapply(res, length) ==0]  <- NA
+  res[lapply(res, length) == 0]  <- NA
   
   class(res) <- "gtrends"
   return(res)
 }
+

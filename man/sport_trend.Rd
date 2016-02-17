@@ -29,7 +29,7 @@ Google Trends data for keywords \code{nhl}, \code{nba} and \code{nfl} between
 \examples{
 \dontrun{
 ch <- gconnect("usr@gmail.com", "psw")
-sport_trend <- gtrends(ch, c("nhl", "nba", "nfl"))
+sport_trend <- gtrends(c("nhl", "nba", "nfl"))
 }
 
 data("sport_trend")

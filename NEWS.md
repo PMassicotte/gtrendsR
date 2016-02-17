@@ -1,5 +1,7 @@
 # grtrends 1.3.2 (unreleased)
 
+- Data parsing should work for any data returned by Google Trends (i.e. countries independent).
+
 - Better support for queries using keywords in different languages (#50, #57). Ex.: `gtrends("蘋果", geo = "TW")`
 
 - Now able to specify up to five countries (#53) via `gtrends("NHL", geo = c("CA", "US"))`
