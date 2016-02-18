@@ -7,7 +7,8 @@
 - Better support for queries using keywords in different languages (#50, #57). Ex.: `gtrends("蘋果", geo = "TW")`
 
 - Now able to specify up to five countries (#53) via `gtrends("NHL", geo = c("CA", "US"))`
-- Fixing issue #51 allowing UK-based queries via `geo="GB"`
+
+- Fixing issue #51 allowing UK-based queries via `geo = "GB"`
 
 # gtrendsR 1.3.1
 

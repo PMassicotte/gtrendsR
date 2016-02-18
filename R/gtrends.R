@@ -185,6 +185,7 @@ gtrends <- function(query, geo, cat, ch, ...) {
     
 }
 
+#' @importFrom utils data
 #' @rdname gtrends
 #' @export
 gtrends.default <- function(query, 
@@ -341,6 +342,7 @@ summary.gtrends <- function(object, ...) {
 #' @import ggplot2
 #' @importFrom graphics plot
 #' @importFrom stats reshape
+#' @importFrom utils data
 #' @examples 
 #' data("sport_trend")
 #' plot(sport_trend)
@@ -418,6 +420,7 @@ as.zoo.gtrends <- function(x, ...) {
 }
 
 #' @importFrom utils read.csv
+#' @importFrom stats na.omit
 .processResults <- function(resultsText, queryparams) {
   
   #get back to latin1 encoding
