@@ -259,9 +259,9 @@ gtrends.default <- function(query,
   
   countries[, 1] <- as.character(countries[, 1])
   countries[, 2] <- as.character(countries[, 2])
-  countries[which(countries[, "COUNTRY"] == "Namibia"), "CODE"] <- "NA"
+  countries[which(countries[, "country"] == "Namibia"), "code"] <- "NA"
   
-  if (geo != "" && !all(geo %in% countries[, "CODE"])) {
+  if (geo != "" && !all(geo %in% countries[, "code"]) && !all(geo %in% countries[, "subcode"])) {
     stop("Country code not valid. Please use 'data(countries)' to retreive valid codes.",
          call. = FALSE)
   }
@@ -382,9 +382,8 @@ plot.gtrends <- function(x, type = c("trend", "geo"), which = 5, ind = 1L, ...){
     
     # Try to find if the requested block contains geographic information.
     data(locations, envir = environment())
-    loc <- locations
     
-    if(!any(tolower(block[1, ]) %in% tolower(loc$Name))){
+    if(!any(tolower(block[1, ]) %in% tolower(locations$Name))){
       
       message("The requested block does not seems to contain geographical information. Please choose another block.")
       

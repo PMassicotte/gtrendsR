@@ -4,15 +4,20 @@
 \name{countries}
 \alias{countries}
 \title{Word countries ISO code.}
-\format{A data frame with 244 rows and 2 variables}
+\format{A data frame with 4707 rows and 4 variables}
 \usage{
 data("countries")
 }
 \description{
 \itemize{
-  \item CODE  ISO 3 characters codes
-  \item COUNTRY Full countries names
+  \item code  ISO 3 characters codes
+  \item country Full countries names
+  \item subcode Countries subcodes
+  \item subname Countries subname
 }
+}
+\references{
+\url{http://www.unece.org/cefact/codesfortrade/codes_index.html}
 }
 \keyword{datasets}
 
