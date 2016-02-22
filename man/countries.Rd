@@ -4,7 +4,7 @@
 \name{countries}
 \alias{countries}
 \title{Word countries ISO code.}
-\format{A data frame with 4707 rows and 4 variables}
+\format{A data frame with 4764 rows and 4 variables}
 \usage{
 data("countries")
 }
