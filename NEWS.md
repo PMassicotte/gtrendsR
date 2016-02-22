@@ -1,4 +1,8 @@
-# grtrends 1.3.2 (unreleased)
+# gtrendsR 1.3.3 (unreleased)
+
+- Support for categorties (#46). Ex.: `gtrends("NHL", geo = "US", cat = "0-20")` will search only in the *sport* category.
+
+# gtrendsR 1.3.2
 
 - Added support for sub-countries (#25). Ex.: `gtrends("NHL", geo = "CA-QC")` will return trends data for Québec province in Canada. The list of supported sub-countries can be obtained via `data(countries)`.
 

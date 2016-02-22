@@ -177,6 +177,9 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
 #' sport_trend <- gtrends(c("NHL", "NBA", "MLB", "MLS"))
 #' 
 #' sport_trend <- gtrends("NHL", geo = c("CA", "US"))
+#' 
+#' # Search only for the sport category.
+#' sport_trend <- gtrends("NHL", geo = c("CA", "US"), cat = "0-20")
 #' }
 #' @export
 gtrends <- function(query, geo, cat, ch, ...) {
@@ -280,6 +283,7 @@ gtrends.default <- function(query,
   res <- paste(nmonth, "m", sep = "")
   
   pp <- list(q = query, 
+             cat = cat,
              cmpt = cmpt, 
              content = 1, 
              export = 1,

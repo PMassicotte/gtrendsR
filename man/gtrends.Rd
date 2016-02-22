@@ -74,6 +74,9 @@ ch <- gconnect("usr@gmail.com", "psw")
 sport_trend <- gtrends(c("NHL", "NBA", "MLB", "MLS"))
 
 sport_trend <- gtrends("NHL", geo = c("CA", "US"))
+
+# Search only for the sport category.
+sport_trend <- gtrends("NHL", geo = c("CA", "US"), cat = "0-20")
 }
 data("sport_trend")
 plot(sport_trend)
