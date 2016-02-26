@@ -258,15 +258,15 @@ gtrends.default <- function(query,
   if (!(Encoding(query) == "UTF-8")) {
     query <- iconv(query, "latin1", "utf-8", sub = "byte")
   }
-  # data("countries")
-  # countries[, 1] <- as.character(countries[, 1])
-  # countries[, 2] <- as.character(countries[, 2])
-  # countries[which(countries[, "country"] == "Namibia"), "code"] <- "NA"
-  #
-  # if (geo != "" && !all(geo %in% countries[, "code"]) && !all(geo %in% countries[, "subcode"])) {
-  #   stop("Country code not valid. Please use 'data(countries)' to retreive valid codes.",
-  #        call. = FALSE)
-  # }
+
+  countries[, 1] <- as.character(countries[, 1])
+  countries[, 2] <- as.character(countries[, 2])
+  countries[which(countries[, "country"] == "Namibia"), "code"] <- "NA"
+
+  if (geo != "" && !all(geo %in% countries[, "code"]) && !all(geo %in% countries[, "subcode"])) {
+    stop("Country code not valid. Please use 'data(countries)' to retreive valid codes.",
+         call. = FALSE)
+  }
 
   # https://www.google.com/trends/trendsReport?&q=nhl&geo=US%2C%20BR&cmpt=geo&content=1&export=1
 
