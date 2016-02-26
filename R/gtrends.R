@@ -259,7 +259,7 @@ gtrends.default <- function(query,
     query <- iconv(query, "latin1", "utf-8", sub = "byte")
   }
   
-  data("countries", envir = environment())
+  #data("countries", envir = environment())
   
   countries[, 1] <- as.character(countries[, 1])
   countries[, 2] <- as.character(countries[, 2])
