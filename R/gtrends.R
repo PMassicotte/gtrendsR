@@ -7,7 +7,7 @@
 #' If the environment variables \code{GOOGLE_USER} and
 #' \code{GOOGLE_PASSWORD} are set, they will be retrieved in case no
 #' argument has been supplied.  Similarly, the environment variable
-#' \code{GOOGLE_PASSWORD} or \code{options("google.password")} can be
+#' \code{options("google.user")} or \code{options("google.password")} can be
 #' used. Lastly, if the environment variable \code{GOOGLE_AUTOCONNECT}
 #' is set to (the text string) \sQuote{TRUE}, or the the R option
 #' \code{options("google.autoconnect")} is set to \sQuote{TRUE} then
@@ -231,12 +231,12 @@ gtrends.default <- function(query,
   end_date <- as.Date(end_date, "%Y-%m-%d")  
   
   if (is.na(start_date)) {
-    stop("start_date is not a valide date. Please use yyyy-mm-dd format.",
+    stop("start_date is not a valid date. Please use yyyy-mm-dd format.",
          call. = FALSE)
   } 
   
   if (is.na(end_date)) {
-    stop("end_date is not a valide date. Please use yyyy-mm-dd format.",
+    stop("end_date is not a valid date. Please use yyyy-mm-dd format.",
          call. = FALSE)
   } 
   
