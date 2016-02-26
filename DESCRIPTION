@@ -15,13 +15,15 @@ Description: An interface for retrieving and displaying the information returned
     online by Google Trends is provided. Trends (number of hits) over the time as
     well as geographic representation of the results can be displayed.
 License: GPL (>= 2)
+LazyData: true
 BugReports: https://github.com/PMassicotte/gtrendsR/issues
 URL: https://github.com/PMassicotte/gtrendsR
-Depends: 
+Depends:
     R (>= 3.0)
-Imports: 
+Imports:
     RCurl,
     googleVis,
     zoo,
     ggplot2
 RoxygenNote: 5.0.1
+Suggests: testthat
