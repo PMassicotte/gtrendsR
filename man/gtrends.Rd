@@ -10,9 +10,9 @@
 \usage{
 gtrends(query, geo, cat, ch, ...)
 
-\method{gtrends}{default}(query, geo, cat, ch, res = c(NA, "1-H", "4-H",
-  "1-d", "7-d"), start_date = as.Date("2004-01-01"),
-  end_date = as.Date(Sys.time()), ...)
+\method{gtrends}{default}(query, geo, cat, ch, res = c(NA, "1h", "4h", "1d",
+  "7d"), start_date = as.Date("2004-01-01"), end_date = as.Date(Sys.time()),
+  ...)
 
 \method{summary}{gtrends}(object, ...)
 
@@ -78,7 +78,7 @@ geolocation and category can also be supplied.
   these are only available for a certain period prior to the \emph{current} 
   date.
   
-  For instance, \code{1-H}, \code{7-H}, \code{1-d} and \code{7-d} denote 
+  For instance, \code{1h}, \code{7h}, \code{1d} and \code{7d} denote 
   trends data for the last 1 hour, last four hours, last day and last seven 
   days respectively. Using one of the above \code{res} will return the 
   corresponding hourly data.
@@ -105,10 +105,10 @@ gtrends("NHL", geo = c("SE"), start_date = "2015-01-01", end_date = "2015-03-01"
 gtrends("NHL", geo = c("SE"), start_date = "2015-01-01", end_date = "2015-04-01")
 
 # Last 4 hours trends
-gtrends("NHL", geo = c("CA"), res = "4-H")
+gtrends("NHL", geo = c("CA"), res = "4h")
 
 # Last 7 days trends
-gtrends("NHL", geo = c("CA"), res = "7-d")
+gtrends("NHL", geo = c("CA"), res = "7d")
 }
 data("sport_trend")
 plot(sport_trend)

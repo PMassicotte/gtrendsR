@@ -177,7 +177,7 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
 #'   these are only available for a certain period prior to the \emph{current} 
 #'   date.
 #'   
-#'   For instance, \code{1-H}, \code{7-H}, \code{1-d} and \code{7-d} denote 
+#'   For instance, \code{1h}, \code{7h}, \code{1d} and \code{7d} denote 
 #'   trends data for the last 1 hour, last four hours, last day and last seven 
 #'   days respectively. Using one of the above \code{res} will return the 
 #'   corresponding hourly data.
@@ -206,10 +206,10 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
 #' gtrends("NHL", geo = c("SE"), start_date = "2015-01-01", end_date = "2015-04-01")
 #' 
 #' # Last 4 hours trends
-#' gtrends("NHL", geo = c("CA"), res = "4-H")
+#' gtrends("NHL", geo = c("CA"), res = "4h")
 #' 
 #' # Last 7 days trends
-#' gtrends("NHL", geo = c("CA"), res = "7-d")
+#' gtrends("NHL", geo = c("CA"), res = "7d")
 #' }
 #' @export
 gtrends <- function(query, geo, cat, ch, ...) {
@@ -225,7 +225,7 @@ gtrends.default <- function(query,
                             geo, 
                             cat, 
                             ch, 
-                            res = c(NA, "1-H", "4-H", "1-d", "7-d"),
+                            res = c(NA, "1h", "4h", "1d", "7d"),
                             start_date = as.Date("2004-01-01"),
                             end_date = as.Date(Sys.time()),
                             ...){
@@ -284,6 +284,14 @@ gtrends.default <- function(query,
   }
   
   if(!is.na(res)){
+    
+    # Match Google code (ex. 1-H) to a more user friendly value (1h)
+    resolution_code <- data.frame(code = c("1-H", "4-H", "1-d", "7-d"),
+                                  res = c("1h", "4h", "1d", "7d"), 
+                                  stringsAsFactors = FALSE)
+    
+    res <- resolution_code$code[resolution_code$res == res]
+    
     date <- paste("now" , res)
   }
 
