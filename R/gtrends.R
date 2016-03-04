@@ -306,8 +306,6 @@ gtrends.default <- function(query,
          call. = FALSE)
   }
   
-  # https://www.google.com/trends/trendsReport?&q=nhl&geo=US%2C%20BR&cmpt=geo&content=1&export=1
-  
   geo <- paste(geo, sep = "", collapse = ", ")
   #geo <- URLencode(geo, reserved = TRUE)
   
@@ -488,7 +486,12 @@ as.zoo.gtrends <- function(x, ...) {
   
   trend <- trend[, mapply(is.numeric, trend), drop = FALSE]
   
-  names(trend) <- unlist(strsplit(queryparams[1], ","), use.names = FALSE)
+  #names(trend) <- unlist(strsplit(queryparams[1], ","), use.names = FALSE)
+  
+  kw <- trimws(unlist(strsplit(queryparams[1], ","), use.names = FALSE))
+  geo <- trimws(unlist(strsplit(queryparams[3], ","), use.names = FALSE))
+  names(trend) <- make.names(paste(kw, geo))
+  
   
   if(ncol(weeks) == 2){
     
