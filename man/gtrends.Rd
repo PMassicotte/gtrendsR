@@ -10,8 +10,9 @@
 \usage{
 gtrends(query, geo, cat, ch, ...)
 
-\method{gtrends}{default}(query, geo, cat, ch, res = "week",
-  start_date = as.Date("2004-01-01"), end_date = as.Date(Sys.time()), ...)
+\method{gtrends}{default}(query, geo, cat, ch, res = c(NA, "1-H", "4-H",
+  "1-d", "7-d"), start_date = as.Date("2004-01-01"),
+  end_date = as.Date(Sys.time()), ...)
 
 \method{summary}{gtrends}(object, ...)
 
@@ -25,8 +26,8 @@ gtrends(query, geo, cat, ch, ...)
 Multiple keywords are possible using \code{gtrends(c("NHL", "NBA", "MLB", 
 "MLS"))}.}
 
-\item{geo}{A character vector denoting geographic regions for the query,
-default to \dQuote{all} for global queries. Multiple regions are possible
+\item{geo}{A character vector denoting geographic regions for the query, 
+default to \dQuote{all} for global queries. Multiple regions are possible 
 using \code{gtrends("NHL", c("CA", "US"))}.}
 
 \item{cat}{A character denoting the category, defaults to \dQuote{0}.}
@@ -37,8 +38,10 @@ Users can either supply an explicit handle, or rely on the helper function
 
 \item{...}{Additional parameters passed on in method dispatch.}
 
-\item{res}{Resolution of the trending data to be returned. Either \code{week}
-for weekly data or \code{day} for daily data.}
+\item{res}{Resolution of the trending data to be returned. One of 
+\code{c("1-H", "4-H", "1-d", "7-d")}. If \code{res} is provided, then 
+\code{start_date} and \code{end_date} parameters are ignored. See 
+\emph{Query resolution} for more information.}
 
 \item{start_date}{Starting date using yyyy-mm-dd format. Must be greater than
 2004-01-01.}
@@ -68,15 +71,44 @@ The \code{gtrends} default method performs a Google Trends query for the
 \sQuote{query} argument and handle \sQuote{ch}. Optional arguments for 
 geolocation and category can also be supplied.
 }
+\section{Query resolution}{
+ By default, Google returns weekly information when
+  the requested data spans a period greater than three months. It is also 
+  possible to obtain \emph{daily} and \emph{hourly} information. However, 
+  these are only available for a certain period prior to the \emph{current} 
+  date.
+  
+  For instance, \code{1-H}, \code{7-H}, \code{1-d} and \code{7-d} denote 
+  trends data for the last 1 hour, last four hours, last day and last seven 
+  days respectively. Using one of the above \code{res} will return the 
+  corresponding hourly data.
+  
+  Note that data requested for a beriod between one and three months will be 
+  returned daily. For a  period greater than three months, data will be 
+  always returned weekly.
+}
 \examples{
 \dontrun{
 ch <- gconnect("usr@gmail.com", "psw")
-sport_trend <- gtrends(c("NHL", "NBA", "MLB", "MLS"))
 
-sport_trend <- gtrends("NHL", geo = c("CA", "US"))
+gtrends(c("NHL", "NBA", "MLB", "MLS"))
+
+gtrends("NHL", geo = c("CA", "US"))
 
 # Search only for the sport category.
-sport_trend <- gtrends("NHL", geo = c("CA", "US"), cat = "0-20")
+gtrends("NHL", geo = c("CA", "US"), cat = "0-20")
+
+# Trends between 2015-01-01 and 2015-03-01 in Sweeden. Will be daily data.
+gtrends("NHL", geo = c("SE"), start_date = "2015-01-01", end_date = "2015-03-01")
+
+# Trends between 2015-01-01 and 2015-04-01 in Sweeden. Will be weekly data.
+gtrends("NHL", geo = c("SE"), start_date = "2015-01-01", end_date = "2015-04-01")
+
+# Last 4 hours trends
+gtrends("NHL", geo = c("CA"), res = "4-H")
+
+# Last 7 days trends
+gtrends("NHL", geo = c("CA"), res = "7-d")
 }
 data("sport_trend")
 plot(sport_trend)

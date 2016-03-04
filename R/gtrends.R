@@ -148,16 +148,18 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
 #'   Multiple keywords are possible using \code{gtrends(c("NHL", "NBA", "MLB", 
 #'   "MLS"))}.
 #'   
-#' @param geo A character vector denoting geographic regions for the query,
-#'   default to \dQuote{all} for global queries. Multiple regions are possible
+#' @param geo A character vector denoting geographic regions for the query, 
+#'   default to \dQuote{all} for global queries. Multiple regions are possible 
 #'   using \code{gtrends("NHL", c("CA", "US"))}.
 #'   
 #' @param cat A character denoting the category, defaults to \dQuote{0}.
 #'   
 #' @param ... Additional parameters passed on in method dispatch.
 #'   
-#' @param res Resolution of the trending data to be returned. Either \code{week}
-#'   for weekly data or \code{day} for daily data.
+#' @param res Resolution of the trending data to be returned. One of 
+#'   \code{c("1-H", "4-H", "1-d", "7-d")}. If \code{res} is provided, then 
+#'   \code{start_date} and \code{end_date} parameters are ignored. See 
+#'   \emph{Query resolution} for more information.
 #'   
 #' @param start_date Starting date using yyyy-mm-dd format. Must be greater than
 #'   2004-01-01.
@@ -169,17 +171,45 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
 #'   Users can either supply an explicit handle, or rely on the helper function 
 #'   \code{.getDefaultConnection()} to retrieve the current connection handle.
 #'   
+#' @section Query resolution: By default, Google returns weekly information when
+#'   the requested data spans a period greater than three months. It is also 
+#'   possible to obtain \emph{daily} and \emph{hourly} information. However, 
+#'   these are only available for a certain period prior to the \emph{current} 
+#'   date.
+#'   
+#'   For instance, \code{1-H}, \code{7-H}, \code{1-d} and \code{7-d} denote 
+#'   trends data for the last 1 hour, last four hours, last day and last seven 
+#'   days respectively. Using one of the above \code{res} will return the 
+#'   corresponding hourly data.
+#'   
+#'   Note that data requested for a beriod between one and three months will be 
+#'   returned daily. For a  period greater than three months, data will be 
+#'   always returned weekly.
+#'   
 #' @return An object of class \sQuote{gtrends} which is list with six elements 
 #'   containing the results.
 #' @examples 
 #' \dontrun{
 #' ch <- gconnect("usr@gmail.com", "psw")
-#' sport_trend <- gtrends(c("NHL", "NBA", "MLB", "MLS"))
 #' 
-#' sport_trend <- gtrends("NHL", geo = c("CA", "US"))
+#' gtrends(c("NHL", "NBA", "MLB", "MLS"))
+#' 
+#' gtrends("NHL", geo = c("CA", "US"))
 #' 
 #' # Search only for the sport category.
-#' sport_trend <- gtrends("NHL", geo = c("CA", "US"), cat = "0-20")
+#' gtrends("NHL", geo = c("CA", "US"), cat = "0-20")
+#' 
+#' # Trends between 2015-01-01 and 2015-03-01 in Sweeden. Will be daily data.
+#' gtrends("NHL", geo = c("SE"), start_date = "2015-01-01", end_date = "2015-03-01")
+#' 
+#' # Trends between 2015-01-01 and 2015-04-01 in Sweeden. Will be weekly data.
+#' gtrends("NHL", geo = c("SE"), start_date = "2015-01-01", end_date = "2015-04-01")
+#' 
+#' # Last 4 hours trends
+#' gtrends("NHL", geo = c("CA"), res = "4-H")
+#' 
+#' # Last 7 days trends
+#' gtrends("NHL", geo = c("CA"), res = "7-d")
 #' }
 #' @export
 gtrends <- function(query, geo, cat, ch, ...) {
@@ -195,7 +225,7 @@ gtrends.default <- function(query,
                             geo, 
                             cat, 
                             ch, 
-                            res = "week",
+                            res = c(NA, "1-H", "4-H", "1-d", "7-d"),
                             start_date = as.Date("2004-01-01"),
                             end_date = as.Date(Sys.time()),
                             ...){
@@ -206,10 +236,10 @@ gtrends.default <- function(query,
 
   stopifnot(is.character(query),
             is.vector(query),
-            all(res %in% c("week", "day")),
-            length(res) == 1,
             length(query) <= 5, 
             length(geo) <= 5)
+  
+  res <- match.arg(res, several.ok = FALSE)
   
   if(length(query) > 1 & length(geo) > 1){
     stop("Can not specify multiple keywords and geo at the same time.", 
@@ -226,7 +256,10 @@ gtrends.default <- function(query,
          call. = FALSE)
   }
   
-  ## Verify the dates
+  #---------------------------------------------------------------------
+  # Date verification.
+  #---------------------------------------------------------------------
+  
   start_date <- as.Date(start_date, "%Y-%m-%d")  
   end_date <- as.Date(end_date, "%Y-%m-%d")  
   
@@ -240,18 +273,23 @@ gtrends.default <- function(query,
          call. = FALSE)
   } 
   
-  # date verification
   stopifnot(start_date < end_date, 
             start_date >= as.Date("2004-01-01"), # cant be earlier than 2004
             end_date <= as.Date(Sys.time())) # cant be more than current date
   
-  # if resolution is day then maximum date difference must be less than 3 months
   nmonth <- length(seq(from = start_date, to = end_date, by = "month"))
   
-  if(res == "day" & nmonth > 3){
-    stop("Maximum of 3 months allowed with daily resolution.", call. = FALSE)
+  if(nmonth >= 1){
+    date <- paste(format(start_date, "%m/%Y"), paste(nmonth, "m", sep = ""))
   }
   
+  if(!is.na(res)){
+    date <- paste("now" , res)
+  }
+
+  #---------------------------------------------------------------------
+  # Build the query.
+  #---------------------------------------------------------------------
   query <- paste(query, collapse = ",")
   
   ## Change encoding to utf-8
@@ -277,27 +315,20 @@ gtrends.default <- function(query,
   
   trendsURL <- "http://www.google.com/trends/trendsReport?"
 
-  
-  res <- paste(nmonth, "m", sep = "")
-  
   pp <- list(q = query, 
              cat = cat,
              cmpt = cmpt, 
              content = 1, 
              export = 1,
-             date = paste(format(start_date, "%m/%Y"), res),
+             date = date,
              geo = geo)
-  
-  
-  #http://www.google.com/trends/trendsReport?&q=%2Cfoo%2Cbar%2Cbaz%2Cfoo&cmpt=q&content=1&export=1&date=1%2F2015%202m
   
   resultsText <- getForm(trendsURL, .params = pp, curl = ch)
   
   if (any(grep("QUOTA", resultsText))) {
-  
     stop("Reached Google Trends quota limit! Please try again later.")
-  
   }
+  
   queryparams <- c(query = query, 
                    cat = cat, 
                    geo = geo, 
@@ -438,51 +469,56 @@ as.zoo.gtrends <- function(x, ...) {
          call. = FALSE)
   }
   
-  ## block 1: meta data
-  meta  <- strsplit(vec[1], "\\\r\\\n")[[1]]
-
   #---------------------------------------------------------------------
   # Section to deal with trend data.
   #---------------------------------------------------------------------
-    
-  ## block 2: trend
+  
+  # meta data
+  meta  <- strsplit(vec[1], "\\\r\\\n")[[1]]
+
+  # trend
   trend <- read.csv(textConnection(strsplit(vec[2], "\\\n")[[1]]),
                     skip = 1,
                     stringsAsFactors = FALSE)
   
-  weeks <- data.frame(do.call(rbind, strsplit(trend[, 1], " - ")))
+  # block date
+  
+  weeks <- data.frame(date = do.call(rbind, strsplit(trend[, 1], " - ")),
+                      stringsAsFactors = FALSE)
   
   trend <- trend[, mapply(is.numeric, trend), drop = FALSE]
   
   names(trend) <- unlist(strsplit(queryparams[1], ","), use.names = FALSE)
   
-  is_weekly <- all(do.call(c, 
-                           lapply(weeks, 
-                                  grepl, 
-                                  pattern = "\\d{4}-\\d{2}-\\d{2}")))
-  
-  is_daily <- all(do.call(c, 
-                           lapply(weeks, 
-                                  grepl, 
-                                  pattern = "\\d{4}-\\d{2}")))
-  
-  # data = gtrends(c("nhl", "asasnfassaasl"), "IS") # Bug here with IS
-  if(!is_weekly & !is_daily){
-    stop("Not enough search volume to show results.", call. = FALSE)
-  }
-  
-  if(is_weekly){
+  if(ncol(weeks) == 2){
     
-    weeks <- lapply(weeks, as.Date, SIMPLIFY = FALSE)
+    weeks <- lapply(weeks, as.POSIXct, SIMPLIFY = FALSE)
     weeks <- do.call(cbind.data.frame, weeks)
     names(weeks) <- c("start", "end")[1:ncol(weeks)]
   
-  }else{
+  }
+  
+  # Either daily or hourly data
+  if(ncol(weeks) == 1){
     
-    weeks <- paste(weeks[, 1], "-01", sep = "")
-    weeks <- data.frame(start = weeks)
+    if(nchar(weeks$date[1]) == 7){
+      
+      # Sometimes data are returned without a day. Asusme it is first day of month.
+      weeks <- as.POSIXct(paste(weeks[, 1], "-01", sep = ""))
+      weeks <- data.frame(start = weeks)
+      
+    }else if(nchar(weeks$date[1]) == 10){
+      
+      weeks <- as.POSIXct(weeks$date)
+      weeks <- data.frame(start = weeks)
+      
+    }else{
+      
+      weeks <- as.POSIXct(weeks[, 1], format = "%Y-%m-%d-%H:%M", tz = "UTC")
+      weeks <- data.frame(start = weeks)
+      
+    }
     
-    message("The number of hits was too low for daily (weekly) resolution. Results were returned using weekly (monthly) resolution instead.")
   }
   
   trend <- cbind(weeks, trend)

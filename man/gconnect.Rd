@@ -32,7 +32,7 @@ environment from which the (internal) helper function
 If the environment variables \code{GOOGLE_USER} and
 \code{GOOGLE_PASSWORD} are set, they will be retrieved in case no
 argument has been supplied.  Similarly, the environment variable
-\code{GOOGLE_PASSWORD} or \code{options("google.password")} can be
+\code{options("google.user")} or \code{options("google.password")} can be
 used. Lastly, if the environment variable \code{GOOGLE_AUTOCONNECT}
 is set to (the text string) \sQuote{TRUE}, or the the R option
 \code{options("google.autoconnect")} is set to \sQuote{TRUE} then
