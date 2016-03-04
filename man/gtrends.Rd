@@ -39,7 +39,7 @@ Users can either supply an explicit handle, or rely on the helper function
 \item{...}{Additional parameters passed on in method dispatch.}
 
 \item{res}{Resolution of the trending data to be returned. One of 
-\code{c("1-H", "4-H", "1-d", "7-d")}. If \code{res} is provided, then 
+\code{c("1h", "4h", "1d", "7d")}. If \code{res} is provided, then 
 \code{start_date} and \code{end_date} parameters are ignored. See 
 \emph{Query resolution} for more information.}
 

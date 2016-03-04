@@ -153,11 +153,9 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
 #'   using \code{gtrends("NHL", c("CA", "US"))}.
 #'   
 #' @param cat A character denoting the category, defaults to \dQuote{0}.
-#'   
-#' @param ... Additional parameters passed on in method dispatch.
-#'   
+#'      
 #' @param res Resolution of the trending data to be returned. One of 
-#'   \code{c("1-H", "4-H", "1-d", "7-d")}. If \code{res} is provided, then 
+#'   \code{c("1h", "4h", "1d", "7d")}. If \code{res} is provided, then 
 #'   \code{start_date} and \code{end_date} parameters are ignored. See 
 #'   \emph{Query resolution} for more information.
 #'   
@@ -171,6 +169,8 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
 #'   Users can either supply an explicit handle, or rely on the helper function 
 #'   \code{.getDefaultConnection()} to retrieve the current connection handle.
 #'   
+#' @param ... Additional parameters passed on in method dispatch.
+#'
 #' @section Query resolution: By default, Google returns weekly information when
 #'   the requested data spans a period greater than three months. It is also 
 #'   possible to obtain \emph{daily} and \emph{hourly} information. However, 
