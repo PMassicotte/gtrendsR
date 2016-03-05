@@ -65,6 +65,9 @@ search terms.}
 \value{
 An object of class \sQuote{gtrends} which is list with six elements 
   containing the results.
+
+When \code{type} is equal to \sQuote{trends}, the resulting 
+ggplot2 object is returned silently.
 }
 \description{
 The \code{gtrends} default method performs a Google Trends query for the 
