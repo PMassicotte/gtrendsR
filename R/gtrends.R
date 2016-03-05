@@ -377,6 +377,8 @@ summary.gtrends <- function(object, ...) {
 #' @param which Block number containing the geographical data to plot.
 #' @param ind A integer selecting the result set in case of multiple
 #' search terms.
+#' @return When \code{type} is equal to \sQuote{trends}, the resulting 
+#' ggplot2 object is returned silently.
 #' @import googleVis
 #' @import ggplot2
 #' @importFrom graphics plot
@@ -389,6 +391,7 @@ summary.gtrends <- function(object, ...) {
 plot.gtrends <- function(x, type = c("trend", "geo"), which = 5, ind = 1L, ...){
   
   type <- match.arg(type)
+  ret <- NULL # by default we return nothing
   
   if (type == "trend") {
     
@@ -412,6 +415,7 @@ plot.gtrends <- function(x, type = c("trend", "geo"), which = 5, ind = 1L, ...){
       theme_bw()
     
     print(p)
+    ret <- p
     
   } else if (type == "geo") {
     
@@ -447,8 +451,7 @@ plot.gtrends <- function(x, type = c("trend", "geo"), which = 5, ind = 1L, ...){
                                      resolution = "countries")))
   } 
   
-  
-  invisible(NULL)
+  invisible(ret)
 }
 
 #' @rdname gtrends
