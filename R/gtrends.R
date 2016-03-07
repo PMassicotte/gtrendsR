@@ -426,8 +426,6 @@ plot.gtrends <- function(x, type = c("trend", "geo"), which = 5, ind = 1L, ...){
     block <- x[which][[ind]]
     
     # Try to find if the requested block contains geographic information.
-    data(locations, envir = environment())
-    
     if(!any(tolower(block[1, ]) %in% tolower(locations$Name))){
       
       message("The requested block does not seems to contain geographical information. Please choose another block.")

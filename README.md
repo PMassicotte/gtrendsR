@@ -25,8 +25,9 @@ plot(sport_trend)        # data set also included in package
 It is also possible to plot geographical data using `googleVis` as follow.
 
 ``` {.r}
-plot(sport_trend, type = "region")
-plot(sport_trend, type = "cities")
+plot(sport_trend, type = "geo", which = 5)
+plot(sport_trend, type = "geo", which = 6)
+plot(sport_trend, type = "geo", which = 7)
 ```
 
 Should you have trouble connecting, and also use two-factor authentication on
