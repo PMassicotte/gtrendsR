@@ -519,6 +519,8 @@ as.zoo.gtrends <- function(x, ...) {
       weeks <- as.POSIXct(paste(weeks[, 1], "-01", sep = ""))
       weeks <- data.frame(start = weeks)
       
+      warning("Data was returned monthly.", call. = FALSE)
+      
     }else if(nchar(weeks$date[1]) == 10){
       
       weeks <- as.POSIXct(weeks$date)
@@ -541,47 +543,34 @@ as.zoo.gtrends <- function(x, ...) {
   # Section to deal with geographical data
   #---------------------------------------------------------------------
   
-  ## block 3+: geographical info
-  start <- 3 # Always start at index 3
+  # Data likely returned monthly, so no geographical information.
+  blocks <- NULL
   
-  blocks <- lapply(start:length(vec), function(i)
-    read.csv(
-      textConnection(strsplit(vec[i], "\\\n")[[1]]),
-      skip = 1,
-      stringsAsFactors = FALSE
-    ))
-  
-  
-  blocks <- Map(assign, 
-                make.names(headers[start:length(headers)]), 
-                value = blocks)
+  if(length(vec) >= 3) {
+    
+    ## block 3+: geographical info
+    start <- 3 # Always start at index 3
+    
+    blocks <- lapply(start:length(vec), function(i)
+      read.csv(
+        textConnection(strsplit(vec[i], "\\\n")[[1]]),
+        skip = 1,
+        stringsAsFactors = FALSE
+      ))
+    
+    
+    blocks <- Map(assign, 
+                  make.names(headers[start:length(headers)]), 
+                  value = blocks)
+  }
   
   res <- list(query = queryparams,
               meta = meta,
               trend = trend,
               headers = headers)
 
-  
   res <- append(res, blocks)
-                
- 
-  # res <- list(
-  #   
-  #   query = queryparams,
-  #   meta = meta,
-  #   
-  #   trend = trend,
-  #   
-  #   regions = res[which(types == "State" | types == "Province")],
-  #   topmetros = res[which(types == "DMA Region")],
-  #   cities = res[which(types == "City")],
-  #   
-  #   # searches = schlist,
-  #   # rising = rislist,
-  #   
-  #   headers = headers
-  # )
-  
+
   # if data was returned monthly, it will not be possible to plot maps
   res[lapply(res, length) == 0]  <- NA
   
