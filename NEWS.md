@@ -1,3 +1,9 @@
+# gtrendsR 1.3.4 (Unreleased)
+
+- Fixing crash occuring when monthly data was returned (#81).
+
+- `gtrends()` will throw a warning if data is returned monthly (#80).
+
 # gtrendsR 1.3.3
 
 - A ggplot2 object can now be returned for further customization. `plot(gtrends("NHL")) + ggtitle("NHL trend") + theme(legend.position="none")`

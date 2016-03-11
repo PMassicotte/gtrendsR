@@ -494,10 +494,15 @@ as.zoo.gtrends <- function(x, ...) {
                       stringsAsFactors = FALSE)
   
   trend <- trend[, mapply(is.numeric, trend), drop = FALSE]
-  
-  #names(trend) <- unlist(strsplit(queryparams[1], ","), use.names = FALSE)
-  
+
+  # For some reason, the headers returned by Google will be the country names
+  # if only 1 keeword is provided. 
   kw <- trimws(unlist(strsplit(queryparams[1], ","), use.names = FALSE))
+  
+  if(length(kw) > 1){
+    kw <- trimws(names(trend))
+  }
+  
   geo <- trimws(unlist(strsplit(queryparams[3], ","), use.names = FALSE))
   names(trend) <- make.names(paste(kw, geo))
   
