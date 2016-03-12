@@ -497,15 +497,26 @@ as.zoo.gtrends <- function(x, ...) {
 
   # For some reason, the headers returned by Google will be the country names
   # if only 1 keeword is provided. 
-  kw <- trimws(unlist(strsplit(queryparams[1], ","), use.names = FALSE))
-  
-  if(length(kw) > 1){
-    kw <- trimws(names(trend))
+  requested_kw <- trimws(unlist(strsplit(queryparams[1], ","), use.names = FALSE))
+  received_kw <- trimws(names(trend))
+
+  if(length(requested_kw > 1) & !identical(requested_kw, received_kw)) {
+    
+    missing_kw <- requested_kw[!requested_kw %in% received_kw]
+    
+    warning(paste("No data returned for", 
+                  paste("'", missing_kw, "'", sep = "", collapse = ","),
+                  "keyword(s)."),
+            call. = FALSE)
+    
+    # Dirk, do you think we should add columns missing keywords with NA values?
   }
   
-  geo <- trimws(unlist(strsplit(queryparams[3], ","), use.names = FALSE))
-  names(trend) <- make.names(paste(kw, geo))
+  kw <- ifelse(length(requested_kw) == 1, requested_kw, received_kw)
   
+  geo <- trimws(unlist(strsplit(queryparams[3], ","), use.names = FALSE))
+  
+  names(trend) <- make.names(paste(kw, geo))
   
   if(ncol(weeks) == 2){
     
