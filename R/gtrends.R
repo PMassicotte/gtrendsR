@@ -464,7 +464,7 @@ as.zoo.gtrends <- function(x, ...) {
 .processResults <- function(resultsText, queryparams) {
   
   #get back to latin1 encoding
-  #queryparams[1] <- iconv(queryparams[1], "utf-8", "latin1", sub = "byte")
+  queryparams[1] <- iconv(queryparams[1], "utf-8", "latin1", sub = "byte")
   
   vec <- strsplit(resultsText, "\\\n{2,}")[[1]]
   
