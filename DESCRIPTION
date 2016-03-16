@@ -1,7 +1,7 @@
 Package: gtrendsR
 Type: Package
 Title: R Functions to Perform and Display Google Trends Queries
-Version: 1.3.3
+Version: 1.3.3.9000
 Date: 2016-03-07
 Authors@R: c(person("Philippe", 
          "Massicotte", 
