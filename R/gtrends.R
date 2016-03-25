@@ -497,10 +497,10 @@ as.zoo.gtrends <- function(x, ...) {
 
   # For some reason, the headers returned by Google will be the country names
   # if only 1 keeword is provided. 
-  requested_kw <- trimws(unlist(strsplit(queryparams[1], ","), use.names = FALSE))
-  received_kw <- trimws(names(trend))
+  requested_kw <- tolower(trimws(unlist(strsplit(queryparams[1], ","), use.names = FALSE)))
+  received_kw <- tolower(trimws(names(trend)))
 
-  if(length(requested_kw > 1) & !identical(requested_kw, received_kw)) {
+  if(length(requested_kw) > 1 & (length(requested_kw) != length(received_kw))) {
     
     missing_kw <- requested_kw[!requested_kw %in% received_kw]
     
@@ -509,14 +509,14 @@ as.zoo.gtrends <- function(x, ...) {
                   "keyword(s)."),
             call. = FALSE)
     
-    # Dirk, do you think we should add columns missing keywords with NA values?
+    trend[, missing_kw] <- NA
   }
   
-  kw <- ifelse(length(requested_kw) == 1, requested_kw, received_kw)
+  requested_kw <- make.names(requested_kw)
   
   geo <- trimws(unlist(strsplit(queryparams[3], ","), use.names = FALSE))
   
-  names(trend) <- make.names(paste(kw, geo))
+  names(trend) <- make.names(paste(requested_kw, geo))
   
   if(ncol(weeks) == 2){
     
@@ -553,7 +553,8 @@ as.zoo.gtrends <- function(x, ...) {
   
   trend <- cbind(weeks, trend)
   
-  trend <- na.omit(trend)
+  # Remove lines with all NA (happens sometimes to the last line of the df)
+  trend <- trend[!apply(trend, 1, function(x) all(is.na(x))), ]
   
   #---------------------------------------------------------------------
   # Section to deal with geographical data
