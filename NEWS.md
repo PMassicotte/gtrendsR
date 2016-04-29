@@ -4,7 +4,7 @@
 
 - `gtrends()` will throw a warning if data is returned monthly (#80).
 
-- `gtrends()` is not correctly detecting when quota limit is reached (#90).
+- `gtrends()` is now correctly detecting when quota limit is reached (#90).
 
 # gtrendsR 1.3.3
 
