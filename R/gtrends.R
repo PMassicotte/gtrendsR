@@ -221,7 +221,7 @@ gtrends <- function(query, geo, cat, ch, ...) {
 #' @importFrom utils data
 #' @rdname gtrends
 #' @export
-gtrends.default <- function(query, 
+gtrends.default <- function(query = "", 
                             geo, 
                             cat, 
                             ch, 
@@ -331,7 +331,7 @@ gtrends.default <- function(query,
   
   resultsText <- getForm(trendsURL, .params = pp, curl = ch)
   
-  if (any(grep("QUOTA", resultsText))) {
+  if (any(grep("quota", resultsText, ignore.case = TRUE))) {
     stop("Reached Google Trends quota limit! Please try again later.")
   }
   
@@ -493,8 +493,12 @@ as.zoo.gtrends <- function(x, ...) {
   weeks <- data.frame(date = do.call(rbind, strsplit(trend[, 1], " - ")),
                       stringsAsFactors = FALSE)
   
-  trend <- trend[, mapply(is.numeric, trend), drop = FALSE]
-
+  #trend <- trend[, mapply(is.numeric, trend), drop = FALSE]
+  trend <- trend[, 2:ncol(trend), drop = FALSE]
+  trend <- as.data.frame(lapply(trend,
+                                function(x) as.numeric(gsub("([0-9]+).*$", "\\1", x))))
+  
+  
   # For some reason, the headers returned by Google will be the country names
   # if only 1 keeword is provided. 
   requested_kw <- tolower(trimws(unlist(strsplit(queryparams[1], ","), use.names = FALSE)))
@@ -511,6 +515,8 @@ as.zoo.gtrends <- function(x, ...) {
     
     trend[, missing_kw] <- NA
   }
+  
+  if(length(requested_kw) == 0) {requested_kw = received_kw}
   
   requested_kw <- make.names(requested_kw)
   
