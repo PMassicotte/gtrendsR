@@ -212,7 +212,7 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
 #' gtrends("NHL", geo = c("CA"), res = "7d")
 #' }
 #' @export
-gtrends <- function(query, geo, cat, ch, ...) {
+gtrends <- function(query, geo, cat, ch, gprop, ...) {
   
   UseMethod("gtrends")
     
@@ -224,7 +224,8 @@ gtrends <- function(query, geo, cat, ch, ...) {
 gtrends.default <- function(query, 
                             geo, 
                             cat, 
-                            ch, 
+                            ch,
+                            gprop,
                             res = c(NA, "1h", "4h", "1d", "7d"),
                             start_date = as.Date("2004-01-01"),
                             end_date = as.Date(Sys.time()),
@@ -232,10 +233,11 @@ gtrends.default <- function(query,
 
   if (missing(geo)) geo <- ""
   if (missing(cat)) cat <- "0"
+  if (missing(gprop)) gprop <- ""
   if (missing(ch))  ch  <- .getDefaultConnection()
 
-  stopifnot(is.character(query),
-            is.vector(query),
+  stopifnot(#is.character(query), This allows us the ability to download category search trends
+            #is.vector(query),
             length(query) <= 5, 
             length(geo) <= 5)
   
@@ -309,7 +311,9 @@ gtrends.default <- function(query,
   countries[, 2] <- as.character(countries[, 2])
   countries[which(countries[, "country"] == "Namibia"), "code"] <- "NA"
   
-  if (geo != "" && !all(geo %in% countries[, "code"]) && !all(geo %in% countries[, "subcode"])) {
+  #if (geo != "" && !all(geo %in% countries[, "code"]) && !all(geo %in% countries[, "subcode"])) {
+  # Incase if I want to choose a country code with a country sub-code
+  if (geo != "" && !all((geo %in% countries[, "code"]) || (geo %in% countries[, "subcode"]))) {
     stop("Country code not valid. Please use 'data(countries)' to retreive valid codes.",
          call. = FALSE)
   }
@@ -327,7 +331,8 @@ gtrends.default <- function(query,
              content = 1, 
              export = 1,
              date = date,
-             geo = geo)
+             geo = geo,
+             gprop = gprop)
   
   resultsText <- getForm(trendsURL, .params = pp, curl = ch)
   
@@ -493,6 +498,16 @@ as.zoo.gtrends <- function(x, ...) {
   weeks <- data.frame(date = do.call(rbind, strsplit(trend[, 1], " - ")),
                       stringsAsFactors = FALSE)
   
+  chg.data <- function(x){
+    if(is.character(x)){
+      y<-100+strtoi(str_replace(x,"%",""))}else{
+        y<-x
+        }
+      }
+# Incase if you want to download category search trends, the data is output in percentage terms. Indexing the same  
+  if(queryparams[1]==""){trend[,2:ncol(trend)] <-sapply(trend[,2:ncol(trend)],chg.data)}
+  
+
   trend <- trend[, mapply(is.numeric, trend), drop = FALSE]
 
   # For some reason, the headers returned by Google will be the country names
@@ -571,7 +586,7 @@ as.zoo.gtrends <- function(x, ...) {
     blocks <- lapply(start:length(vec), function(i)
       read.csv(
         textConnection(strsplit(vec[i], "\\\n")[[1]]),
-        skip = 1,
+        skip = 1, header = FALSE,
         stringsAsFactors = FALSE
       ))
     
