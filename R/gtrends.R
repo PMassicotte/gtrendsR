@@ -71,7 +71,7 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
   form <- rvest::html_form(form)
   form <- rvest::set_values(form, Email = usr)
   
-  session <- rvest::submit_form(session, form) 
+  session <- suppressWarnings(suppressMessages(rvest::submit_form(session, form))) 
   
   form <- rvest::html_node(session, "form")
   form <- rvest::html_form(form)
@@ -82,7 +82,7 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
   
   form <- rvest::set_values(form, Passwd = psw)
   
-  session <- rvest::submit_form(session, form)
+  session <- suppressWarnings(suppressMessages(rvest::submit_form(session, form)))
   
   # look if the password was accepted
   if (!any(grepl("DENY", session$response$headers))) {
@@ -98,7 +98,7 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
   ## store connection handler in package-local environment
   assign("session", session, envir = .pkgenv)
     
-  return(session)
+  invisible(session)
   
 }
 
