@@ -27,7 +27,7 @@
 #' @param verbose Logical for displaying additional information
 #'
 #' @return A libcurl handle is returned (invisibly).
-#' @import RCurl
+#' @import rvest
 #' @export
 #' @examples
 #' \dontrun{
@@ -43,7 +43,7 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
   
   loginURL <- "https://accounts.google.com/accounts/ServiceLogin"
   
-  authenticateURL <- "https://accounts.google.com/ServiceLoginBoxAuth"
+  # authenticateURL <- "https://accounts.google.com/ServiceLoginBoxAuth"
   
   if (is.null(usr)) {
     
@@ -64,32 +64,21 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
     if (is.null(psw)) stop("No Google password supplied.", call. = FALSE)
   }
   
-  ch <- getCurlHandle()
   
-  ans <- curlSetOpt(curl = ch,
-                    ssl.verifypeer = FALSE,
-                    useragent = getOption('HTTPUserAgent', "R"),
-                    timeout = 60,         
-                    followlocation = TRUE,
-                    cookiejar = "./cookies",
-                    cookiefile = "")
+  form <- rvest::html_node(session, "form")
+  form <- rvest::html_form(form)
+  form <- rvest::set_values(form, Email = usr)
   
-  galx <- .getGALX(ch)
+  session <- rvest::submit_form(session, form) 
   
-  formparams <- list(Email = usr,
-                     Passwd = psw,
-                     GALX = galx,
-                     PersistentCookie = "yes",
-                     continue = "http://www.google.com/trends")
+  form <- rvest::html_node(session, "form")
+  form <- rvest::html_form(form)
+  form <- rvest::set_values(form, Passwd = psw)
   
-  authenticatePage <- postForm(authenticateURL, .params = formparams, curl = ch)
-  #print(getCurlInfo(ch)$response.code)
+  session <- rvest::submit_form(session, form)
   
-  authenticatePage2 <- getURL("https://www.google.com/accounts/CheckCookie?chtml=LoginDoneHtml", curl = ch)
-  #print(getCurlInfo(ch)$response.code)
-  
-  #if http answer is 200 then login was ok
-  if (getCurlInfo(ch)$response.code == 200) {
+  # if http answer is 200 then login was ok
+  if (session$response$status_code == 200) {
     
     if (verbose) cat("Google login successful!\n")
   
@@ -100,9 +89,9 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
   }
 
   ## store connection handler in package-local environment
-  assign("ch", ch, envir = .pkgenv)
+  assign("ch", session, envir = .pkgenv)
     
-  invisible(ch)
+  invisible(session)
   
 }
 
