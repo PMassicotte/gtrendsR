@@ -21,7 +21,7 @@ Depends:
     R (>= 3.0)
 LazyData: true
 Imports: 
-    RCurl,
+    rvest,
     googleVis,
     zoo,
     ggplot2

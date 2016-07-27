@@ -1,5 +1,7 @@
 # gtrendsR 1.3.4 (Unreleased)
 
+- Fixing loging issue due to backdoor changes made by Google. Thanks to @MrLoh for initial implementation and suggestions.
+
 - Fixing crash occuring when monthly data was returned (#81).
 
 - `gtrends()` will throw a warning if data is returned monthly (#80).
