@@ -27,23 +27,23 @@
 #' @param verbose Logical for displaying additional information
 #'
 #' @return A libcurl handle is returned (invisibly).
-#' @import RCurl
+#' @import rvest
 #' @export
 #' @examples
 #' \dontrun{
 #' # use with explicit arguments
-#' ch <- gconnect("usr@gmail.com", "psw")
+#' session <- gconnect("usr@gmail.com", "psw")
 #' 
 #' # use with arguments stored in env.var or options()
 #' # this is preferred for scripts shared with others who
 #' # can place their secret password in a file only they know
-#' ch <- gconnect("usr@gmail.com", "psw")
+#' session <- gconnect("usr@gmail.com", "psw")
 #' }
 gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
   
   loginURL <- "https://accounts.google.com/accounts/ServiceLogin"
   
-  authenticateURL <- "https://accounts.google.com/ServiceLoginBoxAuth"
+  # authenticateURL <- "https://accounts.google.com/ServiceLoginBoxAuth"
   
   if (is.null(usr)) {
     
@@ -64,32 +64,28 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
     if (is.null(psw)) stop("No Google password supplied.", call. = FALSE)
   }
   
-  ch <- getCurlHandle()
+  session <- rvest::html_session(loginURL)
   
-  ans <- curlSetOpt(curl = ch,
-                    ssl.verifypeer = FALSE,
-                    useragent = getOption('HTTPUserAgent', "R"),
-                    timeout = 60,         
-                    followlocation = TRUE,
-                    cookiejar = "./cookies",
-                    cookiefile = "")
   
-  galx <- .getGALX(ch)
+  form <- rvest::html_node(session, "form")
+  form <- rvest::html_form(form)
+  form <- rvest::set_values(form, Email = usr)
   
-  formparams <- list(Email = usr,
-                     Passwd = psw,
-                     GALX = galx,
-                     PersistentCookie = "yes",
-                     continue = "http://www.google.com/trends")
+  session <- rvest::submit_form(session, form) 
   
-  authenticatePage <- postForm(authenticateURL, .params = formparams, curl = ch)
-  #print(getCurlInfo(ch)$response.code)
+  form <- rvest::html_node(session, "form")
+  form <- rvest::html_form(form)
   
-  authenticatePage2 <- getURL("https://www.google.com/accounts/CheckCookie?chtml=LoginDoneHtml", curl = ch)
-  #print(getCurlInfo(ch)$response.code)
+  if (!any(grepl("Passwd", form$fields))) {
+    stop("Invalid email.", call. = FALSE)
+  }
   
-  #if http answer is 200 then login was ok
-  if (getCurlInfo(ch)$response.code == 200) {
+  form <- rvest::set_values(form, Passwd = psw)
+  
+  session <- rvest::submit_form(session, form)
+  
+  # look if the password was accepted
+  if (!any(grepl("DENY", session$response$headers))) {
     
     if (verbose) cat("Google login successful!\n")
   
@@ -100,48 +96,27 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
   }
 
   ## store connection handler in package-local environment
-  assign("ch", ch, envir = .pkgenv)
+  assign("session", session, envir = .pkgenv)
     
-  invisible(ch)
+  return(session)
   
 }
 
-
-#---------------------------------------------------------------------
-# This gets the GALX cookie which we need to pass back in the login 
-# form we post.
-#---------------------------------------------------------------------
-.getGALX <- function(curl) {
-  txt <- basicTextGatherer()
-  
-  curlPerform(url = "https://accounts.google.com/accounts/ServiceLogin", 
-              curl = curl, 
-              writefunction = txt$update, 
-              header = TRUE, 
-              ssl.verifypeer = FALSE)
-  
-  tmp <- txt$value()
-  
-  val <- grep("Cookie: GALX", strsplit(tmp, "\n")[[1]], value = TRUE)
-  
-  strsplit(val, "[:=;]")[[1]][3]
-  
-  return(strsplit(val, "[:=;]")[[1]][3])
-}
 
 #' @rdname gconnect
 .getDefaultConnection <- function() {
-    ch <- .pkgenv$ch
-    if (is.null(ch))
-        stop("No connection object has been created. Use 'gconnect()' first.",
-             call.=FALSE)
-    ch
+    session <- .pkgenv$session
+    if (is.null(session))
+      stop("No connection object has been created. Use 'gconnect()' first.",
+           call. = FALSE
+      )
+    session
 }
 
 #' Google Trends Query
 #' 
 #' The \code{gtrends} default method performs a Google Trends query for the 
-#' \sQuote{query} argument and handle \sQuote{ch}. Optional arguments for 
+#' \sQuote{query} argument and session \sQuote{session}. Optional arguments for 
 #' geolocation and category can also be supplied.
 #' 
 #' @param query A character vector with the actual Google Trends query keywords.
@@ -153,7 +128,7 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
 #'   using \code{gtrends("NHL", c("CA", "US"))}.
 #'   
 #' @param cat A character denoting the category, defaults to \dQuote{0}.
-#'      
+#'   
 #' @param res Resolution of the trending data to be returned. One of 
 #'   \code{c("1h", "4h", "1d", "7d")}. If \code{res} is provided, then 
 #'   \code{start_date} and \code{end_date} parameters are ignored. See 
@@ -165,21 +140,22 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
 #' @param end_date Starting date using yyyy-mm-dd format. Must be before than 
 #'   current date.
 #'   
-#' @param ch A valid handle which can be created via \code{\link{gconnect}}. 
-#'   Users can either supply an explicit handle, or rely on the helper function 
-#'   \code{.getDefaultConnection()} to retrieve the current connection handle.
+#' @param session A valid session which can be created via
+#'   \code{\link{gconnect}}. Users can either supply an explicit handle, or rely
+#'   on the helper function \code{.getDefaultConnection()} to retrieve the
+#'   current connection handle.
 #'   
 #' @param ... Additional parameters passed on in method dispatch.
-#'
+#'   
 #' @section Query resolution: By default, Google returns weekly information when
 #'   the requested data spans a period greater than three months. It is also 
 #'   possible to obtain \emph{daily} and \emph{hourly} information. However, 
 #'   these are only available for a certain period prior to the \emph{current} 
 #'   date.
 #'   
-#'   For instance, \code{1h}, \code{7h}, \code{1d} and \code{7d} denote 
-#'   trends data for the last 1 hour, last four hours, last day and last seven 
-#'   days respectively. Using one of the above \code{res} will return the 
+#'   For instance, \code{1h}, \code{7h}, \code{1d} and \code{7d} denote trends
+#'   data for the last 1 hour, last four hours, last day and last seven days
+#'   respectively. Using one of the above \code{res} will return the 
 #'   corresponding hourly data.
 #'   
 #'   Note that data requested for a beriod between one and three months will be 
@@ -190,7 +166,7 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
 #'   containing the results.
 #' @examples 
 #' \dontrun{
-#' ch <- gconnect("usr@gmail.com", "psw")
+#' session <- gconnect("usr@gmail.com", "psw")
 #' 
 #' gtrends(c("NHL", "NBA", "MLB", "MLS"))
 #' 
@@ -212,19 +188,20 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
 #' gtrends("NHL", geo = c("CA"), res = "7d")
 #' }
 #' @export
-gtrends <- function(query, geo, cat, ch, ...) {
+gtrends <- function(query, geo, cat, session, ...) {
   
   UseMethod("gtrends")
     
 }
 
 #' @importFrom utils data
+#' @importFrom utils URLencode
 #' @rdname gtrends
 #' @export
 gtrends.default <- function(query = "", 
                             geo, 
                             cat, 
-                            ch, 
+                            session, 
                             res = c(NA, "1h", "4h", "1d", "7d"),
                             start_date = as.Date("2004-01-01"),
                             end_date = as.Date(Sys.time()),
@@ -232,7 +209,7 @@ gtrends.default <- function(query = "",
 
   if (missing(geo)) geo <- ""
   if (missing(cat)) cat <- "0"
-  if (missing(ch))  ch  <- .getDefaultConnection()
+  if (missing(session))  session  <- .getDefaultConnection()
 
   stopifnot(is.character(query),
             is.vector(query),
@@ -248,13 +225,8 @@ gtrends.default <- function(query = "",
   
   cmpt <- ifelse(length(query) > 1, "q", "geo")
   
-  if(is.null(ch)) stop("You are not signed in. Please log in using gconnect().",
+  if(is.null(session)) stop("You are not signed in. Please log in using gconnect().",
                        call. = FALSE)
-  
-  if (inherits(ch, "CURLHandle") != TRUE) {
-    stop("'ch' arguments has to be result from 'gconnect()'.", 
-         call. = FALSE)
-  }
   
   #---------------------------------------------------------------------
   # Date verification.
@@ -315,11 +287,8 @@ gtrends.default <- function(query = "",
   }
   
   geo <- paste(geo, sep = "", collapse = ", ")
-  #geo <- URLencode(geo, reserved = TRUE)
-  
-  authenticatePage2 <- getURL("http://www.google.com", curl = ch)
-  
-  trendsURL <- "http://www.google.com/trends/trendsReport?"
+
+  trendsURL <- "https://www.google.com/trends/trendsReport?"
 
   pp <- list(q = query, 
              cat = cat,
@@ -329,7 +298,10 @@ gtrends.default <- function(query = "",
              date = date,
              geo = geo)
   
-  resultsText <- getForm(trendsURL, .params = pp, curl = ch)
+  trendsURL <- paste(trendsURL, paste(names(pp), pp, sep = "=", collapse = "&"), sep = "")
+  trendsURL <- URLencode(trendsURL)
+  
+  resultsText <- rvest::jump_to(session, trendsURL)
   
   if (any(grep("quota", resultsText, ignore.case = TRUE))) {
     stop("Reached Google Trends quota limit! Please try again later.")
@@ -339,6 +311,9 @@ gtrends.default <- function(query = "",
                    cat = cat, 
                    geo = geo, 
                    time = format(Sys.time()))
+  
+  
+  resultsText <- rawToChar(resultsText$response$content)
   
   res <- .processResults(resultsText, queryparams)
 
