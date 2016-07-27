@@ -15,6 +15,7 @@ before_install:
 
 install:
   - ./travis-tool.sh install_aptget r-cran-rcurl r-cran-googlevis r-cran-zoo r-cran-rcolorbrewer r-cran-ggplot2
+  - ./travis-tool.sh install_r rvest
 
 script:
   - ./travis-tool.sh run_tests
