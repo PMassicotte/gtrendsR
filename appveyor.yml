@@ -14,7 +14,7 @@ install:
 
 build_script:
   - travis-tool.sh install_deps
-  - travis-tool.sh install_r gtable r-cran-googlevis r-cran-zoo r-cran-rcolorbrewer r-cran-ggplot2 r-cran-rvest
+  - travis-tool.sh install_r gtable r-cran-googlevis r-cran-zoo r-cran-rcolorbrewer r-cran-ggplot2 r-cran-rvest scales
 
 test_script:
   - travis-tool.sh run_tests
