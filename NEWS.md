@@ -1,4 +1,4 @@
-# gtrendsR 1.3.4 (Unreleased)
+# gtrendsR 1.3.4
 
 - Fixing loging issue due to backdoor changes made by Google (#103). Thanks to @MrLoh for initial implementation and suggestions.
 
