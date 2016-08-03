@@ -19,7 +19,7 @@ BugReports: https://github.com/PMassicotte/gtrendsR/issues
 URL: https://github.com/PMassicotte/gtrendsR
 Depends: 
     R (>= 3.0)
-LazyData: no
+LazyData: yes
 Imports: 
     rvest,
     googleVis,
