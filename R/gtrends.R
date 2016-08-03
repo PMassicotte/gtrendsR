@@ -380,7 +380,7 @@ plot.gtrends <- function(x, type = c("trend", "geo"), which = 5, ind = 1L, ...){
                   times = names(df)[mapply(is.numeric, x$trend)],
                   timevar = "keyword")
     
-    df$start <- as.POSIXct(df$start)
+    df$start <- as.POSIXct(df$start, tz = "UTC")
     
     p <- ggplot(df, aes_string(x = "start", y = "hit", color = "keyword")) +
       geom_line() +
@@ -501,7 +501,7 @@ as.zoo.gtrends <- function(x, ...) {
   
   if(ncol(weeks) == 2){
     
-    weeks <- lapply(weeks, as.POSIXct, SIMPLIFY = FALSE)
+    weeks <- lapply(weeks, as.POSIXct, tz = "UTC", SIMPLIFY = FALSE)
     weeks <- do.call(cbind.data.frame, weeks)
     names(weeks) <- c("start", "end")[1:ncol(weeks)]
   
@@ -513,14 +513,14 @@ as.zoo.gtrends <- function(x, ...) {
     if(nchar(weeks$date[1]) == 7){
       
       # Sometimes data are returned without a day. Asusme it is first day of month.
-      weeks <- as.POSIXct(paste(weeks[, 1], "-01", sep = ""))
+      weeks <- as.POSIXct(paste(weeks[, 1], "-01", sep = ""), tz = "UTC")
       weeks <- data.frame(start = weeks)
       
       warning("Data was returned monthly.", call. = FALSE)
       
     }else if(nchar(weeks$date[1]) == 10){
       
-      weeks <- as.POSIXct(weeks$date)
+      weeks <- as.POSIXct(weeks$date, tz = "UTC")
       weeks <- data.frame(start = weeks)
       
     }else{
