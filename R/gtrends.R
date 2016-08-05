@@ -140,9 +140,9 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
 #' @param end_date Starting date using yyyy-mm-dd format. Must be before than 
 #'   current date.
 #'   
-#' @param session A valid session which can be created via
+#' @param session A valid session which can be created via 
 #'   \code{\link{gconnect}}. Users can either supply an explicit handle, or rely
-#'   on the helper function \code{.getDefaultConnection()} to retrieve the
+#'   on the helper function \code{.getDefaultConnection()} to retrieve the 
 #'   current connection handle.
 #'   
 #' @param ... Additional parameters passed on in method dispatch.
@@ -153,17 +153,22 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
 #'   these are only available for a certain period prior to the \emph{current} 
 #'   date.
 #'   
-#'   For instance, \code{1h}, \code{7h}, \code{1d} and \code{7d} denote trends
-#'   data for the last 1 hour, last four hours, last day and last seven days
+#'   For instance, \code{1h}, \code{7h}, \code{1d} and \code{7d} denote trends 
+#'   data for the last 1 hour, last four hours, last day and last seven days 
 #'   respectively. Using one of the above \code{res} will return the 
 #'   corresponding hourly data.
 #'   
 #'   Note that data requested for a beriod between one and three months will be 
 #'   returned daily. For a  period greater than three months, data will be 
-#'   always returned weekly.
+#'   always returned weekly.   
 #'   
+#' @section Categories: The package includes a complete list of categories that
+#'   can be used to narrow requests. These can be accessed using
+#'   \code{data("categories")}.
+#' 
 #' @return An object of class \sQuote{gtrends} which is list with six elements 
 #'   containing the results.
+#'   
 #' @examples 
 #' \dontrun{
 #' session <- gconnect("usr@gmail.com", "psw")
@@ -186,6 +191,13 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
 #' 
 #' # Last 7 days trends
 #' gtrends("NHL", geo = c("CA"), res = "7d")
+#' 
+#' # Using categories
+#' 
+#' data("categories")
+#' categories[grepl("music", categories$name, ignore.case = TRUE), ]
+#' 
+#' gtrends(cat = "1087")
 #' }
 #' @export
 gtrends <- function(query, geo, cat, session, ...) {

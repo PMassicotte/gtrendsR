@@ -32,9 +32,9 @@ using \code{gtrends("NHL", c("CA", "US"))}.}
 
 \item{cat}{A character denoting the category, defaults to \dQuote{0}.}
 
-\item{session}{A valid session which can be created via
+\item{session}{A valid session which can be created via 
 \code{\link{gconnect}}. Users can either supply an explicit handle, or rely
-on the helper function \code{.getDefaultConnection()} to retrieve the
+on the helper function \code{.getDefaultConnection()} to retrieve the 
 current connection handle.}
 
 \item{...}{Additional parameters passed on in method dispatch.}
@@ -82,14 +82,20 @@ geolocation and category can also be supplied.
   these are only available for a certain period prior to the \emph{current} 
   date.
   
-  For instance, \code{1h}, \code{7h}, \code{1d} and \code{7d} denote trends
-  data for the last 1 hour, last four hours, last day and last seven days
+  For instance, \code{1h}, \code{7h}, \code{1d} and \code{7d} denote trends 
+  data for the last 1 hour, last four hours, last day and last seven days 
   respectively. Using one of the above \code{res} will return the 
   corresponding hourly data.
   
   Note that data requested for a beriod between one and three months will be 
   returned daily. For a  period greater than three months, data will be 
   always returned weekly.
+}
+
+\section{Categories}{
+ The package includes a complete list of categories that
+  can be used to narrow requests. These can be accessed using
+  \code{data("categories")}.
 }
 \examples{
 \dontrun{
@@ -113,6 +119,13 @@ gtrends("NHL", geo = c("CA"), res = "4h")
 
 # Last 7 days trends
 gtrends("NHL", geo = c("CA"), res = "7d")
+
+# Using categories
+
+data("categories")
+categories[grepl("music", categories$name, ignore.case = TRUE), ]
+
+gtrends(cat = "1087")
 }
 data("sport_trend")
 plot(sport_trend)
