@@ -10,8 +10,8 @@
 \usage{
 gtrends(query, geo, cat, session, ...)
 
-\method{gtrends}{default}(query = "", geo, cat, session, res = c(NA, "1h",
-  "4h", "1d", "7d"), start_date = as.Date("2004-01-01"),
+\method{gtrends}{default}(query = "", geo = "", cat = "0", session,
+  res = c(NA, "1h", "4h", "1d", "7d"), start_date = as.Date("2004-01-01"),
   end_date = as.Date(Sys.time()), ...)
 
 \method{summary}{gtrends}(object, ...)

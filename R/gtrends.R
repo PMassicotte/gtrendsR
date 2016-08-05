@@ -199,34 +199,33 @@ gtrends <- function(query, geo, cat, session, ...) {
 #' @rdname gtrends
 #' @export
 gtrends.default <- function(query = "", 
-                            geo, 
-                            cat, 
+                            geo = "", 
+                            cat = "0", 
                             session, 
                             res = c(NA, "1h", "4h", "1d", "7d"),
                             start_date = as.Date("2004-01-01"),
                             end_date = as.Date(Sys.time()),
                             ...){
 
-  if (missing(geo)) geo <- ""
-  if (missing(cat)) cat <- "0"
   if (missing(session))  session  <- .getDefaultConnection()
 
   stopifnot(is.character(query),
             is.vector(query),
-            length(query) <= 5, 
+            length(query) <= 5,
             length(geo) <= 5)
   
   res <- match.arg(res, several.ok = FALSE)
   
-  if(length(query) > 1 & length(geo) > 1){
-    stop("Can not specify multiple keywords and geo at the same time.", 
+  if (length(query) > 1 & length(geo) > 1) {
+    stop("Can not specify multiple keywords and geo at the same time.",
          call. = FALSE)
   }
   
   cmpt <- ifelse(length(query) > 1, "q", "geo")
   
-  if(is.null(session)) stop("You are not signed in. Please log in using gconnect().",
-                       call. = FALSE)
+  if (is.null(session))
+    stop("You are not signed in. Please log in using gconnect().",
+         call. = FALSE)
   
   #---------------------------------------------------------------------
   # Date verification.
@@ -251,16 +250,19 @@ gtrends.default <- function(query = "",
   
   nmonth <- length(seq(from = start_date, to = end_date, by = "month"))
   
-  if(nmonth >= 1){
+  if (nmonth >= 1) {
     date <- paste(format(start_date, "%m/%Y"), paste(nmonth, "m", sep = ""))
   }
   
-  if(!is.na(res)){
+  if (!is.na(res)) {
     
     # Match Google code (ex. 1-H) to a more user friendly value (1h)
-    resolution_code <- data.frame(code = c("1-H", "4-H", "1-d", "7-d"),
-                                  res = c("1h", "4h", "1d", "7d"), 
-                                  stringsAsFactors = FALSE)
+    resolution_code <-
+      data.frame(
+        code = c("1-H", "4-H", "1-d", "7-d"),
+        res = c("1h", "4h", "1d", "7d"),
+        stringsAsFactors = FALSE
+      )
     
     res <- resolution_code$code[resolution_code$res == res]
     
@@ -290,13 +292,15 @@ gtrends.default <- function(query = "",
 
   trendsURL <- "https://www.google.com/trends/trendsReport?"
 
-  pp <- list(q = query, 
-             cat = cat,
-             cmpt = cmpt, 
-             content = 1, 
-             export = 1,
-             date = date,
-             geo = geo)
+  pp <- list(
+    q = query,
+    cat = cat,
+    cmpt = cmpt,
+    content = 1,
+    export = 1,
+    date = date,
+    geo = geo
+  )
   
   trendsURL <- paste(trendsURL, paste(names(pp), pp, sep = "=", collapse = "&"), sep = "")
   trendsURL <- URLencode(trendsURL)
@@ -307,10 +311,12 @@ gtrends.default <- function(query = "",
     stop("Reached Google Trends quota limit! Please try again later.")
   }
   
-  queryparams <- c(query = query, 
-                   cat = cat, 
-                   geo = geo, 
-                   time = format(Sys.time()))
+  queryparams <- c(
+    query = query,
+    cat = cat,
+    geo = geo,
+    time = format(Sys.time())
+  )
   
   
   resultsText <- rawToChar(resultsText$response$content)
@@ -370,25 +376,21 @@ plot.gtrends <- function(x, type = c("trend", "geo"), which = 5, ind = 1L, ...){
   
   if (type == "trend") {
     
-    df <- x$trend
+    if (length(unique(x$trend$location)) != 1) {
+      color <- "location"
+      linetype <- "keyword"
+    } else {
+      color <- "keyword"
+      linetype <- "location"
+    }
     
-    df <- reshape(df,
-                  varying = names(df)[mapply(is.numeric, x$trend)],
-                  v.names = "hit",
-                  idvar = names(df)[!mapply(is.numeric, x$trend)],
-                  direction = "long",
-                  times = names(df)[mapply(is.numeric, x$trend)],
-                  timevar = "keyword")
-    
-    df$start <- as.POSIXct(df$start)
-    
-    p <- ggplot(df, aes_string(x = "start", y = "hit", color = "keyword")) +
-      geom_line() +
+    p <- ggplot(x$trend, aes_string(x = "start", y = "hits")) +
+      geom_line(aes_string(color = color, linetype = linetype)) +
       xlab("Date") +
       ylab("Search hits") +
       ggtitle("Interest over time") +
       theme_bw()
-    
+
     print(p)
     ret <- p
     
@@ -401,7 +403,7 @@ plot.gtrends <- function(x, type = c("trend", "geo"), which = 5, ind = 1L, ...){
     block <- x[which][[ind]]
     
     # Try to find if the requested block contains geographic information.
-    if(!any(tolower(block[1, ]) %in% tolower(locations$Name))){
+    if (!any(tolower(block[1,]) %in% tolower(locations$Name))) {
       
       message("The requested block does not seems to contain geographical information. Please choose another block.")
       
@@ -411,18 +413,23 @@ plot.gtrends <- function(x, type = c("trend", "geo"), which = 5, ind = 1L, ...){
       
     }
     
-    if(all(is.na(block))) stop("Not enough search volume to show results.", 
-                      call. = FALSE)
+    if (all(is.na(block)))
+      stop("Not enough search volume to show results.",
+           call. = FALSE)
     
     df <- data.frame(loc = block[, 1], hits = block[, 2])
     
-    plot(gvisGeoChart(df, 
-                      "loc",
-                      "hits",
-                      options = list(region = "world",
-                                     displayMode = "markers",
-                                     resolution = "countries")))
-  } 
+    plot(gvisGeoChart(
+      df,
+      "loc",
+      "hits",
+      options = list(
+        region = "world",
+        displayMode = "markers",
+        resolution = "countries"
+      )
+    ))
+  }
   
   invisible(ret)
 }
@@ -437,15 +444,12 @@ as.zoo.gtrends <- function(x, ...) {
 #' @importFrom utils read.csv
 #' @importFrom stats na.omit
 .processResults <- function(resultsText, queryparams) {
-  
-  #get back to latin1 encoding
-  queryparams[1] <- iconv(queryparams[1], "utf-8", "latin1", sub = "byte")
-  
+
   vec <- strsplit(resultsText, "\\\n{2,}")[[1]]
   
   headers <- unname(sapply(vec, function(v) strsplit(v, "\\\n")[[1]][1]))
   
-  ## Make sure there are some results have been returned.
+  # Make sure there are some results have been returned.
   if (length(vec) < 2) {
     stop("Not enough search volume. Please change your search terms.",
          call. = FALSE)
@@ -454,6 +458,14 @@ as.zoo.gtrends <- function(x, ...) {
   #---------------------------------------------------------------------
   # Section to deal with trend data.
   #---------------------------------------------------------------------
+  
+  kw <- unlist(strsplit(queryparams[1], ","), use.names = FALSE)
+  cat <- unlist(strsplit(queryparams[2], ","), use.names = FALSE)
+  geo <- unlist(strsplit(queryparams[3], ","), use.names = FALSE)
+  
+  if (length(geo) == 0) {
+    geo <- "World"
+  }
   
   # meta data
   meta  <- strsplit(vec[1], "\\\r\\\n")[[1]]
@@ -464,42 +476,26 @@ as.zoo.gtrends <- function(x, ...) {
                     stringsAsFactors = FALSE)
   
   # block date
-  
   weeks <- data.frame(date = do.call(rbind, strsplit(trend[, 1], " - ")),
                       stringsAsFactors = FALSE)
   
-  #trend <- trend[, mapply(is.numeric, trend), drop = FALSE]
   trend <- trend[, 2:ncol(trend), drop = FALSE]
-  trend <- as.data.frame(lapply(trend,
-                                function(x) as.numeric(gsub("([0-9]+).*$", "\\1", x))))
   
+  trend <-
+    as.data.frame(lapply(trend, function(x)
+      as.numeric(gsub(
+        "([0-9]+).*$", "\\1", x
+      ))))
   
-  # For some reason, the headers returned by Google will be the country names
-  # if only 1 keeword is provided. 
-  requested_kw <- tolower(trimws(unlist(strsplit(queryparams[1], ","), use.names = FALSE)))
-  received_kw <- tolower(trimws(names(trend)))
-
-  if(length(requested_kw) > 1 & (length(requested_kw) != length(received_kw))) {
-    
-    missing_kw <- requested_kw[!requested_kw %in% received_kw]
-    
-    warning(paste("No data returned for", 
-                  paste("'", missing_kw, "'", sep = "", collapse = ","),
-                  "keyword(s)."),
-            call. = FALSE)
-    
-    trend[, missing_kw] <- NA
+  # No keyword provided, it must be a category
+  if (length(kw) == 0) {
+    kw <- names(trend) 
   }
   
-  if(length(requested_kw) == 0) {requested_kw = received_kw}
-  
-  requested_kw <- make.names(requested_kw)
-  
-  geo <- trimws(unlist(strsplit(queryparams[3], ","), use.names = FALSE))
-  
-  names(trend) <- make.names(paste(requested_kw, geo))
-  
-  if(ncol(weeks) == 2){
+  tmp_kw <- paste("kw", 1:ncol(trend), sep = "_")
+  names(trend) <- tmp_kw
+
+  if (ncol(weeks) == 2) {
     
     weeks <- lapply(weeks, as.POSIXct, SIMPLIFY = FALSE)
     weeks <- do.call(cbind.data.frame, weeks)
@@ -508,9 +504,9 @@ as.zoo.gtrends <- function(x, ...) {
   }
   
   # Either daily or hourly data
-  if(ncol(weeks) == 1){
+  if (ncol(weeks) == 1) {
     
-    if(nchar(weeks$date[1]) == 7){
+    if (nchar(weeks$date[1]) == 7) {
       
       # Sometimes data are returned without a day. Asusme it is first day of month.
       weeks <- as.POSIXct(paste(weeks[, 1], "-01", sep = ""))
@@ -518,12 +514,12 @@ as.zoo.gtrends <- function(x, ...) {
       
       warning("Data was returned monthly.", call. = FALSE)
       
-    }else if(nchar(weeks$date[1]) == 10){
+    } else if (nchar(weeks$date[1]) == 10) { 
       
       weeks <- as.POSIXct(weeks$date)
       weeks <- data.frame(start = weeks)
       
-    }else{
+    } else {
       
       weeks <- as.POSIXct(weeks[, 1], format = "%Y-%m-%d-%H:%M", tz = "UTC")
       weeks <- data.frame(start = weeks)
@@ -534,8 +530,35 @@ as.zoo.gtrends <- function(x, ...) {
   
   trend <- cbind(weeks, trend)
   
+  if (length(geo) == 1) {
+    times <- kw
+    timevar <- "keyword"
+  } else {
+    times <- geo
+    timevar <- "location"
+  }
+  
+  trend <- reshape(
+    trend,
+    varying = tmp_kw,
+    v.names = "hits",
+    direction = "long",
+    timevar = timevar,
+    times = times
+  )
+  
+  trend <- trend[, -ncol(trend)] # Remvoe the generated id
+  row.names(trend) <- NULL 
+  
+  if (length(geo) == 1) {
+    trend$location = geo
+  } else {
+    trend$keyword = kw
+  }
+  
+  
   # Remove lines with all NA (happens sometimes to the last line of the df)
-  trend <- trend[!apply(trend, 1, function(x) all(is.na(x))), ]
+  trend <- na.omit(trend)
   
   #---------------------------------------------------------------------
   # Section to deal with geographical data

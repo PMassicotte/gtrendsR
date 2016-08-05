@@ -1,3 +1,7 @@
+# gtrendsR 1.3.5
+
+- Returned data is now tidy (#110). The `trend` object now contains `keyword`, `hits` and `location` header (`head(sport_trend$trend)`).
+
 # gtrendsR 1.3.4
 
 - Fixing loging issue due to backdoor changes made by Google (#103). Thanks to @MrLoh for initial implementation and suggestions.
