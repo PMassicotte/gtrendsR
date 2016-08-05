@@ -47,12 +47,12 @@ connection here.
 \examples{
 \dontrun{
 # use with explicit arguments
-ch <- gconnect("usr@gmail.com", "psw")
+session <- gconnect("usr@gmail.com", "psw")
 
 # use with arguments stored in env.var or options()
 # this is preferred for scripts shared with others who
 # can place their secret password in a file only they know
-ch <- gconnect("usr@gmail.com", "psw")
+session <- gconnect("usr@gmail.com", "psw")
 }
 }
 

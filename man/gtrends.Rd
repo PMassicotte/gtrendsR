@@ -8,11 +8,11 @@
 \alias{summary.gtrends}
 \title{Google Trends Query}
 \usage{
-gtrends(query, geo, cat, ch, ...)
+gtrends(query, geo, cat, session, ...)
 
-\method{gtrends}{default}(query, geo, cat, ch, res = c(NA, "1h", "4h", "1d",
-  "7d"), start_date = as.Date("2004-01-01"), end_date = as.Date(Sys.time()),
-  ...)
+\method{gtrends}{default}(query = "", geo, cat, session, res = c(NA, "1h",
+  "4h", "1d", "7d"), start_date = as.Date("2004-01-01"),
+  end_date = as.Date(Sys.time()), ...)
 
 \method{summary}{gtrends}(object, ...)
 
@@ -32,9 +32,10 @@ using \code{gtrends("NHL", c("CA", "US"))}.}
 
 \item{cat}{A character denoting the category, defaults to \dQuote{0}.}
 
-\item{ch}{A valid handle which can be created via \code{\link{gconnect}}. 
-Users can either supply an explicit handle, or rely on the helper function 
-\code{.getDefaultConnection()} to retrieve the current connection handle.}
+\item{session}{A valid session which can be created via
+\code{\link{gconnect}}. Users can either supply an explicit handle, or rely
+on the helper function \code{.getDefaultConnection()} to retrieve the
+current connection handle.}
 
 \item{...}{Additional parameters passed on in method dispatch.}
 
@@ -71,7 +72,7 @@ ggplot2 object is returned silently.
 }
 \description{
 The \code{gtrends} default method performs a Google Trends query for the 
-\sQuote{query} argument and handle \sQuote{ch}. Optional arguments for 
+\sQuote{query} argument and session \sQuote{session}. Optional arguments for 
 geolocation and category can also be supplied.
 }
 \section{Query resolution}{
@@ -81,9 +82,9 @@ geolocation and category can also be supplied.
   these are only available for a certain period prior to the \emph{current} 
   date.
   
-  For instance, \code{1h}, \code{7h}, \code{1d} and \code{7d} denote 
-  trends data for the last 1 hour, last four hours, last day and last seven 
-  days respectively. Using one of the above \code{res} will return the 
+  For instance, \code{1h}, \code{7h}, \code{1d} and \code{7d} denote trends
+  data for the last 1 hour, last four hours, last day and last seven days
+  respectively. Using one of the above \code{res} will return the 
   corresponding hourly data.
   
   Note that data requested for a beriod between one and three months will be 
@@ -92,7 +93,7 @@ geolocation and category can also be supplied.
 }
 \examples{
 \dontrun{
-ch <- gconnect("usr@gmail.com", "psw")
+session <- gconnect("usr@gmail.com", "psw")
 
 gtrends(c("NHL", "NBA", "MLB", "MLS"))
 

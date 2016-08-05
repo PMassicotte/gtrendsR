@@ -1,8 +1,16 @@
-# gtrendsR 1.3.4 (Unreleased)
+# gtrednsR 1.3.5 (unreleased)
+
+- Fixing a bug where overriding `countries` variable was breaking package's functionalities (#109).
+
+# gtrendsR 1.3.4
+
+- Fixing login issue due to backend changes made by Google (#103). Thanks to @MrLoh for initial implementation and suggestions.
 
 - Fixing crash occuring when monthly data was returned (#81).
 
 - `gtrends()` will throw a warning if data is returned monthly (#80).
+
+- `gtrends()` is now correctly detecting when quota limit is reached (#90).
 
 # gtrendsR 1.3.3
 

@@ -1,8 +1,8 @@
 ## Test environments
 
-* Tested on Linux (R 3.2.3) using Travis CI
-* Tested on Windows (R 3.2.3) using AppVeyor
-* Tested on Windows (R 3.2.1) Windows 10 (personal computer)
+* Tested on Linux (R 3.3.1) using Travis CI
+* Tested on Windows (R 3.3.1-patched) using AppVeyor
+* Tested on Windows (R 3.3.1-patched) Windows 10 (personal computer)
 * Tested on win-builder (both R-release and R-devel)
 
 ## R CMD check results
