@@ -129,6 +129,11 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
 #'   
 #' @param cat A character denoting the category, defaults to \dQuote{0}.
 #'   
+#' @param gprop A character string defining the Google product for which the 
+#'   trend query if preformed. Valid options are \dQuote{} (empty string - web 
+#'   search), \dQuote{news}, \dQuote{images}, \dQuote{froogle} and 
+#'   \dQuote{youtube}. Default is \dQuote{}.
+#'   
 #' @param res Resolution of the trending data to be returned. One of 
 #'   \code{c("1h", "4h", "1d", "7d")}. If \code{res} is provided, then 
 #'   \code{start_date} and \code{end_date} parameters are ignored. See 
@@ -142,7 +147,7 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
 #'   
 #' @param session A valid session which can be created via 
 #'   \code{\link{gconnect}}. Users can either supply an explicit handle, or rely
-#'   on the helper function \code{.getDefaultConnection()} to retrieve the
+#'   on the helper function \code{.getDefaultConnection()} to retrieve the 
 #'   current connection handle.
 #'   
 #' @param ... Additional parameters passed on in method dispatch.
@@ -153,19 +158,19 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
 #'   these are only available for a certain period prior to the \emph{current} 
 #'   date.
 #'   
-#'   For instance, \code{1h}, \code{7h}, \code{1d} and \code{7d} denote trends
-#'   data for the last 1 hour, last four hours, last day and last seven day
+#'   For instance, \code{1h}, \code{7h}, \code{1d} and \code{7d} denote trends 
+#'   data for the last 1 hour, last four hours, last day and last seven day 
 #'   respectively. Using one of the above \code{res} will return the 
 #'   corresponding hourly data.
 #'   
 #'   Note that data requested for a beriod between one and three months will be 
 #'   returned daily. For a  period greater than three months, data will be 
-#'   always returned weekly.   
+#'   always returned weekly.
 #'   
-#' @section Categories: The package includes a complete list of categories that
-#'   can be used to narrow requests. These can be accessed using
+#' @section Categories: The package includes a complete list of categories that 
+#'   can be used to narrow requests. These can be accessed using 
 #'   \code{data("categories")}.
-#' 
+#'   
 #' @return An object of class \sQuote{gtrends} which is list with six elements 
 #'   containing the results.
 #'   
@@ -200,7 +205,7 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
 #' gtrends(cat = "1087")
 #' }
 #' @export
-gtrends <- function(query, geo, cat, session, ...) {
+gtrends <- function(query, geo, cat, gprop, session, ...) {
   
   UseMethod("gtrends")
     
@@ -213,6 +218,7 @@ gtrends <- function(query, geo, cat, session, ...) {
 gtrends.default <- function(query = "", 
                             geo = "", 
                             cat = "0", 
+                            gprop = c("", "news", "images", "froogle", "youtube"),
                             session, 
                             res = c(NA, "1h", "4h", "1d", "7d"),
                             start_date = as.Date("2004-01-01"),
@@ -228,6 +234,7 @@ gtrends.default <- function(query = "",
             cat %in% categories$id)
   
   res <- match.arg(res, several.ok = FALSE)
+  gprop <- match.arg(gprop, several.ok = FALSE)
   
   if (length(query) > 1 & length(geo) > 1) {
     stop("Can not specify multiple keywords and geo at the same time.",
@@ -312,7 +319,8 @@ gtrends.default <- function(query = "",
     content = 1,
     export = 1,
     date = date,
-    geo = geo
+    geo = geo,
+    gprop = gprop
   )
 
   trendsURL <- paste(trendsURL, paste(names(pp), pp, sep = "=", collapse = "&"), sep = "")
