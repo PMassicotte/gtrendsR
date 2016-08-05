@@ -224,7 +224,8 @@ gtrends.default <- function(query = "",
   stopifnot(is.character(query),
             is.vector(query),
             length(query) <= 5,
-            length(geo) <= 5)
+            length(geo) <= 5,
+            cat %in% categories$id)
   
   res <- match.arg(res, several.ok = FALSE)
   
