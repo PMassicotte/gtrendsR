@@ -8,7 +8,7 @@
 \alias{summary.gtrends}
 \title{Google Trends Query}
 \usage{
-gtrends(query, geo, cat, session, ...)
+gtrends(query, geo, cat, gprop, session, ...)
 
 \method{gtrends}{default}(query = "", geo = "", cat = "0", gprop = c("",
   "news", "images", "froogle", "youtube"), session, res = c(NA, "1h", "4h",
@@ -33,17 +33,17 @@ using \code{gtrends("NHL", c("CA", "US"))}.}
 
 \item{cat}{A character denoting the category, defaults to \dQuote{0}.}
 
+\item{gprop}{A character string defining the Google product for which the 
+trend query if preformed. Valid options are \dQuote{} (empty string - web 
+search), \dQuote{news}, \dQuote{images}, \dQuote{froogle} and 
+\dQuote{youtube}. Default is \dQuote{}.}
+
 \item{session}{A valid session which can be created via 
 \code{\link{gconnect}}. Users can either supply an explicit handle, or rely
 on the helper function \code{.getDefaultConnection()} to retrieve the 
 current connection handle.}
 
 \item{...}{Additional parameters passed on in method dispatch.}
-
-\item{gprop}{A character string defining the Google product for which the 
-trend query if preformed. Valid options are \dQuote{} (empty string - web 
-search), \dQuote{news}, \dQuote{images}, \dQuote{froogle} and 
-\dQuote{youtube}. Default is \dQuote{}.}
 
 \item{res}{Resolution of the trending data to be returned. One of 
 \code{c("1h", "4h", "1d", "7d")}. If \code{res} is provided, then 

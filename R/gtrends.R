@@ -205,7 +205,7 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
 #' gtrends(cat = "1087")
 #' }
 #' @export
-gtrends <- function(query, geo, cat, session, ...) {
+gtrends <- function(query, geo, cat, gprop, session, ...) {
   
   UseMethod("gtrends")
     
