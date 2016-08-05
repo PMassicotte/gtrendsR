@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 # gtrednsR 1.3.5 (unreleased)
+=======
+# gtrendsR 1.3.5
+
+- Returned data is now tidy (#110). The `trend` object now contains `keyword`, `hits` and `location` header (`head(sport_trend$trend)`).
+>>>>>>> tidy
 
 - Fixing a bug where overriding `countries` variable was breaking package's functionalities (#109).
 

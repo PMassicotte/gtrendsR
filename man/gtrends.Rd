@@ -10,8 +10,8 @@
 \usage{
 gtrends(query, geo, cat, session, ...)
 
-\method{gtrends}{default}(query = "", geo, cat, session, res = c(NA, "1h",
-  "4h", "1d", "7d"), start_date = as.Date("2004-01-01"),
+\method{gtrends}{default}(query = "", geo = "", cat = "0", session,
+  res = c(NA, "1h", "4h", "1d", "7d"), start_date = as.Date("2004-01-01"),
   end_date = as.Date(Sys.time()), ...)
 
 \method{summary}{gtrends}(object, ...)
@@ -34,7 +34,7 @@ using \code{gtrends("NHL", c("CA", "US"))}.}
 
 \item{session}{A valid session which can be created via 
 \code{\link{gconnect}}. Users can either supply an explicit handle, or rely
-on the helper function \code{.getDefaultConnection()} to retrieve the 
+on the helper function \code{.getDefaultConnection()} to retrieve the
 current connection handle.}
 
 \item{...}{Additional parameters passed on in method dispatch.}
@@ -82,8 +82,8 @@ geolocation and category can also be supplied.
   these are only available for a certain period prior to the \emph{current} 
   date.
   
-  For instance, \code{1h}, \code{7h}, \code{1d} and \code{7d} denote trends 
-  data for the last 1 hour, last four hours, last day and last seven days 
+  For instance, \code{1h}, \code{7h}, \code{1d} and \code{7d} denote trends
+  data for the last 1 hour, last four hours, last day and last seven day
   respectively. Using one of the above \code{res} will return the 
   corresponding hourly data.
   
