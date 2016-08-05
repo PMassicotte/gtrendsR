@@ -504,7 +504,7 @@ as.zoo.gtrends <- function(x, ...) {
 
   # No keyword provided, it must be a category
   if (length(kw) == 0) {
-    kw <- names(trend) 
+    kw <- gsub("\\.+", " ", names(trend))
   }
 
   tmp_kw <- paste("kw", 1:ncol(trend), sep = "_")
