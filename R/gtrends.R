@@ -47,9 +47,12 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
   
   if (is.null(usr)) {
     
-    if (Sys.getenv("GOOGLE_USER") != "") usr <- Sys.getenv("GOOGLE_USER")
-    
-    if (getOption("google.user") != "") usr <- getOption("google.user")
+    if (!is.null(Sys.getenv("GOOGLE_USER")) && Sys.getenv("GOOGLE_USER") != "") {
+      usr <- Sys.getenv("GOOGLE_USER")
+    }
+    else if (!is.null(getOption("google.user")) &&  getOption("google.user") != "") {
+      usr <- getOption("google.user")
+    }
     
     if (is.null(usr)) stop("No Google Username / account supplied.", 
                            call. = FALSE)
@@ -57,9 +60,12 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
   
   if (is.null(psw)) {
     
-    if (Sys.getenv("GOOGLE_PASSWORD") != "") psw <- Sys.getenv("GOOGLE_PASSWORD")
-    
-    if (getOption("google.password") != "") psw <- getOption("google.password")
+    if (!is.null(Sys.getenv("GOOGLE_PASSWORD")) && Sys.getenv("GOOGLE_PASSWORD") != "") {
+      psw <- Sys.getenv("GOOGLE_PASSWORD")
+    }
+    else if (!is.null(getOption("google.password")) && getOption("google.password") != "") {
+      psw <- getOption("google.password")
+    }
     
     if (is.null(psw)) stop("No Google password supplied.", call. = FALSE)
   }
