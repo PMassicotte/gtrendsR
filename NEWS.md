@@ -8,6 +8,8 @@
 
 - Fixing a bug where overriding `countries` variable was breaking package's functionalities (#109).
 
+- Correct default fallback for querying for google.user and google.password in gconnect (#121)
+
 # gtrendsR 1.3.4
 
 - Fixing login issue due to backend changes made by Google (#103). Thanks to @MrLoh for initial implementation and suggestions.
