@@ -49,7 +49,7 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
     
     if (Sys.getenv("GOOGLE_USER") != "") usr <- Sys.getenv("GOOGLE_USER")
     
-    if (getOption("google.user") != "") usr <- getOption("google.user")
+    if (getOption("google.user", "") != "") usr <- getOption("google.user")
     
     if (is.null(usr)) stop("No Google Username / account supplied.", 
                            call. = FALSE)
@@ -59,7 +59,7 @@ gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
     
     if (Sys.getenv("GOOGLE_PASSWORD") != "") psw <- Sys.getenv("GOOGLE_PASSWORD")
     
-    if (getOption("google.password") != "") psw <- getOption("google.password")
+    if (getOption("google.password", "") != "") psw <- getOption("google.password")
     
     if (is.null(psw)) stop("No Google password supplied.", call. = FALSE)
   }
