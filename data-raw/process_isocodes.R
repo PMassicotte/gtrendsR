@@ -1,6 +1,6 @@
 # Script to download ISO3166-2 country codes
 
-"http://www.unece.org/cefact/codesfortrade/codes_index.html"
+# source: http://www.unece.org/cefact/codesfortrade/codes_index.html
 
 dir <- tempdir()
 destfile <- paste0(dir, "/isocodes.zip")
