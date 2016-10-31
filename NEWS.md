@@ -1,5 +1,7 @@
 # gtrendsR 1.3.5
 
+- Added some missing country codes (#94). `data("countries")`.
+
 - Now able to specify for which Google products the request is performed using the `gprop` parameter (#112). Possible values are `froogle` for Google shopping, `new` for Google news, `youtube` for Youtube videos and `images` for Google images.
 
 - Now able to query using Google categories `?gtrends` (#89). 

@@ -1,16 +1,15 @@
 #' Word countries ISO code.
 #'
 #' \itemize{
-#'   \item code  ISO 3 characters codes
-#'   \item country Full countries names
-#'   \item subcode Countries subcodes
-#'   \item subname Countries subname
+#'   \item country_code  Two-digits country codes
+#'   \item description Descption of the location
+#'   \item sub_code ISO3166-2 country codes
 #' }
 #' 
 #' @docType data
 #' @keywords datasets
 #' @name countries
 #' @usage data("countries")
-#' @format A data frame with 4764 rows and 4 variables
+#' @format A data frame with 89743 rows and 3 variables
 #' @references \url{http://www.unece.org/cefact/codesfortrade/codes_index.html}
 NULL
