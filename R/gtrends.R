@@ -299,11 +299,13 @@ gtrends.default <- function(query = "",
     query <- iconv(query, "latin1", "utf-8", sub = "byte")
   }
   
-  countries[, 1] <- as.character(countries[, 1])
-  countries[, 2] <- as.character(countries[, 2])
-  countries[which(countries[, "country"] == "Namibia"), "code"] <- "NA"
+  # countries[, 1] <- as.character(countries[, 1])
+  # countries[, 2] <- as.character(countries[, 2])
+  # countries[which(countries[, "country"] == "Namibia"), "code"] <- "NA"
   
-  if (geo != "" && !all(geo %in% countries[, "code"]) && !all(geo %in% countries[, "subcode"])) {
+  if (geo != "" &&
+      !all(geo %in% countries[, "country_code"]) &&
+      !all(geo %in% countries[, "sub_code"])) {
     stop("Country code not valid. Please use 'data(countries)' to retreive valid codes.",
          call. = FALSE)
   }
