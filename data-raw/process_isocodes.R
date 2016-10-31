@@ -28,12 +28,13 @@ countries <-
     fileEncoding = "latin1"
   )
 
+# Bind everything
 countries <- do.call(rbind, countries)
 countries <- countries[, c(2, 4, 6)]
 countries <- unique(countries)
 names(countries) <- c("country_code", "description", "sub_code")
 
-# Remove entries without sub_code
+# Remove entries without sub_code and format the data
 index <- which(grepl("^\\.", countries$description) | countries$sub_code != "")
 countries <- countries[index, ]
 countries$sub_code <- ifelse(countries$sub_code != "",
