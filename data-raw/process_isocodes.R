@@ -44,3 +44,7 @@ countries$sub_code <- ifelse(countries$sub_code != "",
 # Save the data
 save(countries, file = "data/countries.rda") # for data("countries")
 save(countries, file = "R/sysdata.rda") # for internal use
+
+# Compress data
+tools::resaveRdaFiles("data/countries.rda")
+tools::resaveRdaFiles("R/sysdata.rda")
