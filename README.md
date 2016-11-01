@@ -37,7 +37,7 @@ connection here.
 
 ### Installation
 
-Since release 1.3.0, the package is on [CRAN](http://cran.r-project.org) and
+Since release 1.3.0, the package is on [CRAN](https://cran.r-project.org) and
 can be installed via
 
 ``` {.r}
