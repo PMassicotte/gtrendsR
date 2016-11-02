@@ -7,4 +7,4 @@
 
 ## R CMD check results
 
-There were no ERRORs and no WARNINGs. There is 1 NOTE for non-ascii characters because the package uses geographical data. Some countries have non-ascii characters such as *Pinar del Río* or *Médéa*. It is easier to use UTF-8 encoding.
+There were no ERRORS and not NOTES. There is one WARNING for non-ascii characters because the package uses geographical data. Some countries have non-ascii characters such as *Pinar del Río* or *Médéa*. It is easier to use UTF-8 encoding.
