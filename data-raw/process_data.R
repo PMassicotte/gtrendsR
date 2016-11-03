@@ -65,6 +65,9 @@ get_countries <- function() {
                                paste(countries$country_code, countries$sub_code, sep = "-"),
                                "")
   
+  # Fix the encoding
+  countries <- data.frame(sapply(countries, iconv, to = "ASCII//TRANSLIT"))
+  
   return(countries)
   
 }
