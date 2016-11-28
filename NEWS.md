@@ -1,3 +1,7 @@
+# gTrends 1.3.6 (unreleased)
+
+- Added missing all DMAs within the US (#146).
+
 # gtrendsR 1.3.5
 
 - Added some missing country codes (#94). `data("countries")`.

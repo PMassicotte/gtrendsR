@@ -65,13 +65,41 @@ get_countries <- function() {
                                paste(countries$country_code, countries$sub_code, sep = "-"),
                                "")
   
+  # *************************************************************************
+  # USA metro codes
+  # *************************************************************************
+  
+  dir <- tempdir()
+  destfile <- paste0(dir, "/dma.xlsx")
+  
+  file <- download.file("www.google.com/help/hc/downloads/ds3/Location-Language-Codes-AdWords.xlsx", 
+                        destfile = destfile)
+  
+  usa <- readxl::read_excel(destfile, skip = 1)
+  usa <- na.omit(usa[, c(8, 10, 11)])
+  
+  usa <- data.frame(
+    country_code = "US",
+    description = usa$Metro,
+    sub_code = paste(
+      "US",
+      lapply(regmatches(usa$Metro, regexec(", (\\S{2})", usa$Metro)), "[", 2),
+      usa$`Metro code`,
+      sep = "-"
+    )
+  )
+  
+  # *************************************************************************
+  # Merge together
+  # *************************************************************************
+  countries <- rbind(countries, usa)
+  
   # Fix the encoding
   countries <- data.frame(sapply(countries, iconv, to = "ASCII//TRANSLIT"))
   
   return(countries)
   
 }
-
 
 countries <- get_countries()
 categories <- get_categories()
