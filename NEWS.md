@@ -2,6 +2,8 @@
 
 - Added missing all DMAs within the US (#146).
 
+- Correctly parsing blocks that use the comma `,` thousand separator (#133).
+
 # gtrendsR 1.3.5
 
 - Added some missing country codes (#94). `data("countries")`.
