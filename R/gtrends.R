@@ -600,7 +600,7 @@ as.zoo.gtrends <- function(x, ...) {
     blocks <- lapply(start:length(vec), function(i) {
       
       dat <- vec[i]
-      dat <- gsub("(+\\d+)(,)", "\\1 ", dat) #replace thousand comma by a space
+      dat <- gsub("(+\\d+)(,)", "\\1", dat) #replace thousand comma by a space
       
       read.csv(textConnection(strsplit(dat, "\\\n")[[1]]),
                skip = 1,
