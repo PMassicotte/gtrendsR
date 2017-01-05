@@ -322,7 +322,8 @@ gtrends.default <- function(query = "",
     export = 1,
     date = date,
     geo = geo,
-    gprop = gprop
+    gprop = gprop,
+    hl = "en-US"
   )
 
   trendsURL <- paste(trendsURL, paste(names(pp), pp, sep = "=", collapse = "&"), sep = "")

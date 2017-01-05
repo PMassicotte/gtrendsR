@@ -1,8 +1,11 @@
-# gTrends 1.3.6 (unreleased)
+# gtrendsR 1.3.6 (unreleased)
 
 - Added missing all DMAs within the US (#146).
 
 - Correctly parsing blocks that use the comma `,` thousand separator (#133).
+
+- Force gtrendsR to download an English version of the csv file containing the requested data This will simplify data manipulation by avoiding non-ascii charaters in the headers (#128).
+
 
 # gtrendsR 1.3.5
 
