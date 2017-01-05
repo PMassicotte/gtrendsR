@@ -251,7 +251,7 @@ gtrends.default <- function(query = "",
   # Date verification.
   #---------------------------------------------------------------------
   
-  start_date <- as.Date(start_date, "%Y-%m-%d")  
+  start_date <- as.Date(start_date, "%hl=en-USY-%m-%d")  
   end_date <- as.Date(end_date, "%Y-%m-%d")  
   
   if (is.na(start_date)) {
@@ -322,7 +322,8 @@ gtrends.default <- function(query = "",
     export = 1,
     date = date,
     geo = geo,
-    gprop = gprop
+    gprop = gprop,
+    hl = "en-US"
   )
 
   trendsURL <- paste(trendsURL, paste(names(pp), pp, sep = "=", collapse = "&"), sep = "")
