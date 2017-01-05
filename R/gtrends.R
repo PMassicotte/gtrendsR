@@ -593,17 +593,20 @@ as.zoo.gtrends <- function(x, ...) {
   # Data likely returned monthly, so no geographical information.
   blocks <- NULL
   
-  if(length(vec) >= 3) {
+  if (length(vec) >= 3) {
     
     ## block 3+: geographical info
     start <- 3 # Always start at index 3
     
-    blocks <- lapply(start:length(vec), function(i)
-      read.csv(
-        textConnection(strsplit(vec[i], "\\\n")[[1]]),
-        skip = 1,
-        stringsAsFactors = FALSE
-      ))
+    blocks <- lapply(start:length(vec), function(i) {
+      
+      dat <- vec[i]
+      dat <- gsub("(+\\d+)(,)", "\\1", dat) #replace thousand comma by a space
+      
+      read.csv(textConnection(strsplit(dat, "\\\n")[[1]]),
+               skip = 1,
+               stringsAsFactors = FALSE)
+    })
     
     
     blocks <- Map(assign, 
