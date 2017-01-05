@@ -251,7 +251,7 @@ gtrends.default <- function(query = "",
   # Date verification.
   #---------------------------------------------------------------------
   
-  start_date <- as.Date(start_date, "%hl=en-USY-%m-%d")  
+  start_date <- as.Date(start_date, "%Y-%m-%d")  
   end_date <- as.Date(end_date, "%Y-%m-%d")  
   
   if (is.na(start_date)) {
