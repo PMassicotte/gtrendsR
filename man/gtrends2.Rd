@@ -46,5 +46,10 @@ head(gtrends2(c("NHL", "NFL")))
 
 head(gtrends2(c("NHL", "NFL"), geo = c("CA", "US")))
 
+## Sport category (20)
+data(categories)
+categories[grepl("^Sport", categories$name), ]
+head(gtrends2(c("NHL", "NFL"), geo = c("CA", "US"), category = 20))
+
 }
 

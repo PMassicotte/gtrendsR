@@ -36,6 +36,11 @@
 #' 
 #' head(gtrends2(c("NHL", "NFL"), geo = c("CA", "US")))
 #' 
+#' ## Sport category (20)
+#' data(categories)
+#' categories[grepl("^Sport", categories$name), ]
+#' head(gtrends2(c("NHL", "NFL"), geo = c("CA", "US"), category = 20))
+#' 
 #' @export
 gtrends2 <- function(keyword, geo = "", time = "today+5-y", gprop = "", category = 0) {
   
