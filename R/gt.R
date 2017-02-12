@@ -5,10 +5,10 @@ library(jsonlite)
 # ****************************************************************************
 payload <- list()
 
-keyword <- c("nhl", "nfl", "nba")
+keyword <- c("one", "two", "three")
 # time <- "today+5-y"
-# time <- "2016-12-18 2017-01-25"
-time <- "now 7-d"
+time <- "2017-02-09 2017-02-18"
+# time <- "now 7-d"
 geo <- c("CA", "FR", "US")
 
 df <- data.frame(keyword, geo, time)
@@ -52,6 +52,10 @@ url1 <- paste0(
 res <- curl::curl_fetch_memory(URLencode(url1))
 
 res <- read.csv(textConnection(rawToChar(res$content)), skip = 1, stringsAsFactors = FALSE)
+
+stopifnot(res$status_code == 200)
+
+nrow(res)
 
 res2 <- reshape(
   res,
