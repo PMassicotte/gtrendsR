@@ -1,15 +1,25 @@
 library(jsonlite)
 
+rm(list = ls())
+
 # ****************************************************************************
 # Request a token from Google
 # ****************************************************************************
 payload <- list()
 
-keyword <- c("one", "two", "three")
-# time <- "today+5-y"
-time <- "2017-02-09 2017-02-18"
+# keyword <- c("one", "two", "three")
+
+keyword <- "trump"
+
+# if (!(Encoding(keyword) == "UTF-8")) {
+#   keyword <- iconv(keyword, "latin1", "utf-8", sub = "byte")
+# }
+
+time <- "today+5-y"
+# time <- "2017-02-09 2017-02-18"
 # time <- "now 7-d"
-geo <- c("CA", "FR", "US")
+# geo <- c("CA", "FR", "US")
+geo <- c("CA", "DK", "US")
 
 df <- data.frame(keyword, geo, time)
 
@@ -59,11 +69,11 @@ nrow(res)
 
 res2 <- reshape(
   res,
-  varying = names(res)[2:4],
+  varying = names(res)[2:ncol(res)],
   v.names = "hits",
   direction = "long",
   timevar = "temp",
-  times = names(res)[2:4]
+  times = names(res)[2:ncol(res)]
 )
 
 res2 <- res2[, -2]
