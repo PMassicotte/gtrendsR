@@ -7,9 +7,9 @@ rm(list = ls())
 # ****************************************************************************
 payload <- list()
 
-# keyword <- c("one", "two", "three")
+keyword <- c("one", "two")
 
-keyword <- "trump"
+# keyword <- "trump"
 
 # if (!(Encoding(keyword) == "UTF-8")) {
 #   keyword <- iconv(keyword, "latin1", "utf-8", sub = "byte")
@@ -19,7 +19,8 @@ time <- "today+5-y"
 # time <- "2017-02-09 2017-02-18"
 # time <- "now 7-d"
 # geo <- c("CA", "FR", "US")
-geo <- c("CA", "DK", "US")
+geo <- c("CA", "DK", "FR", "US")
+# geo <- "US"
 
 df <- data.frame(keyword, geo, time)
 
