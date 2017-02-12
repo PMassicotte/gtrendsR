@@ -46,14 +46,26 @@ gtrends2 <- function(keyword, geo = "", time = "today+5-y", gprop = "", category
   
   stopifnot(
     # One  vector should be a multiple of the other
-    (length(keyword) %% length(geo) == 0) | (length(geo) %% length(keyword) == 0),
+    (length(keyword) %% length(geo) == 0) || (length(geo) %% length(keyword) == 0),
     is.vector(keyword),
     length(keyword) <= 5,
     length(geo) <= 5,
     length(time) == 1
-    ## check if valide category
-    ## check if valide geo
   )
+  
+  ## Check if valide geo
+  if (geo != "" &&
+      !all(geo %in% countries[, "country_code"]) &&
+      !all(geo %in% countries[, "sub_code"])) {
+    stop("Country code not valid. Please use 'data(countries)' to retreive valid codes.",
+         call. = FALSE)
+  }
+  
+  ## Check if valide category
+  if (!all(category %in% categories[, "id"]))  {
+    stop("Category code not valid. Please use 'data(categories)' to retreive valid codes.",
+         call. = FALSE)
+  }
   
   # time <- "today+5-y"
   # time <- "2017-02-09 2017-02-18"
