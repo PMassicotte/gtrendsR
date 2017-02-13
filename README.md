@@ -8,32 +8,14 @@ Trends (number of hits) over time as well as geographic representation of the re
 
 ### Example
 
-In this simple example, trends for keywords `nhl`, `nba` and `nfl` are
-retrieved and then plotted from R.
+In this simple example, trends for keywords `nhl`, `nba` are retrieved for Canada and USA and then plotted from R.
 
 ``` {.r}
 library(gtrendsR)
-usr <- "user@gmail.com"  # alternatively store as options() or env.var
-psw <- "password"        # idem
-gconnect(usr, psw)       # stores handle in environment
-sport_trend <- gtrends(c("nhl", "nba", "nfl"))
-plot(sport_trend)        # data set also included in package
+
+res <- gtrends(c("nhl", "nba"), geo = c("CA", "US"))
+plot(res)
 ```
-
-![result of sport_trend query](https://raw.githubusercontent.com/PMassicotte/gtrendsR/master/inst/images/sport_trend_2016-08-05.png)
-
-It is also possible to plot geographical data using `googleVis` as follow.
-
-``` {.r}
-plot(sport_trend, type = "geo", which = 5)
-plot(sport_trend, type = "geo", which = 6)
-plot(sport_trend, type = "geo", which = 7)
-```
-
-Should you have trouble connecting, and also use two-factor authentication on
-your Google Account, then consider creating another Google account (without
-two-factor authentication) which should allow automated (_i.e._ programmatic)
-connection here.
 
 ### Installation
 
