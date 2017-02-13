@@ -52,4 +52,19 @@ data(categories)
 categories[grepl("^Sport", categories$name), ]
 head(gtrends(c("NHL", "NFL"), geo = c("CA", "US"), category = 20))
 
+## Playing with time format
+
+head(gtrends(c("NHL", "NFL"), time = "now 1-H")) # last hour
+head(gtrends(c("NHL", "NFL"), time = "now 4-H")) # last four hours
+head(gtrends(c("NHL", "NFL"), time = "now 1-d")) # last day
+head(gtrends(c("NHL", "NFL"), time = "today 1-m")) # last 30 days
+head(gtrends(c("NHL", "NFL"), time = "today 3-m")) # last 90 days
+head(gtrends(c("NHL", "NFL"), time = "today 12-m")) # last 12 months
+head(gtrends(c("NHL", "NFL"), time = "today+5-y")) # last five years (default)
+head(gtrends(c("NHL", "NFL"), time = "all")) # since 2004
+
+## Custom date format
+
+head(gtrends(c("NHL", "NFL"), time = "2010-01-01 2010-04-03")) 
+
 }

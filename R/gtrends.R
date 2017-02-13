@@ -43,6 +43,21 @@
 #' categories[grepl("^Sport", categories$name), ]
 #' head(gtrends(c("NHL", "NFL"), geo = c("CA", "US"), category = 20))
 #' 
+#' ## Playing with time format
+#' 
+#' head(gtrends(c("NHL", "NFL"), time = "now 1-H")) # last hour
+#' head(gtrends(c("NHL", "NFL"), time = "now 4-H")) # last four hours
+#' head(gtrends(c("NHL", "NFL"), time = "now 1-d")) # last day
+#' head(gtrends(c("NHL", "NFL"), time = "today 1-m")) # last 30 days
+#' head(gtrends(c("NHL", "NFL"), time = "today 3-m")) # last 90 days
+#' head(gtrends(c("NHL", "NFL"), time = "today 12-m")) # last 12 months
+#' head(gtrends(c("NHL", "NFL"), time = "today+5-y")) # last five years (default)
+#' head(gtrends(c("NHL", "NFL"), time = "all")) # since 2004
+#' 
+#' ## Custom date format
+#' 
+#' head(gtrends(c("NHL", "NFL"), time = "2010-01-01 2010-04-03")) 
+#' 
 #' @export
 gtrends <- function(
   keyword, 
@@ -74,14 +89,22 @@ gtrends <- function(
          call. = FALSE)
   }
   
-  gprop <- match.arg(gprop, several.ok = FALSE)
+  ## Check if time format is ok
+  if (!check_time(time)) {
+    stop("Can not parse the supplied time format.", call. = FALSE)
+  }
   
   # time <- "today+5-y"
   # time <- "2017-02-09 2017-02-18"
   # time <- "now 7-d"
+  # time <- "all_2006"
+  # time <- "all"
+  # time <- "now 4-H"
   # geo <- c("CA", "FR", "US")
   # geo <- c("CA", "DK", "FR", "US", "CA")
   # geo <- "US"
+  
+  gprop <- match.arg(gprop, several.ok = FALSE)
   
   # ****************************************************************************
   # Request a token from Google
@@ -161,9 +184,14 @@ gtrends <- function(
   df$geo <- ifelse(df$geo == "", "world", df$geo)
   
   names(df)[1] <- "date"
+  df$id <- NULL
   
-  # Oh, it works!
-  df$date <- anytime::anytime(df$date)
+  # Format the returned date
+  if (time == "all") {
+    df$date <- anytime::anydate(df$date)
+  } else {
+    df$date <- anytime::anytime(df$date)
+  }
   
   class(df) <- c("gtrends", "data.frame")
   
