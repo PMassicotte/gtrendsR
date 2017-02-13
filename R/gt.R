@@ -132,6 +132,8 @@ gtrends2 <- function(keyword, geo = "", time = "today+5-y", gprop = "", category
                   skip = 1,
                   stringsAsFactors = FALSE)
   
+  n <- nrow(df) # used to reshape the data
+  
   df <- reshape(
     df,
     varying = names(df)[2:ncol(df)],
@@ -144,7 +146,7 @@ gtrends2 <- function(keyword, geo = "", time = "today+5-y", gprop = "", category
   df$temp <- NULL
   
   df <- cbind(df, 
-              comparison_item[rep(seq_len(nrow(comparison_item)), each = nrow(df)), 1:2], 
+              comparison_item[rep(seq_len(nrow(comparison_item)), each = n), 1:2], 
               row.names = NULL)
   
   df$geo <- ifelse(df$geo == "", "world", df$geo)
@@ -160,17 +162,33 @@ gtrends2 <- function(keyword, geo = "", time = "today+5-y", gprop = "", category
   
 }
 
-# keyword <- LETTERS[1:5]
-# 
-# # keyword <- "trump"
-# 
-# # if (!(Encoding(keyword) == "UTF-8")) {
-# #   keyword <- iconv(keyword, "latin1", "utf-8", sub = "byte")
-# # }
-# 
-# library(ggplot2)
-# 
-# ggplot(res2, aes(x = date, y = hits)) +
-#   geom_line(aes(color = paste(keyword, " (", geo, ")", sep = ""))) +
-#   theme(legend.title = element_blank())
+#' Plot Google Trends interest over time
+#' 
+#' @param x A \code{\link{gtrends}} object.
+#' @param ... Additional parameters passed on in method dispatch. Currently not
+#'   used.
+#'   
+#' @import ggplot2
+#'   
+#' @return A ggplot2 object is returned silently.
+#' @export
+#' 
+#' @examples
+#' res <- gtrends2("nhl", geo = c("CA", "US"))
+#' plot(res)
+plot.gtrends2 <- function(x, ...) {
 
+  x$legend <-  paste(x$keyword, " (", x$geo, ")", sep = "")
+  
+  p <- ggplot(x, aes_string(x = "date", y = "hits", color = "legend")) +
+    geom_line() +
+    xlab("Date") +
+    ylab("Search hits") +
+    ggtitle("Interest over time") +
+    theme_bw() +
+    theme(legend.title = element_blank()) 
+  
+  print(p)
+  invisible(p)
+   
+}

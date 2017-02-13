@@ -2,6 +2,7 @@
 
 S3method(gtrends,default)
 S3method(plot,gtrends)
+S3method(plot,gtrends2)
 S3method(summary,gtrends)
 export(gconnect)
 export(gtrends)
