@@ -42,7 +42,12 @@
 #' head(gtrends2(c("NHL", "NFL"), geo = c("CA", "US"), category = 20))
 #' 
 #' @export
-gtrends2 <- function(keyword, geo = "", time = "today+5-y", gprop = "", category = 0) {
+gtrends2 <- function(
+  keyword, 
+  geo = "", 
+  time = "today+5-y", 
+  gprop = c("", "news", "images", "froogle", "youtube"), 
+  category = 0) {
   
   stopifnot(
     # One  vector should be a multiple of the other
@@ -66,6 +71,8 @@ gtrends2 <- function(keyword, geo = "", time = "today+5-y", gprop = "", category
     stop("Category code not valid. Please use 'data(categories)' to retreive valid codes.",
          call. = FALSE)
   }
+  
+  gprop <- match.arg(gprop, several.ok = FALSE)
   
   # time <- "today+5-y"
   # time <- "2017-02-09 2017-02-18"
