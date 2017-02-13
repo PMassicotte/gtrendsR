@@ -183,6 +183,10 @@ create_geo_payload <- function(i, widget) {
                  skip = 1,
                  stringsAsFactors = FALSE)
   
+  if (nrow(df) == 0) {
+    return(NULL)
+  }
+  
   n <- nrow(df) # used to reshape the data
 
   df <- reshape(
