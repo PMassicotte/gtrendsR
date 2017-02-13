@@ -19,4 +19,3 @@ data("countries")
 \url{http://www.unece.org/cefact/codesfortrade/codes_index.html}
 }
 \keyword{datasets}
-

@@ -21,11 +21,8 @@ Depends:
     R (>= 3.0)
 LazyData: yes
 Imports:
-    rvest,
-    googleVis,
-    zoo,
     ggplot2,
     jsonlite,
     anytime,
     curl
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1

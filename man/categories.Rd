@@ -15,4 +15,3 @@ data("categories")
 }
 }
 \keyword{datasets}
-
