@@ -112,90 +112,20 @@ gtrends <- function(
   
   comparison_item <- data.frame(keyword, geo, time, stringsAsFactors = FALSE)
   
-  payload <- list()
-  payload$comparisonItem <- comparison_item
-  payload$category <- category
-  
-  url <- URLencode(paste0("https://www.google.com/trends/api/explore?property=&req=", 
-                          jsonlite::toJSON(payload, auto_unbox = TRUE), 
-                          "&tz=360&hl=en-US")) ## Need better than this
-  
-  widget <- curl::curl_fetch_memory(url)
-  
-  stopifnot(widget$status_code == 200)
-  
-  myjs <- jsonlite::fromJSON(substring(rawToChar(widget$content), first = 6))
-  widget <- myjs$widgets
-  
-  # widget$token
+  widget <- get_widget(comparison_item, category)
   
   # ****************************************************************************
-  # Now that we have a token, we can process the query
+  # Now that we have tokens, we can process the queries
   # ****************************************************************************
   
-  payload2 <- list()
-  payload2$locale <- unique(na.omit(widget$request$locale))
-  payload2$comparisonItem <- widget$request$comparisonItem[[1]]
-  payload2$resolution <- widget$request$resolution[1]
-  payload2$requestOptions$category <- unique(na.omit(widget$request$requestOptions$category))
-  payload2$requestOptions$backend <- unique(na.omit(widget$request$requestOptions$backend))
-  payload2$time <- unique(na.omit(widget$request$time))
+  df1 <- interest_over_time(widget, comparison_item)
+  df2 <- interest_by_region(widget, comparison_item)
   
+  res <- list(interest_over_time = df1, interest_by_region = df2)
   
-  url <- paste0(
-    "https://www.google.fr/trends/api/widgetdata/multiline/csv?req=",
-    jsonlite::toJSON(payload2, auto_unbox = T),
-    "&token=", widget$token[1],
-    "&tz=360"
-  )
-  
-  # ****************************************************************************
-  # Downoad the results
-  # ****************************************************************************
-  
-  res <- curl::curl_fetch_memory(URLencode(url))
-  
-  stopifnot(res$status_code == 200)
-  
-  # ****************************************************************************
-  # Format the results in a nice way
-  # ****************************************************************************
-  df <- read.csv(textConnection(rawToChar(res$content)),
-                  skip = 1,
-                  stringsAsFactors = FALSE)
-  
-  n <- nrow(df) # used to reshape the data
-  
-  df <- reshape(
-    df,
-    varying = names(df)[2:ncol(df)],
-    v.names = "hits",
-    direction = "long",
-    timevar = "temp",
-    times = names(df)[2:ncol(df)]
-  )
-  
-  df$temp <- NULL
-  
-  df <- cbind(df, 
-              comparison_item[rep(seq_len(nrow(comparison_item)), each = n), 1:2], 
-              row.names = NULL)
-  
-  df$geo <- ifelse(df$geo == "", "world", df$geo)
-  
-  names(df)[1] <- "date"
-  df$id <- NULL
-  
-  # Format the returned date
-  if (time == "all") {
-    df$date <- anytime::anydate(df$date)
-  } else {
-    df$date <- anytime::anytime(df$date)
-  }
-  
-  class(df) <- c("gtrends", "data.frame")
-  
-  return(df)
+  class(res) <- c("gtrends", "list")
+ 
+  return(res)
   
 }
 
@@ -215,9 +145,11 @@ gtrends <- function(
 #' plot(res)
 plot.gtrends <- function(x, ...) {
 
-  x$legend <-  paste(x$keyword, " (", x$geo, ")", sep = "")
+  df <- x$interest_over_time
   
-  p <- ggplot(x, aes_string(x = "date", y = "hits", color = "legend")) +
+  df$legend <-  paste(df$keyword, " (", df$geo, ")", sep = "")
+  
+  p <- ggplot(df, aes_string(x = "date", y = "hits", color = "legend")) +
     geom_line() +
     xlab("Date") +
     ylab("Search hits") +
