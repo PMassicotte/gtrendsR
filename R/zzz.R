@@ -200,10 +200,11 @@ create_geo_payload <- function(i, widget) {
   
   
   kw <- do.call(rbind, widget$request$comparisonItem[[i]]$complexKeywordsRestriction$keyword)
-  
-  df <- cbind(df, 
-             kw[rep(seq_len(nrow(kw)), each = ), 2], 
-              row.names = NULL)
+
+  df <- cbind(df,
+              kw[rep(seq_len(nrow(kw)), each =), 2],
+              row.names = NULL,
+              stringsAsFactors = FALSE)
   
   df$temp <- NULL
   df$geo <- widget$geo[i]
