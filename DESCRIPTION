@@ -26,3 +26,6 @@ Imports:
     anytime,
     curl
 RoxygenNote: 6.0.1
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr
