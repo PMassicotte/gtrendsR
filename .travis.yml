@@ -12,10 +12,11 @@ before_install:
   - curl -OL http://raw.github.com/craigcitro/r-travis/master/scripts/travis-tool.sh
   - chmod 755 ./travis-tool.sh
   - ./travis-tool.sh bootstrap
+  - ./travis-tool.sh install_r r-cran-knitr r-cran-rmarkdown
 
 install:
   - ./travis-tool.sh install_aptget r-cran-googlevis r-cran-zoo r-cran-ggplot2 r-cran-rvest r-cran-rcpp r-cran-bh
-  - ./travis-tool.sh install_r anytime r-cran-knitr r-cran-rmarkdown
+  - ./travis-tool.sh install_r anytime
 
 script:
   - ./travis-tool.sh run_tests
