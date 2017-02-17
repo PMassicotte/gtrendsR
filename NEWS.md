@@ -2,7 +2,8 @@
 
 ## Major change
 
-- Google sign in is no longer requiered to search on Google Trends. 
+- Due to recent changes to Google Trends API, `gtrendsR` has been almost re-written form scratch. One big visible change is that signing into a Google account is no longer required to download data from Google Trends.
+
 - Added a vignette (TODO)
 
 ## Bug fixes
@@ -15,7 +16,7 @@
 
 - Now able to specify for which Google products the request is performed using the `gprop` parameter (#112). Possible values are `froogle` for Google shopping, `new` for Google news, `youtube` for Youtube videos and `images` for Google images.
 
-- Now able to query using Google categories `?gtrends` (#89). 
+- Now able to query using Google categories `?gtrends` (#89).
 
 - Returned data is now tidy (#110). The `trend` object now contains `keyword`, `hits` and `location` header (`head(sport_trend$trend)`).
 
