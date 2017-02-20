@@ -55,12 +55,12 @@ check_time <- function(time) {
 }
 
 
-get_widget <- function(comparison_item, category) {
+get_widget <- function(comparison_item, category, gprop) {
   
   token_payload <- list()
   token_payload$comparisonItem <- comparison_item
   token_payload$category <- category
-  token_payload$property <- ""
+  token_payload$property <- gprop
   
   url <- URLencode(paste0("https://www.google.com/trends/api/explore?property=&req=", 
                           jsonlite::toJSON(token_payload, auto_unbox = TRUE), 
@@ -78,13 +78,13 @@ get_widget <- function(comparison_item, category) {
 interest_over_time <- function(widget, comparison_item) {
   
   payload2 <- list()
-  payload2$locale <- unique(na.omit(widget$request$locale))
+  payload2$locale <- widget$request$locale[1]
   payload2$comparisonItem <- widget$request$comparisonItem[[1]]
   payload2$resolution <- widget$request$resolution[1]
-  payload2$requestOptions$category <- unique(na.omit(widget$request$requestOptions$category))
-  payload2$requestOptions$backend <- unique(na.omit(widget$request$requestOptions$backend))
-  payload2$time <- unique(na.omit(widget$request$time))
-  payload2$requestOptions$property <- ""
+  payload2$requestOptions$category <- widget$request$requestOptions$category[1]
+  payload2$requestOptions$backend <- widget$request$requestOptions$backend[1]
+  payload2$time <- widget$request$time[1]
+  payload2$requestOptions$property <- widget$request$requestOptions$property[1]
   
   
   url <- paste0(
@@ -127,7 +127,7 @@ interest_over_time <- function(widget, comparison_item) {
               row.names = NULL)
   
   df$geo <- ifelse(df$geo == "", "world", df$geo)
-  
+  df$gprop <- ifelse(widget$request$requestOptions$property[1] == "", "web", widget$request$requestOptions$property[1])
   names(df)[1] <- "date"
   df$id <- NULL
   
@@ -163,11 +163,11 @@ create_geo_payload <- function(i, widget) {
   payload2$locale <- unique(na.omit(widget$request$locale))
   payload2$comparisonItem <- widget$request$comparisonItem[[i]]
   payload2$resolution <- widget$request$resolution[i]
-  payload2$requestOptions$category <- unique(na.omit(widget$request$requestOptions$category))
-  payload2$requestOptions$backend <- unique(na.omit(widget$request$requestOptions$backend))
-  payload2$requestOptions$property <- ""
-  payload2$geo <- as.list(widget$request$geo[i, , drop = FALSE])
+  payload2$requestOptions$backend <- widget$request$requestOptions$backend[i]
+  payload2$requestOptions$property <- widget$request$requestOptions$property[i]
   payload2$requestOptions$category <- widget$request$requestOptions$category[i]
+  payload2$geo <- as.list(widget$request$geo[i, , drop = FALSE])
+  
   
   url <- paste0(
     "https://www.google.com/trends/api/widgetdata/comparedgeo/csv?req=",
@@ -177,7 +177,8 @@ create_geo_payload <- function(i, widget) {
   )
   
   res <- curl::curl_fetch_memory(URLencode(url))
-  res$status_code
+  
+  stopifnot(res$status_code == 200)
   
   df <- read.csv(textConnection(rawToChar(res$content)),
                  skip = 1,

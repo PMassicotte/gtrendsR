@@ -4,7 +4,7 @@
 \alias{gtrends}
 \title{Google Trends Query}
 \usage{
-gtrends(keyword, geo = "", time = "today+5-y", gprop = c("", "news",
+gtrends(keyword, geo = "", time = "today+5-y", gprop = c("web", "news",
   "images", "froogle", "youtube"), category = 0)
 }
 \arguments{
@@ -26,7 +26,7 @@ search), \dQuote{news}, \dQuote{images}, \dQuote{froogle} and
 \item{category}{A character denoting the category, defaults to \dQuote{0}.}
 }
 \value{
-An object of class \sQuote{gtrends} (basically a dataframe).
+An object of class \sQuote{gtrends} (basically a list of data frames).
 }
 \description{
 The \code{gtrends} default method performs a Google Trends query for the 
@@ -66,5 +66,10 @@ head(gtrends(c("NHL", "NFL"), time = "all")) # since 2004
 ## Custom date format
 
 head(gtrends(c("NHL", "NFL"), time = "2010-01-01 2010-04-03")) 
+
+## Search from various Google's services
+
+head(gtrends(c("NHL", "NFL"), gprop = "news")$interest_over_time)
+head(gtrends(c("NHL", "NFL"), gprop = "youtube")$interest_over_time)
 
 }

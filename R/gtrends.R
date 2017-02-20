@@ -28,7 +28,7 @@
 #' @importFrom stats na.omit reshape
 #' @importFrom utils URLencode read.csv
 #'   
-#' @return An object of class \sQuote{gtrends} (basically a dataframe).
+#' @return An object of class \sQuote{gtrends} (basically a list of data frames).
 #'   
 #' @examples
 #' 
@@ -58,12 +58,17 @@
 #' 
 #' head(gtrends(c("NHL", "NFL"), time = "2010-01-01 2010-04-03")) 
 #' 
+#' ## Search from various Google's services
+#' 
+#' head(gtrends(c("NHL", "NFL"), gprop = "news")$interest_over_time)
+#' head(gtrends(c("NHL", "NFL"), gprop = "youtube")$interest_over_time)
+#' 
 #' @export
 gtrends <- function(
   keyword, 
   geo = "", 
   time = "today+5-y", 
-  gprop = c("", "news", "images", "froogle", "youtube"), 
+  gprop = c("web", "news", "images", "froogle", "youtube"), 
   category = 0) {
   
   stopifnot(
@@ -105,6 +110,7 @@ gtrends <- function(
   # geo <- "US"
   
   gprop <- match.arg(gprop, several.ok = FALSE)
+  gprop <- ifelse(gprop == "web", "", gprop)
   
   # ****************************************************************************
   # Request a token from Google
@@ -112,7 +118,7 @@ gtrends <- function(
   
   comparison_item <- data.frame(keyword, geo, time, stringsAsFactors = FALSE)
   
-  widget <- get_widget(comparison_item, category)
+  widget <- get_widget(comparison_item, category, gprop)
   
   # ****************************************************************************
   # Now that we have tokens, we can process the queries
