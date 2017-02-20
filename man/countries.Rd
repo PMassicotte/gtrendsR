@@ -11,7 +11,7 @@ data("countries")
 \description{
 \itemize{
   \item country_code  Two-digits country codes
-  \item description Descption of the location
+  \item description Description of the location
   \item sub_code ISO3166-2 country codes
 }
 }
@@ -19,4 +19,3 @@ data("countries")
 \url{http://www.unece.org/cefact/codesfortrade/codes_index.html}
 }
 \keyword{datasets}
-

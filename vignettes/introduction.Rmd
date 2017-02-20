@@ -1,0 +1,57 @@
+---
+title: "Introduction to gtrendsR"
+author: "Philippe Massicotte and Dirk Eddelbuettel"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r echo = FALSE}
+library(gtrendsR)
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 5, fig.height = 3, fig.align = 'center')
+```
+
+
+In version v2.0.0, `grendsR` gets a major revamping due to change in Google Trends API. One of the major difference is that login into a Google account is no longer requiered to perform queries.
+
+## Data structure
+
+```{r}
+res <- gtrends("NHL")
+str(res$interest_over_time)
+str(res$interest_by_region)
+```
+
+
+## Countries
+
+## Categories
+
+## Working with time
+
+| Keywords          | Time span                             |
+|------------------:|:--------------------------------------|
+| now 1-H           | Last hour                              |
+| now 4-H           | Last four hours                        |
+| now 1-d           | Last day                               |
+| now 7-d           | Last seven days                        |
+| today 1-m         | Past 30 days                           |
+| today 3-m         | Past 90 days                           |
+| today 12-m        | Past 12 months                         |
+| today+5-y         | Last 5 years (default)                 |
+| all               | Since begening of Google Trends (2004) |
+
+
+### Examples
+
+```{r}
+res <- gtrends("NHL", time = "now 1-H")
+
+plot(res)
+```
+
+
+

@@ -1,308 +1,81 @@
-#' Connect to Google account
-#'
-#' The resulting connection object is also stored in the package-local
-#' environment from which the (internal) helper function
-#' \code{.getDefaultConnection()} retrieves it as needed.
-#'
-#' If the environment variables \code{GOOGLE_USER} and
-#' \code{GOOGLE_PASSWORD} are set, they will be retrieved in case no
-#' argument has been supplied.  Similarly, the environment variable
-#' \code{options("google.user")} or \code{options("google.password")} can be
-#' used. Lastly, if the environment variable \code{GOOGLE_AUTOCONNECT}
-#' is set to (the text string) \sQuote{TRUE}, or the the R option
-#' \code{options("google.autoconnect")} is set to \sQuote{TRUE} then
-#' the connection is automatically made at package load.
-#'
-#' @note Should you have trouble connecting, and also use two-factor authentication on
-#' your Google Account, then consider creating another Google account (without
-#' two-factor authentication) which should allow automated (i.e. programmatic)
-#' connection here.
-
-#' @param usr User name (ex.: yourmail@gmail.com); alternatively the 
-#' environment variable \code{GOOGLE_USER} as well as 
-#' \code{options("google.user")} can be used to supply the user name.
-#' @param psw Account password; alternatively the environment
-#' variable \code{GOOGLE_PASSWORD} as well as 
-#' \code{options("google.password")} can be used to supply the password.
-#' @param verbose Logical for displaying additional information
-#'
-#' @return A libcurl handle is returned (invisibly).
-#' @import rvest
-#' @export
-#' @examples
-#' \dontrun{
-#' # use with explicit arguments
-#' session <- gconnect("usr@gmail.com", "psw")
-#' 
-#' # use with arguments stored in env.var or options()
-#' # this is preferred for scripts shared with others who
-#' # can place their secret password in a file only they know
-#' session <- gconnect("usr@gmail.com", "psw")
-#' }
-gconnect <- function(usr = NULL, psw = NULL, verbose = FALSE) {
-  
-  loginURL <- "https://accounts.google.com/accounts/ServiceLogin"
-  
-  # authenticateURL <- "https://accounts.google.com/ServiceLoginBoxAuth"
-  
-  if (is.null(usr)) {
-    
-    if (Sys.getenv("GOOGLE_USER") != "") usr <- Sys.getenv("GOOGLE_USER")
-    
-    if (getOption("google.user", "") != "") usr <- getOption("google.user")
-    
-    if (is.null(usr)) stop("No Google Username / account supplied.", 
-                           call. = FALSE)
-  }
-  
-  if (is.null(psw)) {
-    
-    if (Sys.getenv("GOOGLE_PASSWORD") != "") psw <- Sys.getenv("GOOGLE_PASSWORD")
-    
-    if (getOption("google.password", "") != "") psw <- getOption("google.password")
-    
-    if (is.null(psw)) stop("No Google password supplied.", call. = FALSE)
-  }
-  
-  session <- rvest::html_session(loginURL)
-  
-  
-  form <- rvest::html_node(session, "form")
-  form <- rvest::html_form(form)
-  form <- rvest::set_values(form, Email = usr)
-  
-  session <- suppressWarnings(suppressMessages(rvest::submit_form(session, form))) 
-  
-  form <- rvest::html_node(session, "form")
-  form <- rvest::html_form(form)
-  
-  if (!any(grepl("Passwd", form$fields))) {
-    stop("Invalid email.", call. = FALSE)
-  }
-  
-  form <- rvest::set_values(form, Passwd = psw)
-  
-  session <- suppressWarnings(suppressMessages(rvest::submit_form(session, form)))
-  
-  # look if the password was accepted
-  if (!any(grepl("DENY", session$response$headers))) {
-    
-    if (verbose) cat("Google login successful!\n")
-  
-  } else {
-    
-    cat("Google login failed! Check your login information.")
-    return(NULL)
-  }
-
-  ## store connection handler in package-local environment
-  assign("session", session, envir = .pkgenv)
-    
-  invisible(session)
-  
-}
-
-
-#' @rdname gconnect
-.getDefaultConnection <- function() {
-    session <- .pkgenv$session
-    if (is.null(session))
-      stop("No connection object has been created. Use 'gconnect()' first.",
-           call. = FALSE
-      )
-    session
-}
-
 #' Google Trends Query
 #' 
 #' The \code{gtrends} default method performs a Google Trends query for the 
 #' \sQuote{query} argument and session \sQuote{session}. Optional arguments for 
 #' geolocation and category can also be supplied.
 #' 
-#' @param query A character vector with the actual Google Trends query keywords.
-#'   Multiple keywords are possible using \code{gtrends(c("NHL", "NBA", "MLB", 
-#'   "MLS"))}.
+#' @param keyword A character vector with the actual Google Trends query 
+#'   keywords. Multiple keywords are possible using \code{gtrends(c("NHL", 
+#'   "NBA", "MLB", "MLS"))}.
 #'   
 #' @param geo A character vector denoting geographic regions for the query, 
 #'   default to \dQuote{all} for global queries. Multiple regions are possible 
 #'   using \code{gtrends("NHL", c("CA", "US"))}.
 #'   
-#' @param cat A character denoting the category, defaults to \dQuote{0}.
+#' @param time The time
+#'   
+#' @param category A character denoting the category, defaults to \dQuote{0}.
 #'   
 #' @param gprop A character string defining the Google product for which the 
 #'   trend query if preformed. Valid options are \dQuote{} (empty string - web 
 #'   search), \dQuote{news}, \dQuote{images}, \dQuote{froogle} and 
 #'   \dQuote{youtube}. Default is \dQuote{}.
 #'   
-#' @param res Resolution of the trending data to be returned. One of 
-#'   \code{c("1h", "4h", "1d", "7d")}. If \code{res} is provided, then 
-#'   \code{start_date} and \code{end_date} parameters are ignored. See 
-#'   \emph{Query resolution} for more information.
-#'   
-#' @param start_date Starting date using yyyy-mm-dd format. Must be greater than
-#'   2004-01-01.
-#'   
-#' @param end_date Starting date using yyyy-mm-dd format. Must be before than 
-#'   current date.
-#'   
-#' @param session A valid session which can be created via 
-#'   \code{\link{gconnect}}. Users can either supply an explicit handle, or rely
-#'   on the helper function \code{.getDefaultConnection()} to retrieve the 
-#'   current connection handle.
-#'   
-#' @param ... Additional parameters passed on in method dispatch.
-#'   
-#' @section Query resolution: By default, Google returns weekly information when
-#'   the requested data spans a period greater than three months. It is also 
-#'   possible to obtain \emph{daily} and \emph{hourly} information. However, 
-#'   these are only available for a certain period prior to the \emph{current} 
-#'   date.
-#'   
-#'   For instance, \code{1h}, \code{7h}, \code{1d} and \code{7d} denote trends 
-#'   data for the last 1 hour, last four hours, last day and last seven day 
-#'   respectively. Using one of the above \code{res} will return the 
-#'   corresponding hourly data.
-#'   
-#'   Note that data requested for a beriod between one and three months will be 
-#'   returned daily. For a  period greater than three months, data will be 
-#'   always returned weekly.
-#'   
 #' @section Categories: The package includes a complete list of categories that 
 #'   can be used to narrow requests. These can be accessed using 
 #'   \code{data("categories")}.
 #'   
-#' @return An object of class \sQuote{gtrends} which is list with six elements 
-#'   containing the results.
+#' @importFrom stats na.omit reshape
+#' @importFrom utils URLencode read.csv
 #'   
-#' @examples 
-#' \dontrun{
-#' session <- gconnect("usr@gmail.com", "psw")
+#' @return An object of class \sQuote{gtrends} (basically a dataframe).
+#'   
+#' @examples
 #' 
-#' gtrends(c("NHL", "NBA", "MLB", "MLS"))
+#' head(gtrends("NHL"))
 #' 
-#' gtrends("NHL", geo = c("CA", "US"))
+#' head(gtrends(c("NHL", "NFL")))
 #' 
-#' # Search only for the sport category.
-#' gtrends("NHL", geo = c("CA", "US"), cat = "0-20")
+#' head(gtrends(c("NHL", "NFL"), geo = c("CA", "US")))
 #' 
-#' # Trends between 2015-01-01 and 2015-03-01 in Sweeden. Will be daily data.
-#' gtrends("NHL", geo = c("SE"), start_date = "2015-01-01", end_date = "2015-03-01")
+#' ## Sport category (20)
+#' data(categories)
+#' categories[grepl("^Sport", categories$name), ]
+#' head(gtrends(c("NHL", "NFL"), geo = c("CA", "US"), category = 20))
 #' 
-#' # Trends between 2015-01-01 and 2015-04-01 in Sweeden. Will be weekly data.
-#' gtrends("NHL", geo = c("SE"), start_date = "2015-01-01", end_date = "2015-04-01")
+#' ## Playing with time format
 #' 
-#' # Last 4 hours trends
-#' gtrends("NHL", geo = c("CA"), res = "4h")
+#' head(gtrends(c("NHL", "NFL"), time = "now 1-H")) # last hour
+#' head(gtrends(c("NHL", "NFL"), time = "now 4-H")) # last four hours
+#' head(gtrends(c("NHL", "NFL"), time = "now 1-d")) # last day
+#' head(gtrends(c("NHL", "NFL"), time = "today 1-m")) # last 30 days
+#' head(gtrends(c("NHL", "NFL"), time = "today 3-m")) # last 90 days
+#' head(gtrends(c("NHL", "NFL"), time = "today 12-m")) # last 12 months
+#' head(gtrends(c("NHL", "NFL"), time = "today+5-y")) # last five years (default)
+#' head(gtrends(c("NHL", "NFL"), time = "all")) # since 2004
 #' 
-#' # Last 7 days trends
-#' gtrends("NHL", geo = c("CA"), res = "7d")
+#' ## Custom date format
 #' 
-#' # Using categories
+#' head(gtrends(c("NHL", "NFL"), time = "2010-01-01 2010-04-03")) 
 #' 
-#' data("categories")
-#' categories[grepl("music", categories$name, ignore.case = TRUE), ]
-#' 
-#' gtrends(cat = "1087")
-#' }
 #' @export
-gtrends <- function(query, geo, cat, gprop, session, ...) {
+gtrends <- function(
+  keyword, 
+  geo = "", 
+  time = "today+5-y", 
+  gprop = c("", "news", "images", "froogle", "youtube"), 
+  category = 0) {
   
-  UseMethod("gtrends")
-    
-}
-
-#' @importFrom utils data
-#' @importFrom utils URLencode
-#' @rdname gtrends
-#' @export
-gtrends.default <- function(query = "", 
-                            geo = "", 
-                            cat = "0", 
-                            gprop = c("", "news", "images", "froogle", "youtube"),
-                            session, 
-                            res = c(NA, "1h", "4h", "1d", "7d"),
-                            start_date = as.Date("2004-01-01"),
-                            end_date = as.Date(Sys.time()),
-                            ...){
-
-  if (missing(session))  session  <- .getDefaultConnection()
-
-  stopifnot(is.character(query),
-            is.vector(query),
-            length(query) <= 5,
-            length(geo) <= 5,
-            cat %in% categories$id)
+  stopifnot(
+    # One  vector should be a multiple of the other
+    (length(keyword) %% length(geo) == 0) || (length(geo) %% length(keyword) == 0),
+    is.vector(keyword),
+    length(keyword) <= 5,
+    length(geo) <= 5,
+    length(time) == 1
+  )
   
-  res <- match.arg(res, several.ok = FALSE)
-  gprop <- match.arg(gprop, several.ok = FALSE)
-  
-  if (length(query) > 1 & length(geo) > 1) {
-    stop("Can not specify multiple keywords and geo at the same time.",
-         call. = FALSE)
-  }
-  
-  cmpt <- ifelse(length(query) > 1, "q", "geo")
-  
-  if (is.null(session))
-    stop("You are not signed in. Please log in using gconnect().",
-         call. = FALSE)
-
-  #---------------------------------------------------------------------
-  # Date verification.
-  #---------------------------------------------------------------------
-  
-  start_date <- as.Date(start_date, "%Y-%m-%d")  
-  end_date <- as.Date(end_date, "%Y-%m-%d")  
-  
-  if (is.na(start_date)) {
-    stop("start_date is not a valid date. Please use yyyy-mm-dd format.",
-         call. = FALSE)
-  } 
-  
-  if (is.na(end_date)) {
-    stop("end_date is not a valid date. Please use yyyy-mm-dd format.",
-         call. = FALSE)
-  } 
-  
-  stopifnot(start_date < end_date, 
-            start_date >= as.Date("2004-01-01"), # cant be earlier than 2004
-            end_date <= as.Date(Sys.time())) # cant be more than current date
-  
-  nmonth <- length(seq(from = start_date, to = end_date, by = "month"))
-  
-  if (nmonth >= 1) {
-    date <- paste(format(start_date, "%m/%Y"), paste(nmonth, "m", sep = ""))
-  }
-  
-  if (!is.na(res)) {
-    
-    # Match Google code (ex. 1-H) to a more user friendly value (1h)
-    resolution_code <-
-      data.frame(
-        code = c("1-H", "4-H", "1-d", "7-d"),
-        res = c("1h", "4h", "1d", "7d"),
-        stringsAsFactors = FALSE
-      )
-    
-    res <- resolution_code$code[resolution_code$res == res]
-    
-    date <- paste("now" , res)
-  }
-
-  #---------------------------------------------------------------------
-  # Build the query.
-  #---------------------------------------------------------------------
-  query <- paste(query, collapse = ",")
-  
-  ## Change encoding to utf-8
-  if (!(Encoding(query) == "UTF-8")) {
-    query <- iconv(query, "latin1", "utf-8", sub = "byte")
-  }
-  
-  # countries[, 1] <- as.character(countries[, 1])
-  # countries[, 2] <- as.character(countries[, 2])
-  # countries[which(countries[, "country"] == "Namibia"), "code"] <- "NA"
-  
+  ## Check if valide geo
   if (geo != "" &&
       !all(geo %in% countries[, "country_code"]) &&
       !all(geo %in% countries[, "sub_code"])) {
@@ -310,321 +83,81 @@ gtrends.default <- function(query = "",
          call. = FALSE)
   }
   
-  geo <- paste(geo, sep = "", collapse = ", ")
-
-  trendsURL <- "https://www.google.com/trends/trendsReport?"
-
-  pp <- list(
-    q = query,
-    cat = cat,
-    cmpt = cmpt,
-    content = 1,
-    export = 1,
-    date = date,
-    geo = geo,
-    gprop = gprop,
-    hl = "en-US"
-  )
-
-  trendsURL <- paste(trendsURL, paste(names(pp), pp, sep = "=", collapse = "&"), sep = "")
-  trendsURL <- URLencode(trendsURL)
-  
-  resultsText <- rvest::jump_to(session, trendsURL)
-  
-  if (any(grep("quota", resultsText, ignore.case = TRUE))) {
-    stop("Reached Google Trends quota limit! Please try again later.")
-  }
-  
-  queryparams <- c(
-    query = query,
-    cat = cat,
-    geo = geo,
-    time = format(Sys.time())
-  )
-  
-  
-  resultsText <- rawToChar(resultsText$response$content)
-
-  res <- .processResults(resultsText, queryparams)
-
-  class(res) <- c("gtrends", "list")
-    
-  res
-}
-
-#' @rdname gtrends
-#' @param object A \code{\link{gtrends}} object
-#' @import zoo
-#' @export
-summary.gtrends <- function(object, ...) {
-  cat("Google Trends results for:\n")
-  cat(unlist(strsplit(object$query[1], ",")))
-  cat("\nRequested at: ")
-  cat(object$query[4])
-  cat("\n\nSummary of trend:\n")
-  print(summary(as.zoo.gtrends(object)))
-  ## cat("\nMain regions:\n")
-  ## print(head(object[["regions"]]))
-  ## cat("\nMain cities:\n")
-  ## print(head(object[["cities"]]))
-  ## cat("\nTop searches cities:\n")
-  ## print(head(object[["searches"]]))
-  ## cat("\nRising searches:\n")
-  ## print(head(object[["rising"]]))
-  invisible(NULL)
-}
-
-#' @rdname gtrends
-#' @param x A \code{\link{gtrends}} object
-#' @param type A character variable selecting the type of plot;
-#' permissible values are \sQuote{trends} (which is also the
-#' default), \sQuote{geo}.
-#' @param which Block number containing the geographical data to plot.
-#' @param ind A integer selecting the result set in case of multiple
-#' search terms.
-#' @return When \code{type} is equal to \sQuote{trends}, the resulting 
-#' ggplot2 object is returned silently.
-#' @import googleVis
-#' @import ggplot2
-#' @importFrom graphics plot
-#' @importFrom stats reshape
-#' @importFrom utils data
-#' @examples 
-#' data("sport_trend")
-#' plot(sport_trend)
-#' @export
-plot.gtrends <- function(x, type = c("trend", "geo"), which = 5, ind = 1L, ...){
-  
-  type <- match.arg(type)
-  ret <- NULL # by default we return nothing
-  
-  if (type == "trend") {
-    
-    if (length(unique(x$trend$location)) != 1) {
-      color <- "location"
-      linetype <- "keyword"
-    } else {
-      color <- "keyword"
-      linetype <- "location"
-    }
-    
-    p <- ggplot(x$trend, aes_string(x = "start", y = "hits")) +
-      geom_line(aes_string(color = color, linetype = linetype)) +
-      xlab("Date") +
-      ylab("Search hits") +
-      ggtitle("Interest over time") +
-      theme_bw()
-
-    print(p)
-    ret <- p
-    
-  } else if (type == "geo") {
-    
-    stopifnot(ind <= length(x[which]),
-              which >= 5,
-              which <= length(x))
-    
-    block <- x[which][[ind]]
-    
-    # Try to find if the requested block contains geographic information.
-    if (!any(tolower(block[1,]) %in% tolower(countries$description))) {
-      
-      message("The requested block does not seems to contain geographical information. Please choose another block.")
-      
-      print(paste(1:length(x), ":", " ", names(x), sep = ""))
-      
-      stop(call. = FALSE)
-      
-    }
-    
-    if (all(is.na(block)))
-      stop("Not enough search volume to show results.",
-           call. = FALSE)
-    
-    df <- data.frame(loc = block[, 1], hits = block[, 2])
-    
-    plot(gvisGeoChart(
-      df,
-      "loc",
-      "hits",
-      options = list(
-        region = "world",
-        displayMode = "markers",
-        resolution = "countries"
-      )
-    ))
-  }
-  
-  invisible(ret)
-}
-
-#' @rdname gtrends
-as.zoo.gtrends <- function(x, ...) {
-  z <- zoo(x[["trend"]][, -(1:2), drop = FALSE],
-           order.by = x[["trend"]][, "end"])
-  z
-}
-
-#' @importFrom utils read.csv
-#' @importFrom stats na.omit
-.processResults <- function(resultsText, queryparams) {
-
-  vec <- strsplit(resultsText, "\\\n{2,}")[[1]]
-  
-  headers <- unname(sapply(vec, function(v) strsplit(v, "\\\n")[[1]][1]))
-  
-  # Make sure there are some results have been returned.
-  if (length(vec) < 2) {
-    stop("Not enough search volume. Please change your search terms.",
+  ## Check if valide category
+  if (!all(category %in% categories[, "id"]))  {
+    stop("Category code not valid. Please use 'data(categories)' to retreive valid codes.",
          call. = FALSE)
   }
   
-  #---------------------------------------------------------------------
-  # Section to deal with trend data.
-  #---------------------------------------------------------------------
-  
-  kw <- unlist(strsplit(queryparams[1], ","), use.names = FALSE)
-  cat <- unlist(strsplit(queryparams[2], ","), use.names = FALSE)
-  geo <- unlist(strsplit(queryparams[3], ","), use.names = FALSE)
-  
-  if (length(geo) == 0) {
-    geo <- "World"
+  ## Check if time format is ok
+  if (!check_time(time)) {
+    stop("Can not parse the supplied time format.", call. = FALSE)
   }
   
-  # meta data
-  meta  <- strsplit(vec[1], "\\\r\\\n")[[1]]
-
-  # trend
-  trend <- read.csv(textConnection(strsplit(vec[2], "\\\n")[[1]]),
-                    skip = 1,
-                    stringsAsFactors = FALSE)
+  # time <- "today+5-y"
+  # time <- "2017-02-09 2017-02-18"
+  # time <- "now 7-d"
+  # time <- "all_2006"
+  # time <- "all"
+  # time <- "now 4-H"
+  # geo <- c("CA", "FR", "US")
+  # geo <- c("CA", "DK", "FR", "US", "CA")
+  # geo <- "US"
   
-  # block date
-  weeks <- data.frame(date = do.call(rbind, strsplit(trend[, 1], " - ")),
-                      stringsAsFactors = FALSE)
+  gprop <- match.arg(gprop, several.ok = FALSE)
   
-
-  trend <- trend[, 2:ncol(trend), drop = FALSE]
-
+  # ****************************************************************************
+  # Request a token from Google
+  # ****************************************************************************
   
-  trend <-
-    as.data.frame(lapply(trend, function(x)
-      as.numeric(gsub(
-        "([0-9]+).*$", "\\1", x
-      ))))
-
-  # No keyword provided, it must be a category
-  if (length(kw) == 0) {
-    kw <- gsub("\\.+", " ", names(trend))
-  }
-
-  tmp_kw <- paste("kw", 1:ncol(trend), sep = "_")
-  names(trend) <- tmp_kw
-
-  if (ncol(weeks) == 2) {
-    
-    weeks <- lapply(weeks, as.POSIXct, SIMPLIFY = FALSE)
-    weeks <- do.call(cbind.data.frame, weeks)
-    names(weeks) <- c("start", "end")[1:ncol(weeks)]
+  comparison_item <- data.frame(keyword, geo, time, stringsAsFactors = FALSE)
   
-  }
+  widget <- get_widget(comparison_item, category)
   
-  # Either daily or hourly data
-  if (ncol(weeks) == 1) {
-    
-    if (nchar(weeks$date[1]) == 7) {
-      
-      # Sometimes data are returned without a day. Asusme it is first day of month.
-      weeks <- as.POSIXct(paste(weeks[, 1], "-01", sep = ""))
-      weeks <- data.frame(start = weeks)
-      
-      warning("Data was returned monthly.", call. = FALSE)
-      
-    } else if (nchar(weeks$date[1]) == 10) { 
-      
-      weeks <- as.POSIXct(weeks$date)
-      weeks <- data.frame(start = weeks)
-      
-    } else {
-      
-      weeks <- as.POSIXct(weeks[, 1], format = "%Y-%m-%d-%H:%M", tz = "UTC")
-      weeks <- data.frame(start = weeks)
-      
-    }
-    
-  }
+  # ****************************************************************************
+  # Now that we have tokens, we can process the queries
+  # ****************************************************************************
   
-  trend <- cbind(weeks, trend)
-
-  if (length(geo) == 1) {
-    times <- kw
-    timevar <- "keyword"
-  } else {
-    times <- geo
-    timevar <- "location"
-  }
+  df1 <- interest_over_time(widget, comparison_item)
+  df2 <- interest_by_region(widget, comparison_item)
   
-  trend <- reshape(
-    trend,
-    varying = tmp_kw,
-    v.names = "hits",
-    direction = "long",
-    timevar = timevar,
-    times = times
-  )
+  res <- list(interest_over_time = df1, interest_by_region = df2)
   
-  trend <- trend[, -ncol(trend)] # Remvoe the generated id
-  row.names(trend) <- NULL 
-  
-  if (length(geo) == 1) {
-    trend$location = geo
-  } else {
-    trend$keyword = kw
-  }
-  
-  
-  # Remove lines with all NA (happens sometimes to the last line of the df)
-  trend <- na.omit(trend)
-
-  #---------------------------------------------------------------------
-  # Section to deal with geographical data
-  #---------------------------------------------------------------------
-  
-  # Data likely returned monthly, so no geographical information.
-  blocks <- NULL
-  
-  if (length(vec) >= 3) {
-    
-    ## block 3+: geographical info
-    start <- 3 # Always start at index 3
-    
-    blocks <- lapply(start:length(vec), function(i) {
-      
-      dat <- vec[i]
-      dat <- gsub("(+\\d+)(,)", "\\1", dat) #replace thousand comma by a space
-      
-      read.csv(textConnection(strsplit(dat, "\\\n")[[1]]),
-               skip = 1,
-               stringsAsFactors = FALSE)
-    })
-    
-    
-    blocks <- Map(assign, 
-                  make.names(headers[start:length(headers)]), 
-                  value = blocks)
-  }
-  
-  res <- list(query = queryparams,
-              meta = meta,
-              trend = trend,
-              headers = headers)
-
-  res <- append(res, blocks)
-
-  # if data was returned monthly, it will not be possible to plot maps
-  res[lapply(res, length) == 0]  <- NA
-  
-  class(res) <- "gtrends"
+  class(res) <- c("gtrends", "list")
+ 
   return(res)
+  
 }
 
+#' Plot Google Trends interest over time
+#' 
+#' @param x A \code{\link{gtrends}} object.
+#' @param ... Additional parameters passed on in method dispatch. Currently not
+#'   used.
+#'   
+#' @import ggplot2
+#'   
+#' @return A ggplot2 object is returned silently.
+#' @export
+#' 
+#' @examples
+#' res <- gtrends("nhl", geo = c("CA", "US"))
+#' plot(res)
+plot.gtrends <- function(x, ...) {
+
+  df <- x$interest_over_time
+  
+  df$legend <-  paste(df$keyword, " (", df$geo, ")", sep = "")
+  
+  p <- ggplot(df, aes_string(x = "date", y = "hits", color = "legend")) +
+    geom_line() +
+    xlab("Date") +
+    ylab("Search hits") +
+    ggtitle("Interest over time") +
+    theme_bw() +
+    theme(legend.title = element_blank()) 
+  
+  print(p)
+  invisible(p)
+   
+}

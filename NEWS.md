@@ -1,11 +1,14 @@
-# gtrendsR 1.3.6 (unreleased)
+# gtrendsR 2.0.0 (unreleased)
+
+## Major change
+
+- Due to recent changes to Google Trends API, `gtrendsR` has been almost re-written form scratch. One big visible change is that signing into a Google account is no longer required to download data from Google Trends.
+
+- Added a vignette (TODO)
+
+## Bug fixes
 
 - Added missing all DMAs within the US (#146).
-
-- Correctly parsing blocks that use the comma `,` thousand separator (#133).
-
-- Force gtrendsR to download an English version of the csv file containing the requested data This will simplify data manipulation by avoiding non-ascii charaters in the headers (#128).
-
 
 # gtrendsR 1.3.5
 
@@ -13,7 +16,7 @@
 
 - Now able to specify for which Google products the request is performed using the `gprop` parameter (#112). Possible values are `froogle` for Google shopping, `new` for Google news, `youtube` for Youtube videos and `images` for Google images.
 
-- Now able to query using Google categories `?gtrends` (#89). 
+- Now able to query using Google categories `?gtrends` (#89).
 
 - Returned data is now tidy (#110). The `trend` object now contains `keyword`, `hits` and `location` header (`head(sport_trend$trend)`).
 
