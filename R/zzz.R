@@ -211,10 +211,11 @@ create_geo_payload <- function(i, widget) {
   df$geo <- widget$geo[i]
   
   df$geo <- ifelse(df$geo == "", "world", df$geo)
+  df$gprop <- ifelse(widget$request$requestOptions$property[i] == "", "web", widget$request$requestOptions$property[i])
   df$id <- NULL
   rownames(df) <- NULL
   
-  names(df) <- c("location", "hits", "keyword", "geo")
+  names(df) <- c("location", "hits", "keyword", "geo", "gprop")
   
   return(df)
 }
