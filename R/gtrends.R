@@ -12,50 +12,46 @@
 #'   default to \dQuote{all} for global queries. Multiple regions are possible 
 #'   using \code{gtrends("NHL", c("CA", "US"))}.
 #'   
-#' @param time A string specifying the time span of the query. Possible values are:
-#' 
-#' \describe{
-#'   \item{"now 1-H"}{Last hour}
-#'   \item{"now 4-H"}{Last four hours}
-#'   \item{"now 1-d"}{Last day}
-#'   \item{"now 7-d"}{Last seven days}
-#'   \item{"today 1-m"}{Past 30 days}
-#'   \item{"today 3-m"}{Past 90 days}
-#'   \item{"today 12-m"}{Past 12 months}
-#'   \item{"today+5-y"}{Last five years (default)}
-#'   \item{"all"}{Since the beginning of Google Trends (2004)}
-#'   \item{"Y-m-d Y-m-d"}{Time span between two dates (ex.: "2010-01-01 2010-04-03")}
-#' }
+#' @param time A string specifying the time span of the query. Possible values
+#'   are:
+#'   
+#'   \describe{ \item{"now 1-H"}{Last hour} \item{"now 4-H"}{Last four hours} 
+#'   \item{"now 1-d"}{Last day} \item{"now 7-d"}{Last seven days} \item{"today
+#'   1-m"}{Past 30 days} \item{"today 3-m"}{Past 90 days} \item{"today
+#'   12-m"}{Past 12 months} \item{"today+5-y"}{Last five years (default)} 
+#'   \item{"all"}{Since the beginning of Google Trends (2004)} \item{"Y-m-d
+#'   Y-m-d"}{Time span between two dates (ex.: "2010-01-01 2010-04-03")} }
 #'   
 #' @param category A character denoting the category, defaults to \dQuote{0}.
 #'   
 #' @param gprop A character string defining the Google product for which the 
 #'   trend query if preformed. Valid options are:
 #'   
-#'   \itemize{
-#'   \item "web" (default)
-#'   \item "news"
-#'   \item "images"
-#'   \item "froogle"
-#'   \item "youtube"
-#' }
+#'   \itemize{ \item "web" (default) \item "news" \item "images" \item "froogle"
+#'   \item "youtube" }
 #'   
 #' @section Categories: The package includes a complete list of categories that 
 #'   can be used to narrow requests. These can be accessed using 
 #'   \code{data("categories")}.
 #'   
+#' @section Related topics: Note that *related topics* are not retrieved when
+#'   more than one keyword is provided due to Google restriction.
+#'   
 #' @importFrom stats na.omit reshape
 #' @importFrom utils URLencode read.csv
 #'   
-#' @return An object of class \sQuote{gtrends} (basically a list of data frames).
+#' @return An object of class \sQuote{gtrends} (basically a list of data
+#'   frames).
 #'   
 #' @examples
 #' 
-#' head(gtrends("NHL"))
+#' head(gtrends("NHL")$interest_over_time)
+#' head(gtrends("NHL")$related_topics)
+#' head(gtrends("NHL")$related_queries)
 #' 
-#' head(gtrends(c("NHL", "NFL")))
+#' head(gtrends(c("NHL", "NFL"))$interest_over_time)
 #' 
-#' head(gtrends(c("NHL", "NFL"), geo = c("CA", "US")))
+#' head(gtrends(c("NHL", "NFL"), geo = c("CA", "US"))$interest_over_time)
 #' 
 #' ## Sport category (20)
 #' data(categories)
@@ -143,10 +139,17 @@ gtrends <- function(
   # Now that we have tokens, we can process the queries
   # ****************************************************************************
   
-  df1 <- interest_over_time(widget, comparison_item)
-  df2 <- interest_by_region(widget, comparison_item)
-  
-  res <- list(interest_over_time = df1, interest_by_region = df2)
+  interest_over_time <- interest_over_time(widget, comparison_item)
+  interest_by_region <- interest_by_region(widget, comparison_item)
+  related_topics <- related_topics(widget, comparison_item)
+  related_queries <- related_queries(widget, comparison_item)
+    
+  res <- list(
+    interest_over_time = interest_over_time, 
+    interest_by_region = interest_by_region, 
+    related_topics = related_topics, 
+    related_queries = related_queries
+  )
   
   class(res) <- c("gtrends", "list")
  
