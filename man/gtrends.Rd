@@ -16,36 +16,27 @@ keywords. Multiple keywords are possible using \code{gtrends(c("NHL",
 default to \dQuote{all} for global queries. Multiple regions are possible 
 using \code{gtrends("NHL", c("CA", "US"))}.}
 
-\item{time}{A string specifying the time span of the query. Possible values are:
+\item{time}{A string specifying the time span of the query. Possible values
+are:
 
-\describe{
-  \item{"now 1-H"}{Last hour}
-  \item{"now 4-H"}{Last four hours}
-  \item{"now 1-d"}{Last day}
-  \item{"now 7-d"}{Last seven days}
-  \item{"today 1-m"}{Past 30 days}
-  \item{"today 3-m"}{Past 90 days}
-  \item{"today 12-m"}{Past 12 months}
-  \item{"today+5-y"}{Last five years (default)}
-  \item{"all"}{Since the beginning of Google Trends (2004)}
-  \item{"Y-m-d Y-m-d"}{Time span between two dates (ex.: "2010-01-01 2010-04-03")}
-}}
+\describe{ \item{"now 1-H"}{Last hour} \item{"now 4-H"}{Last four hours} 
+\item{"now 1-d"}{Last day} \item{"now 7-d"}{Last seven days} \item{"today
+1-m"}{Past 30 days} \item{"today 3-m"}{Past 90 days} \item{"today
+12-m"}{Past 12 months} \item{"today+5-y"}{Last five years (default)} 
+\item{"all"}{Since the beginning of Google Trends (2004)} \item{"Y-m-d
+Y-m-d"}{Time span between two dates (ex.: "2010-01-01 2010-04-03")} }}
 
 \item{gprop}{A character string defining the Google product for which the 
-  trend query if preformed. Valid options are:
-  
-  \itemize{
-  \item "web" (default)
-  \item "news"
-  \item "images"
-  \item "froogle"
-  \item "youtube"
-}}
+trend query if preformed. Valid options are:
+
+\itemize{ \item "web" (default) \item "news" \item "images" \item "froogle"
+\item "youtube" }}
 
 \item{category}{A character denoting the category, defaults to \dQuote{0}.}
 }
 \value{
-An object of class \sQuote{gtrends} (basically a list of data frames).
+An object of class \sQuote{gtrends} (basically a list of data
+  frames).
 }
 \description{
 The \code{gtrends} default method performs a Google Trends query for the 
@@ -58,13 +49,20 @@ geolocation and category can also be supplied.
   \code{data("categories")}.
 }
 
+\section{Related topics}{
+ Note that *related topics* are not retrieved when
+  more than one keyword is provided due to Google restriction.
+}
+
 \examples{
 
-head(gtrends("NHL"))
+head(gtrends("NHL")$interest_over_time)
+head(gtrends("NHL")$related_topics)
+head(gtrends("NHL")$related_queries)
 
-head(gtrends(c("NHL", "NFL")))
+head(gtrends(c("NHL", "NFL"))$interest_over_time)
 
-head(gtrends(c("NHL", "NFL"), geo = c("CA", "US")))
+head(gtrends(c("NHL", "NFL"), geo = c("CA", "US"))$interest_over_time)
 
 ## Sport category (20)
 data(categories)
