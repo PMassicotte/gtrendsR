@@ -15,7 +15,7 @@ related_topics <- function(widget, comparison_item) {
 create_related_topics_payload <- function(i, widget) {
   
   payload2 <- list()
-  payload2$restriction$geo <-  as.list(widget$request$geo[i, , drop = FALSE])
+  payload2$restriction$geo <-  as.list(widget$request$restriction$geo[i, , drop = FALSE])
   payload2$restriction$time <- widget$request$restriction$time[[i]]
   payload2$restriction$complexKeywordsRestriction$keyword <- widget$request$restriction$complexKeywordsRestriction$keyword[[i]]
   payload2$keywordType <- widget$request$keywordType[[i]]
