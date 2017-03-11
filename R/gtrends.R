@@ -148,7 +148,7 @@ gtrends <- function(
     interest_over_time = interest_over_time, 
     interest_by_region = interest_by_region$region,
     interest_by_dma = interest_by_region$dma,
-    interst_by_city = interest_by_region$city,
+    interest_by_city = interest_by_region$city,
     related_topics = related_topics, 
     related_queries = related_queries
   )
