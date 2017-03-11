@@ -2,13 +2,8 @@ related_topics <- function(widget, comparison_item) {
   
   i <- which(grepl("Related topics", widget$title) == TRUE)
   
-  if (length(i) == 0) {
-    return(NULL)
-  }
-  
   res <- lapply(i, create_related_topics_payload, widget = widget)
   res <- do.call(rbind, res)
-  
   
   return(res)
 }
@@ -77,6 +72,7 @@ create_related_topics_payload <- function(i, widget) {
   
   res <- rbind(top, rising)
   res$id <- NULL
+  res$geo <-  unlist(payload2$restriction$geo, use.names = FALSE)
   
   return(res)
 }
