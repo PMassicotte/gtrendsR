@@ -37,6 +37,12 @@ create_related_queries_payload <- function(i, widget) {
   
   res <- readLines(textConnection(rawToChar(res$content)))
   
+  ## Not enough data
+  ## https://trends.google.ca/trends/explore?cat=20&date=today%205-y,today%205-y&geo=CA,US&q=NHL,NFL
+  if (length(res) <= 4) {
+    return(NULL)
+  }
+  
   i <- which(grepl("$^", res))[1:2]
   start <- i[1]
   end <- i[2]
@@ -73,6 +79,7 @@ create_related_queries_payload <- function(i, widget) {
   
   res <- rbind(top, rising)
   res$id <- NULL
+  res$geo <-  unlist(payload2$restriction$geo, use.names = FALSE)
   
   return(res)
 }

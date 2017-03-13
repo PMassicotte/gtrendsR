@@ -149,20 +149,36 @@ interest_by_region <- function(widget, comparison_item) {
   
   ## Interest by region need to be retreived individually
   
-  res <- lapply(i, create_geo_payload, widget = widget)
-  res <- do.call(rbind, res)
+  ## If no country is specified, resolution should be "COUNTRY"
+  resolution <- ifelse("world" %in% widget$geo, "COUNTRY", "REGION")
+  
+  region <- lapply(i, create_geo_payload, widget = widget, resolution = resolution)
+  region <- do.call(rbind, region)
+  
+  ## US top metro
+  dma <- lapply(i, create_geo_payload, widget = widget, resolution = "DMA")
+  dma <- do.call(rbind, dma)
+  
+  ## Top city
+  city <- lapply(i, create_geo_payload, widget = widget, resolution = "CITY")
+  city <- do.call(rbind, city)
     
- 
+  res <- list(
+    region = region,
+    dma = dma,
+    city = city
+  )
+  
   return(res)
 }
 
 
-create_geo_payload <- function(i, widget) {
+create_geo_payload <- function(i, widget, resolution) {
   
   payload2 <- list()
   payload2$locale <- unique(na.omit(widget$request$locale))
   payload2$comparisonItem <- widget$request$comparisonItem[[i]]
-  payload2$resolution <- widget$request$resolution[i]
+  payload2$resolution <- resolution
   payload2$requestOptions$backend <- widget$request$requestOptions$backend[i]
   payload2$requestOptions$property <- widget$request$requestOptions$property[i]
   payload2$requestOptions$category <- widget$request$requestOptions$category[i]
