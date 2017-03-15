@@ -80,6 +80,7 @@ create_related_queries_payload <- function(i, widget) {
   res <- rbind(top, rising)
   res$id <- NULL
   res$geo <-  unlist(payload2$restriction$geo, use.names = FALSE)
+  res$keyword <- payload2$restriction$complexKeywordsRestriction$keyword$value
   
   return(res)
 }
