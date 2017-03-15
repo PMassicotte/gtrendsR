@@ -55,7 +55,7 @@ create_related_topics_payload <- function(i, widget) {
     times = "top"
   )
   
-  rising <- read.csv(textConnection(res[(end + 1):length(res)]))
+  rising <- read.csv(textConnection(res[(end + 1):length(res)]), row.names = NULL)
   rising$subject <- rownames(rising) 
   rownames(rising) <- NULL
   rising <- rising[, c(2, 1)]
