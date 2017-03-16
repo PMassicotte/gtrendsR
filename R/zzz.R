@@ -109,6 +109,10 @@ interest_over_time <- function(widget, comparison_item) {
                  skip = 1,
                  stringsAsFactors = FALSE)
   
+  if (nrow(df) < 1) {
+    return(NULL) ## No data
+  }
+  
   n <- nrow(df) # used to reshape the data
   
   df <- reshape(
@@ -128,6 +132,7 @@ interest_over_time <- function(widget, comparison_item) {
   
   df$geo <- ifelse(df$geo == "", "world", df$geo)
   df$gprop <- ifelse(widget$request$requestOptions$property[1] == "", "web", widget$request$requestOptions$property[1])
+  df$category <- widget$request$requestOptions$category[1]
   names(df)[1] <- "date"
   df$id <- NULL
   
@@ -228,6 +233,7 @@ create_geo_payload <- function(i, widget, resolution) {
   
   df$geo <- ifelse(df$geo == "", "world", df$geo)
   df$gprop <- ifelse(widget$request$requestOptions$property[i] == "", "web", widget$request$requestOptions$property[i])
+  
   df$id <- NULL
   rownames(df) <- NULL
   

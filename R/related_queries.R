@@ -1,6 +1,6 @@
 related_queries <- function(widget, comparison_item) {
   
-  i <- which(grepl("Related queries", widget$title) == TRUE)
+  i <- which(grepl("queries", widget$title) == TRUE)
   
   res <- lapply(i, create_related_queries_payload, widget = widget)
   res <- do.call(rbind, res)
@@ -43,11 +43,14 @@ create_related_queries_payload <- function(i, widget) {
     return(NULL)
   }
   
-  i <- which(grepl("$^", res))[1:2]
-  start <- i[1]
-  end <- i[2]
+  start_top <- which(grepl("TOP", res))
+  start_rising <- which(grepl("RISING", res))
   
-  top <- read.csv(textConnection(res[(start + 1):(end - 1)]))
+  if (length(start_top) == 0 | length(start_rising) == 0) {
+    return(NULL) ## No data returned
+  }
+  
+  top <- read.csv(textConnection(res[start_top:(start_rising - 2)]), row.names = NULL)
   top$subject <- rownames(top) 
   rownames(top) <- NULL
   top <- top[, c(2, 1)]
@@ -62,7 +65,7 @@ create_related_queries_payload <- function(i, widget) {
     times = "top"
   )
   
-  rising <- read.csv(textConnection(res[(end + 1):length(res)]))
+  rising <- read.csv(textConnection(res[start_rising:length(res)]), row.names = NULL)
   rising$subject <- rownames(rising) 
   rownames(rising) <- NULL
   rising <- rising[, c(2, 1)]
@@ -81,6 +84,7 @@ create_related_queries_payload <- function(i, widget) {
   res$id <- NULL
   res$geo <-  unlist(payload2$restriction$geo, use.names = FALSE)
   res$keyword <- payload2$restriction$complexKeywordsRestriction$keyword$value
+  res$category <- payload2$requestOptions$category
   
   return(res)
 }
