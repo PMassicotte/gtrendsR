@@ -157,8 +157,13 @@ interest_by_region <- function(widget, comparison_item) {
   ## If no country is specified, resolution should be "COUNTRY"
   resolution <- ifelse("world" %in% widget$geo, "COUNTRY", "REGION")
   
-  region <- lapply(i, create_geo_payload, widget = widget, resolution = resolution)
-  region <- do.call(rbind, region)
+  ## if searching within US metro, there is no region data. Return NULL.
+  if (any(grepl("region", widget$title))) {
+    region <- lapply(i, create_geo_payload, widget = widget, resolution = resolution)
+    region <- do.call(rbind, region)
+  } else {
+    region <- NULL
+  }
   
   ## US top metro
   dma <- lapply(i, create_geo_payload, widget = widget, resolution = "DMA")
