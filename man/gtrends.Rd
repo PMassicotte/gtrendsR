@@ -5,7 +5,7 @@
 \title{Google Trends Query}
 \usage{
 gtrends(keyword, geo = "", time = "today+5-y", gprop = c("web", "news",
-  "images", "froogle", "youtube"), category = 0)
+  "images", "froogle", "youtube"), category = 0, hl = "en-US")
 }
 \arguments{
 \item{keyword}{A character vector with the actual Google Trends query 
@@ -33,6 +33,10 @@ trend query if preformed. Valid options are:
 \item "youtube" }}
 
 \item{category}{A character denoting the category, defaults to \dQuote{0}.}
+
+\item{hl}{A string specifying the ISO language code (ex.: \dQuote{en-US} or 
+\dQuote{fr}). Default is \dQuote{en-US}. Note that this is only influencing
+the data returned by related topics.}
 }
 \value{
 An object of class \sQuote{gtrends} (basically a list of data
@@ -88,5 +92,10 @@ head(gtrends(c("NHL", "NFL"), time = "2010-01-01 2010-04-03"))
 
 head(gtrends(c("NHL", "NFL"), gprop = "news")$interest_over_time)
 head(gtrends(c("NHL", "NFL"), gprop = "youtube")$interest_over_time)
+
+## Language settings
+
+head(gtrends("NHL", hl = "en")$related_topics)
+head(gtrends("NHL", hl = "fr")$related_topics)
 
 }

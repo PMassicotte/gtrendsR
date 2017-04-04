@@ -1,15 +1,15 @@
-related_topics <- function(widget, comparison_item) {
+related_topics <- function(widget, comparison_item, hl) {
   
   i <- which(grepl("topics", widget$title) == TRUE)
   
-  res <- lapply(i, create_related_topics_payload, widget = widget)
+  res <- lapply(i, create_related_topics_payload, widget = widget, hl = hl)
   res <- do.call(rbind, res)
   
   return(res)
 }
 
 
-create_related_topics_payload <- function(i, widget) {
+create_related_topics_payload <- function(i, widget, hl) {
   
   payload2 <- list()
   payload2$restriction$geo <-  as.list(widget$request$restriction$geo[i, , drop = FALSE])
@@ -27,7 +27,7 @@ create_related_topics_payload <- function(i, widget) {
     "https://www.google.com/trends/api/widgetdata/relatedsearches/csv?req=",
     jsonlite::toJSON(payload2, auto_unbox = T),
     "&token=", widget$token[i],
-    "&tz=300&hl=en-US"
+    "&tz=300&hl=", hl
   )
   
   res <- curl::curl_fetch_memory(URLencode(url))
