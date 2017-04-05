@@ -1,9 +1,11 @@
+library(rvest)
+library(jsonlite)
+library(data.tree)
 
 # Process categories data
 get_categories <- function() {
 
-  library(jsonlite)
-  library(data.tree)
+  
   
     
   file <- system.file("extdata", "categories.json", package = "gtrendsR")
@@ -76,7 +78,7 @@ get_countries <- function() {
                         destfile = destfile)
   
   usa <- readxl::read_excel(destfile, skip = 1)
-  usa <- na.omit(usa[, c(8, 10, 11)])
+  # usa <- na.omit(usa[, c(8, 10, 11)])
   
   usa <- data.frame(
     country_code = "US",
@@ -88,6 +90,8 @@ get_countries <- function() {
       sep = "-"
     )
   )
+  
+  usa <- na.omit(usa)
   
   # *************************************************************************
   # Merge together
@@ -101,15 +105,30 @@ get_countries <- function() {
   
 }
 
+get_language_codes <- function() {
+  url <- "http://www.lingoes.net/en/translator/langcode.htm"
+  
+  webpage <- read_html(url)
+  language_codes <- html_nodes(webpage, 'table')
+  language_codes <- html_table(language_codes, header = TRUE)[[1]]
+  
+  names(language_codes) <- tolower(names(language_codes))
+  
+  return(language_codes)
+  
+}
+
 countries <- get_countries()
 categories <- get_categories()
+language_codes <- get_language_codes()
 
 # Save the data
 save(countries, file = "data/countries.rda") # for data("countries")
 save(categories, file = "data/categories.rda") # for data("countries")
-save(countries, categories, file = "R/sysdata.rda") # for internal use
+save(countries, categories, language_codes, file = "R/sysdata.rda") # for internal use
 
 # Compress data
 tools::resaveRdaFiles("data/countries.rda")
 tools::resaveRdaFiles("data/categories.rda")
 tools::resaveRdaFiles("R/sysdata.rda")
+

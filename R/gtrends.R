@@ -30,6 +30,10 @@
 #'   \itemize{ \item "web" (default) \item "news" \item "images" \item "froogle"
 #'   \item "youtube" }
 #'   
+#' @param hl A string specifying the ISO language code (ex.: \dQuote{en-US} or 
+#'   \dQuote{fr}). Default is \dQuote{en-US}. Note that this is only influencing
+#'   the data returned by related topics.
+#'   
 #' @section Categories: The package includes a complete list of categories that 
 #'   can be used to narrow requests. These can be accessed using 
 #'   \code{data("categories")}.
@@ -78,13 +82,19 @@
 #' head(gtrends(c("NHL", "NFL"), gprop = "news")$interest_over_time)
 #' head(gtrends(c("NHL", "NFL"), gprop = "youtube")$interest_over_time)
 #' 
+#' ## Language settings
+#' 
+#' head(gtrends("NHL", hl = "en")$related_topics)
+#' head(gtrends("NHL", hl = "fr")$related_topics)
+#' 
 #' @export
 gtrends <- function(
   keyword, 
   geo = "", 
   time = "today+5-y", 
   gprop = c("web", "news", "images", "froogle", "youtube"), 
-  category = 0) {
+  category = 0,
+  hl = "en-US") {
   
   stopifnot(
     # One  vector should be a multiple of the other
@@ -92,8 +102,12 @@ gtrends <- function(
     is.vector(keyword),
     length(keyword) <= 5,
     length(geo) <= 5,
-    length(time) == 1
+    length(time) == 1,
+    length(hl) == 1,
+    is.character(hl),
+    hl %in% language_codes$code
   )
+
   
   ## Check if valide geo
   if (geo != "" &&
@@ -141,7 +155,7 @@ gtrends <- function(
   
   interest_over_time <- interest_over_time(widget, comparison_item)
   interest_by_region <- interest_by_region(widget, comparison_item)
-  related_topics <- related_topics(widget, comparison_item)
+  related_topics <- related_topics(widget, comparison_item, hl)
   related_queries <- related_queries(widget, comparison_item)
     
   res <- list(
