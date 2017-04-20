@@ -1,3 +1,8 @@
+# gtrendsR 2.1.0.901 (unreleased)
+
+## Major change
+- Added a function kgraph that allows to download Google Knowledge Graph entities for a given keyword. This is related to Issue #92 in the master branch of PMassicotte. After some testing this function will be suggested to the package maintainers as an addition.
+
 # gtrendsR 2.0.0 (unreleased)
 
 ## Major change
