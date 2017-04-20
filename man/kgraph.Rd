@@ -38,7 +38,6 @@ Kang. Default is \dQuote{FALSE}.}
 Returns an object of class \sQuote{kgraph}. This is a list containing
   the entities returned from the call sorted in an ascending order relative
   to the relevance score.
-'
 }
 \description{
 Obtains Google Knowledge Graph Search entities for a given keyword.

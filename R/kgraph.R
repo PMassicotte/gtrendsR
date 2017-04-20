@@ -41,7 +41,7 @@
 #' @return Returns an object of class \sQuote{kgraph}. This is a list containing
 #'   the entities returned from the call sorted in an ascending order relative
 #'   to the relevance score.
-#''
+#'
 #' @examples
 #' kg <- kgraph("Call of Duty 2", "YOUR TOKEN", types = "VideoGame")
 #' # get google trends for the first entity
