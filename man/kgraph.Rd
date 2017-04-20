@@ -13,7 +13,7 @@ Search query keyword. Note that only one keyword allowed a time.}
 
 \item{token}{A character string containing your Google API access token.
 Details about how to obtain your access token can be found here
-(\link{\url{https://developers.google.com/knowledge-graph/how-tos/authorizing}}).}
+(\url{https://developers.google.com/knowledge-graph/how-tos/authorizing}).}
 
 \item{ids}{A vector of entity IDs to search for in the Knowledge Graph.}
 
@@ -24,7 +24,7 @@ Details about how to obtain your access token can be found here
 entities. For example, you can specify Person to restrict the results to 
 entities representing people. If multiple types are specified, returned 
 entities will contain one or more of these types. Full list of schemas
-types is availabe (\link{\url{http://schema.org/docs/full.html}})}
+types is availabe (\url{http://schema.org/docs/full.html})}
 
 \item{prefix}{If set to \dQuote{TRUE} prefix (initial substring) match
 against names and aliases of entities is allowed. For example, a prefix
@@ -45,7 +45,7 @@ Obtains Google Knowledge Graph Search entities for a given keyword.
 }
 \details{
 \code{kgraph} can be used to obtain Google Knowledge Graph Search entities
-(\link{\url{https://www.google.com/intl/es419/insidesearch/features/search/knowledge.html}})
+(\url{https://www.google.com/intl/es419/insidesearch/features/search/knowledge.html})
 for any given keyword. The obtained \dQuote{kg-id} can then be used together
 with the \code{gtrends} function to obtain Google Trends information based on
 the Topic Search. This is a set of combined search queries providing the 
