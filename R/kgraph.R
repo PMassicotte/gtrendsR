@@ -19,7 +19,8 @@
 #'   Details about how to obtain your access token can be found here
 #'   (\url{https://developers.google.com/knowledge-graph/how-tos/authorizing}).
 #'   
-#' @param ids A vector of entity IDs to search for in the Knowledge Graph.
+#' @param ids A vector of entity ID(s) to obtain the Knowledge Graph details.
+#'   Provide in the form of \dQuote(/m/062s4).
 #'   
 #' @param hl A string specifying the ISO 639 language code (ex.: \dQuote{en} or 
 #'   \dQuote{fr}).
@@ -41,9 +42,14 @@
 #' @return Returns an object of class \sQuote{kgraph}. This is a list containing
 #'   the entities returned from the call sorted in an ascending order relative
 #'   to the relevance score.
+#'   
+#' @note When using \code{types} often \sQuote{Error:400} is returned since not
+#'   all schemas are available, i.e. \dQuote{Vehicle}. In this case it is
+#'   advisable to play around with the types categories to find out the ones
+#'   working.
 #'
 #' @examples
-#' kg <- kgraph("Call of Duty 2", "YOUR TOKEN", types = "VideoGame")
+#' kg <- kgraph("Myst", token = "API_KEY", types = "VideoGame")
 #' # get google trends for the first entity
 #' topicsearch <- gtrends(kgs$entities[[1]]$id, time = "all")
 #'         
@@ -51,54 +57,71 @@
 #' 
 #' @export
 
-kgraph <- function(keyword, token, ids = "", hl = "",
+kgraph <- function(keyword = "", token, ids = "", hl = "",
                    types = "", prefix = FALSE, limit = 10){
   
+  # Error handling
+  if (limit > 20) {
+    warning("Limit of returns is 20 entities")
+    limit <- 20
+  }
+  
+  if (length(keyword) > 1){
+    warning("Only one keyword allowed per query")
+    keyword <- keyword[1]
+  }
+  
+  if (all(keyword != "") & all(ids != "")) {
+    stop("Either keyword or ids can be obtained")
+  }
+  
+  # Create ids string. Need to be in the form of ?ids=A&ids=B
+  if (length(types) > 1) {
+    types <- paste(types, collapse = "&types=")
+  }
+  
+  # urlencode ids seperatly since they contain reserved values, i.e. /m/065qh
+  ids <- as.vector(sapply(ids, URLencode, reserve = T))
   # Create ids string. Need to be in the form of ?ids=A&ids=B
   if (length(ids) > 1) {
     ids <- paste(ids, collapse = "&ids=")
   }
   
-  # Create ids string. Need to be in the form of ?ids=A&ids=B
-  if (length(types) > 1) {
-    ids <- paste(types, collapse = "&types=")
-  }
-  
-  if (limit > 20) {
-    warning("Setting limit to 20 maximum allowed by Google")
-    limit <- 20
+  # Query building needs to better IMO. There is a problem with "" characters in
+  # ids and types. Best solution would be to only include filled values. I don't
+  # know yet how to implement this best without having many if-statements
+  if (any(ids == "") & any(types =="")) {
+    url <- paste0("https://kgsearch.googleapis.com/v1/entities:search?",
+                  "&query=", keyword, "&key=", token, "&languages=", hl,
+                  "&prefix=", tolower(prefix), "&limit=", limit, "&indent=false")
+  } else if (any(ids == "")) {
+    url <- paste0("https://kgsearch.googleapis.com/v1/entities:search?",
+                  "&query=", keyword, "&key=", token, "&languages=", hl,
+                  "&types=", types, "&prefix=", tolower(prefix), "&limit=",
+                  limit, "&indent=false")
+  } else if (any(types == "")) {
+    url <- paste0("https://kgsearch.googleapis.com/v1/entities:search?",
+                  "&query=", keyword, "&key=", token, "&ids=", ids, 
+                  "&languages=", hl, "&prefix=", tolower(prefix),
+                  "&limit=", limit, "&indent=false")
+  } else {
+    url <- paste0("https://kgsearch.googleapis.com/v1/entities:search?",
+                  "&query=", keyword, "&key=", token, "&ids=", ids, 
+                  "&languages=", hl, "&types=", types,
+                  "&prefix=", tolower(prefix), "&limit=", limit, "&indent=false")
   }
   
   # overview of query parameters available here:
   # https://developers.google.com/knowledge-graph/reference/rest/v1/
-  # This needs to be better done -- problems with "" characters in ids and types
-  if (ids == "" & types =="") {
-    url <- paste0("https://kgsearch.googleapis.com/v1/entities:search?",
-                  "&query=", keyword, "&key=", token, "&languages=", hl,
-                  "&prefix=", prefix, "&limit=", limit, "&indent=", FALSE)
-  } else if (ids == "") {
-    url <- paste0("https://kgsearch.googleapis.com/v1/entities:search?",
-                  "&query=", keyword, "&key=", token, 
-                  "&languages=", hl, "&types=", types, "&prefix=", prefix,
-                  "&limit=", limit, "&indent=", FALSE)
-  } else if (types == "") {
-    url <- paste0("https://kgsearch.googleapis.com/v1/entities:search?",
-                  "&query=", keyword, "&key=", token, "&ids=", ids, 
-                  "&languages=", hl, "&prefix=", prefix,
-                  "&limit=", limit, "&indent=", FALSE)
-  } else {
-    url <- paste0("https://kgsearch.googleapis.com/v1/entities:search?",
-                  "&query=", keyword, "&key=", token, "&ids=", ids, 
-                  "&languages=", hl, "&types=", types, "&prefix=", prefix,
-                  "&limit=", limit, "&indent=", FALSE)
-  }
-  
-  
+  # Query building can also be evaluated using Google API Explorer:
+  # https://developers.google.com/apis-explorer/#p/kgsearch/v1/kgsearch.entities.search
   curlReturn <- curl::curl_fetch_memory(URLencode(url))
   
-  
-  # error handling
-  stopifnot(curlReturn$status_code == 200)
+  # error handling and return error from query
+  if (curlReturn$status_code != 200) {
+    content <- jsonlite::fromJSON(rawToChar(curlReturn$content), simplifyVector = F)
+    stop(paste0("Google API Error:", content[[1]][[1]][1], " ", content[[1]][[2]][1]))
+  }
   
   # Prepare output
   callUrl <- curlReturn$url
@@ -129,6 +152,7 @@ kgraph <- function(keyword, token, ids = "", hl = "",
       ecount <- ecount + 1
     }
   }
+  
   return(structure(
     list("type" = "kgraph", "call" = sys.call(), "callUrl" = callUrl,
       "entities" = entities), class = "kgraph"))

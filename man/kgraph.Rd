@@ -4,8 +4,8 @@
 \alias{kgraph}
 \title{kgraph}
 \usage{
-kgraph(keyword, token, ids = "", hl = "", types = "", prefix = FALSE,
-  limit = 10)
+kgraph(keyword = "", token, ids = "", hl = "", types = "",
+  prefix = FALSE, limit = 10)
 }
 \arguments{
 \item{keyword}{A character vector with the actual Google Knowledge Graph
@@ -15,7 +15,8 @@ Search query keyword. Note that only one keyword allowed a time.}
 Details about how to obtain your access token can be found here
 (\url{https://developers.google.com/knowledge-graph/how-tos/authorizing}).}
 
-\item{ids}{A vector of entity IDs to search for in the Knowledge Graph.}
+\item{ids}{A vector of entity ID(s) to obtain the Knowledge Graph details.
+Provide in the form of \dQuote(/m/062s4).}
 
 \item{hl}{A string specifying the ISO 639 language code (ex.: \dQuote{en} or 
 \dQuote{fr}).}
@@ -53,8 +54,14 @@ overall search interest on the topic. For example the topic search query for
 keyword London but also for \dQuote{Hotel in London}  obtaining  to be used
 as \code{gtrends} Google Topic search function in Google Trends.
 }
+\note{
+When using \code{types} often \sQuote{Error:400} is returned since not
+  all schemas are available, i.e. \dQuote{Vehicle}. In this case it is
+  advisable to play around with the types categories to find out the ones
+  working.
+}
 \examples{
-kg <- kgraph("Call of Duty 2", "YOUR TOKEN", types = "VideoGame")
+kg <- kgraph("Myst", token = "API_KEY", types = "VideoGame")
 # get google trends for the first entity
 topicsearch <- gtrends(kgs$entities[[1]]$id, time = "all")
         
