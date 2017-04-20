@@ -2,6 +2,7 @@
 
 S3method(plot,gtrends)
 export(gtrends)
+export(kgraph)
 import(ggplot2)
 importFrom(stats,na.omit)
 importFrom(stats,reshape)
