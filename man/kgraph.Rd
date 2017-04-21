@@ -36,7 +36,7 @@ Kang. Default is \dQuote{FALSE}.}
 \dQuote{10}, maximum allowed is \dQuote{20}}
 }
 \value{
-Returns an object of class \sQuote{kgraph}. This is a list containing
+Returns an object of class \dQuote{kgraph}. This is a list containing
   the entities returned from the call sorted in an ascending order relative
   to the relevance score.
 }
@@ -44,18 +44,20 @@ Returns an object of class \sQuote{kgraph}. This is a list containing
 Obtains Google Knowledge Graph Search entities for a given keyword.
 }
 \details{
-\code{kgraph} can be used to obtain Google Knowledge Graph Search entities
+\code{kgraph} can be used to obtain Google Knowledge Graph Search entities 
 (\url{https://www.google.com/intl/es419/insidesearch/features/search/knowledge.html})
-for any given keyword. The obtained \dQuote{kg-id} can then be used together
+for any given keyword. The obtained \dQuote{kg-id} can then be used together 
 with the \code{gtrends} function to obtain Google Trends information based on
-the Topic Search. This is a set of combined search queries providing the 
-overall search interest on the topic. For example the topic search query for 
-\dQuote{London the capital of England}, will not only cover searches for the
-keyword London but also for \dQuote{Hotel in London}  obtaining  to be used
-as \code{gtrends} Google Topic search function in Google Trends.
+Google's Topic Search. This is a set of combined search queries providing
+the overall search interest on the topic. For example the topic search query
+for \dQuote{London the capital of England}, will not only cover searches for 
+the keyword \dQuote{London} but also for other related search queries such as
+for example \dQuote{Flights to London}. Although, Google is not very specific
+on the keywords they combine the returned Google Trends results are usually
+more robust than using a single keyword.
 }
 \note{
-When using \code{types} often \sQuote{Error:400} is returned since not
+When using \code{types} often \dQuote{Error:400} is returned since not
   all schemas are available, i.e. \dQuote{Vehicle}. In this case it is
   advisable to play around with the types categories to find out the ones
   working.
@@ -65,6 +67,9 @@ kg <- kgraph("Myst", token = "API_KEY", types = "VideoGame")
 # get google trends for the first entity
 topicsearch <- gtrends(kgs$entities[[1]]$id, time = "all")
         
+}
+\seealso{
+\code{\link{gtrends}}
 }
 \author{
 Oliver Schaer, \email{info@oliverschaer.ch}

@@ -2,15 +2,17 @@
 #' 
 #' Obtains Google Knowledge Graph Search entities for a given keyword.
 #' 
-#' \code{kgraph} can be used to obtain Google Knowledge Graph Search entities
+#' \code{kgraph} can be used to obtain Google Knowledge Graph Search entities 
 #' (\url{https://www.google.com/intl/es419/insidesearch/features/search/knowledge.html})
-#' for any given keyword. The obtained \dQuote{kg-id} can then be used together
+#' for any given keyword. The obtained \dQuote{kg-id} can then be used together 
 #' with the \code{gtrends} function to obtain Google Trends information based on
-#' the Topic Search. This is a set of combined search queries providing the 
-#' overall search interest on the topic. For example the topic search query for 
-#' \dQuote{London the capital of England}, will not only cover searches for the
-#' keyword London but also for \dQuote{Hotel in London}  obtaining  to be used
-#' as \code{gtrends} Google Topic search function in Google Trends.
+#' Google's Topic Search. This is a set of combined search queries providing
+#' the overall search interest on the topic. For example the topic search query
+#' for \dQuote{London the capital of England}, will not only cover searches for 
+#' the keyword \dQuote{London} but also for other related search queries such as
+#' for example \dQuote{Flights to London}. Although, Google is not very specific
+#' on the keywords they combine the returned Google Trends results are usually
+#' more robust than using a single keyword.
 #'
 #' @param keyword A character vector with the actual Google Knowledge Graph
 #'   Search query keyword. Note that only one keyword allowed a time.
@@ -39,11 +41,11 @@
 #' @param limit Sets the maximum of returned entities per call. Default is
 #'   \dQuote{10}, maximum allowed is \dQuote{20}
 #'   
-#' @return Returns an object of class \sQuote{kgraph}. This is a list containing
+#' @return Returns an object of class \dQuote{kgraph}. This is a list containing
 #'   the entities returned from the call sorted in an ascending order relative
 #'   to the relevance score.
 #'   
-#' @note When using \code{types} often \sQuote{Error:400} is returned since not
+#' @note When using \code{types} often \dQuote{Error:400} is returned since not
 #'   all schemas are available, i.e. \dQuote{Vehicle}. In this case it is
 #'   advisable to play around with the types categories to find out the ones
 #'   working.
@@ -55,6 +57,8 @@
 #'         
 #' @author Oliver Schaer, \email{info@@oliverschaer.ch}
 #' 
+#' @seealso \code{\link{gtrends}}
+#' 
 #' @export
 
 kgraph <- function(keyword = "", token, ids = "", hl = "",
@@ -62,7 +66,7 @@ kgraph <- function(keyword = "", token, ids = "", hl = "",
   
   # Error handling
   if (limit > 20) {
-    warning("Limit of returns is 20 entities")
+    warning("Limit of returns are 20 entities")
     limit <- 20
   }
   
@@ -75,7 +79,11 @@ kgraph <- function(keyword = "", token, ids = "", hl = "",
     stop("Either keyword or ids can be obtained")
   }
   
-  # Create ids string. Need to be in the form of ?ids=A&ids=B
+  if (!is.logical(prefix)) {
+    stop("Prefix needs to be logical")
+  }
+  
+  # Create ids string if needed. Requires to be in the form of ?ids=A&ids=B
   if (length(types) > 1) {
     types <- paste(types, collapse = "&types=")
   }
@@ -152,7 +160,6 @@ kgraph <- function(keyword = "", token, ids = "", hl = "",
       ecount <- ecount + 1
     }
   }
-  
   return(structure(
     list("type" = "kgraph", "call" = sys.call(), "callUrl" = callUrl,
       "entities" = entities), class = "kgraph"))
