@@ -1,8 +1,8 @@
 Package: gtrendsR
 Type: Package
 Title: Perform and Display Google Trends Queries
-Version: 2.1.0.901
-Date: 2017-04-20
+Version: 2.0.0
+Date: 2017-02-12
 Authors@R: c(person("Philippe", 
          "Massicotte", 
          email = "pmassicotte@hotmail.com",
