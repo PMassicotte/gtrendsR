@@ -29,7 +29,16 @@ can be installed via
 install.packages("gtrendsR")
 ```
 
-Pre-release versions can be install directly from this repository via
+Release-candidate packages are available in the [ghrr drat repository](https://ghrr.github.io/drat/)
+and can installed via
+
+```r
+install.packages("drat")       # easier repo access + creation
+drat:::add("ghrr")             # make it known
+install.packages("gtrendsR")   # install it
+```
+
+Development version (which may be less stable) can be installed directly from this repository via
 
 ``` {.r}
 if (!require("devtools")) install.packages("devtools")
