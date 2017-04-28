@@ -147,10 +147,14 @@ kgraph <- function(keyword = "", token, ids = "", hl = "",
     for (entity in content[[3]]) {
       
       id <- strsplit(entity[[2]][[1]], "kg:")[[1]][2] # ID
-      name <- entity[[2]][[2]] # Name
-      type <- entity[[2]][[3]] # type(s)
+      name <- entity[[2]]$name # Name
+      type <- entity[[2]]$`@type` # type(s)
       description <- entity[[2]][[4]] # description
-      detailedDescription <- entity[[2]][[5]][[1]] # only article body used
+      if (any(names(entity[[2]]) == "detailedDescription")) {
+        detailedDescription <- entity[[2]]$detailedDescription$articleBody # only article body used
+      } else {
+        detailedDescription <- NA
+      }
       score <- entity[[3]] # score 
       
       entities[[ecount]] <-
