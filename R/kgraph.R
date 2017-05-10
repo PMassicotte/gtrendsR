@@ -6,16 +6,15 @@
 #' (\url{https://www.google.com/intl/es419/insidesearch/features/search/knowledge.html})
 #' for any given keyword. The obtained \dQuote{kg-id} can then be used together 
 #' with the \code{gtrends} function to obtain Google Trends information based on
-#' Google's Topic Search. This is a set of combined search queries providing
-#' the overall search interest on the topic. For example the topic search query
-#' for \dQuote{London the capital of England}, will not only cover searches for 
-#' the keyword \dQuote{London} but also for other related search queries such as
-#' for example \dQuote{Flights to London}. Although, Google is not very specific
-#' on the keywords they combine the returned Google Trends results are usually
-#' more robust than using a single keyword.
+#' Google's Topic Search. This is a set of combined search queries for any
+#' language. For example the topic search query for \dQuote{London the capital
+#' of England}, will not only cover searches for the keyword \dQuote{London} but
+#' also for \dQuote{Londres} in Spanish. Details between the differences of
+#' search over terms and topics are highlighted here 
+#' \url{https://support.google.com/trends/answer/4359550}
 #'
 #' @param keyword A character vector with the actual Google Knowledge Graph
-#'   Search query keyword. Note that only one keyword allowed a time.
+#'   Search query keyword. Note that only one keyword is allowed a time.
 #'   
 #' @param token A character string containing your Google API access token.
 #'   Details about how to obtain your access token can be found here
