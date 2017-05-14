@@ -78,19 +78,39 @@ get_widget <- function(comparison_item, category, gprop) {
 interest_over_time <- function(widget, comparison_item) {
   
   payload2 <- list()
-  payload2$locale <- widget$request$locale[1]
-  payload2$comparisonItem <- widget$request$comparisonItem[[1]]
-  payload2$resolution <- widget$request$resolution[1]
-  payload2$requestOptions$category <- widget$request$requestOptions$category[1]
-  payload2$requestOptions$backend <- widget$request$requestOptions$backend[1]
-  payload2$time <- widget$request$time[1]
-  payload2$requestOptions$property <- widget$request$requestOptions$property[1]
   
+  # if there is a mix of search and topic terms requests are all shifted by one
+  # for some reason. Maybe there is a better fix for this. I don't understand
+  # precisely the structure of the widget.
+  # try this example:
+  # topicKeys <- c("/m/05s_khw", "Assassins Creed Brotherhood", "/m/0gmg6lv")
+  # vs.
+  # topicKeys <- c("Assassins Creed", "Assassins Creed Brotherhood", "Assassins Creed Rogue")
+  # gtrends(topicKeys, time = "all")
+  if(!is.na(widget$request$locale[1])){
+    payload2$locale <- widget$request$locale[1]
+    payload2$comparisonItem <- widget$request$comparisonItem[[1]]
+    payload2$resolution <- widget$request$resolution[1]
+    payload2$requestOptions$category <- widget$request$requestOptions$category[1]
+    payload2$requestOptions$backend <- widget$request$requestOptions$backend[1]
+    payload2$time <- widget$request$time[1]
+    payload2$requestOptions$property <- widget$request$requestOptions$property[1]
+    token_payload2 <- widget$token[1]
+  } else {
+    payload2$locale <- widget$request$locale[2]
+    payload2$comparisonItem <- widget$request$comparisonItem[[2]]
+    payload2$resolution <- widget$request$resolution[2]
+    payload2$requestOptions$category <- widget$request$requestOptions$category[2]
+    payload2$requestOptions$backend <- widget$request$requestOptions$backend[2]
+    payload2$time <- widget$request$time[2]
+    payload2$requestOptions$property <- widget$request$requestOptions$property[2]
+    token_payload2 <- widget$token[2]
+  }
   
   url <- paste0(
     "https://www.google.fr/trends/api/widgetdata/multiline/csv?req=",
     jsonlite::toJSON(payload2, auto_unbox = T),
-    "&token=", widget$token[1],
+    "&token=", token_payload2,
     "&tz=360"
   )
   
@@ -105,9 +125,9 @@ interest_over_time <- function(widget, comparison_item) {
   # ****************************************************************************
   # Format the results in a nice way
   # ****************************************************************************
-  df <- read.csv(textConnection(rawToChar(res$content)),
-                 skip = 1,
-                 stringsAsFactors = FALSE)
+  con <- textConnection(rawToChar(res$content))
+  df <- read.csv(con, skip = 1, stringsAsFactors = FALSE)
+  close(con)
   
   if (nrow(df) < 1) {
     return(NULL) ## No data
@@ -206,9 +226,9 @@ create_geo_payload <- function(i, widget, resolution) {
   
   stopifnot(res$status_code == 200)
   
-  df <- read.csv(textConnection(rawToChar(res$content)),
-                 skip = 1,
-                 stringsAsFactors = FALSE)
+  con <- textConnection(rawToChar(res$content))
+  df <- read.csv(con, skip = 1, stringsAsFactors = FALSE)
+  close(con)
   
   if (nrow(df) == 0) {
     return(NULL)
