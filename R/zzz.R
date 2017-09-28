@@ -70,7 +70,11 @@ get_widget <- function(comparison_item, category, gprop) {
   
   stopifnot(widget$status_code == 200)
   
-  myjs <- jsonlite::fromJSON(substring(rawToChar(widget$content), first = 6))
+  ## Fix encoding issue for keywords like österreich"
+  temp <- rawToChar(widget$content)
+  Encoding(temp) <- "UTF-8"
+  
+  myjs <- jsonlite::fromJSON(substring(temp, first = 6))
   widget <- myjs$widgets
   
 }
