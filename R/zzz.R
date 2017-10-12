@@ -74,7 +74,7 @@ get_widget <- function(comparison_item, category, gprop,
 
   widget <- curl::curl_fetch_memory(url)
   
-  if (!widget$status_code == 200) {
+  if (widget$status_code != 200) {
     stop("Error: could not retrieve data, the query error code is ", widget$status_code)
   }
 
