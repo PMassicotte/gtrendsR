@@ -69,8 +69,13 @@ get_widget <- function(comparison_item, category, gprop) {
   widget <- curl::curl_fetch_memory(url)
 
   stopifnot(widget$status_code == 200)
+  
+  ## Fix encoding issue for keywords like österreich"
+  temp <- rawToChar(widget$content)
+  Encoding(temp) <- "UTF-8"
+  
+  myjs <- jsonlite::fromJSON(substring(temp, first = 6))
 
-  myjs <- jsonlite::fromJSON(substring(rawToChar(widget$content), first = 6))
   widget <- myjs$widgets
 
 }
