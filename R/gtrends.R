@@ -179,7 +179,6 @@ gtrends <- function(
 #' @param ... Additional parameters passed on in method dispatch. Currently not
 #'   used.
 #'   
-#' @import ggplot2
 #' @importFrom ggplot2 ggplot labs theme_bw theme geom_line
 #'   
 #' @return A ggplot2 object is returned silently.
