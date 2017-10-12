@@ -147,7 +147,7 @@ gtrends <- function(
   
   comparison_item <- data.frame(keyword, geo, time, stringsAsFactors = FALSE)
   
-  widget <- get_widget(comparison_item, category, gprop)
+  widget <- get_widget(comparison_item, category, gprop, hl = hl)
   
   # ****************************************************************************
   # Now that we have tokens, we can process the queries
@@ -180,6 +180,7 @@ gtrends <- function(
 #'   used.
 #'   
 #' @import ggplot2
+#' @importFrom ggplot2 ggplot labs theme_bw theme geom_line
 #'   
 #' @return A ggplot2 object is returned silently.
 #' @export
@@ -195,9 +196,11 @@ plot.gtrends <- function(x, ...) {
   
   p <- ggplot(df, aes_string(x = "date", y = "hits", color = "legend")) +
     geom_line() +
-    xlab("Date") +
-    ylab("Search hits") +
-    ggtitle("Interest over time") +
+    labs ( 
+      title = "Interest over time", 
+      x = "Date", 
+      y = "Search hits"
+      ) +
     theme_bw() +
     theme(legend.title = element_blank()) 
   

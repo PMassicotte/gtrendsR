@@ -55,20 +55,28 @@ check_time <- function(time) {
 }
 
 
-get_widget <- function(comparison_item, category, gprop) {
+get_widget <- function(comparison_item, category, gprop, 
+                       tz = "300", 
+                       hl = "en-US") {
 
   token_payload <- list()
   token_payload$comparisonItem <- comparison_item
   token_payload$category <- category
   token_payload$property <- gprop
+  
+  tz_code = paste0("&tz=", tz) ## The tz coding is unclear, this should be handled
+                               ## better, currently it defaults to 300
+  hl_code = paste0("&hl=", hl)
 
   url <- URLencode(paste0("https://www.google.com/trends/api/explore?property=&req=",
                           jsonlite::toJSON(token_payload, auto_unbox = TRUE),
-                          "&tz=300&hl=en-US")) ## Need better than this
+                          tz_code, hl_code)) 
 
   widget <- curl::curl_fetch_memory(url)
-
-  stopifnot(widget$status_code == 200)
+  
+  if (widget$status_code != 200) {
+    stop("Error: could not retrieve data, the query error code is ", widget$status_code)
+  }
 
   myjs <- jsonlite::fromJSON(substring(rawToChar(widget$content), first = 6))
   widget <- myjs$widgets
