@@ -147,7 +147,7 @@ gtrends <- function(
   
   comparison_item <- data.frame(keyword, geo, time, stringsAsFactors = FALSE)
   
-  widget <- get_widget(comparison_item, category, gprop)
+  widget <- get_widget(comparison_item, category, gprop, hl)
   
   # ****************************************************************************
   # Now that we have tokens, we can process the queries
