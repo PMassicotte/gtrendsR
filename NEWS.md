@@ -1,14 +1,16 @@
-# gtrendsR 2.0.0 (unreleased)
+# gtrendsR 1.4.0
 
 ## Major change
 
 - Due to recent changes to Google Trends API, `gtrendsR` has been almost re-written form scratch. One big visible change is that signing into a Google account is no longer required to download data from Google Trends.
 
-- Added a vignette (TODO)
-
 ## Bug fixes
 
 - Added missing all DMAs within the US (#146).
+
+- gtrendsR now correctly use the `hl` (local) parameter to retreive data (@antaldaniel).
+
+# - Better support for queries using non-ascii keywords (`gtrends("österreich")`).
 
 # gtrendsR 1.3.5
 
