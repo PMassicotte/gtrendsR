@@ -55,7 +55,7 @@ check_time <- function(time) {
 }
 
 
-get_widget <- function(comparison_item, category, gprop) {
+get_widget <- function(comparison_item, category, gprop, hl) {
 
   token_payload <- list()
   token_payload$comparisonItem <- comparison_item
@@ -64,11 +64,14 @@ get_widget <- function(comparison_item, category, gprop) {
 
   url <- URLencode(paste0("https://www.google.com/trends/api/explore?property=&req=",
                           jsonlite::toJSON(token_payload, auto_unbox = TRUE),
-                          "&tz=300&hl=en-US")) ## Need better than this
+                          "&tz=300&hl=", hl)) ## The tz part is unclear but different
+                                              ## valid values do not change the result:
+                                              ## clarification needed.
 
   widget <- curl::curl_fetch_memory(url)
 
   stopifnot(widget$status_code == 200)
+
   
   ## Fix encoding issue for keywords like österreich"
   temp <- rawToChar(widget$content)
@@ -93,10 +96,10 @@ interest_over_time <- function(widget, comparison_item) {
 
 
   url <- paste0(
-    "https://www.google.fr/trends/api/widgetdata/multiline/csv?req=",
+    "https://www.google.com/trends/api/widgetdata/multiline/csv?req=",
     jsonlite::toJSON(payload2, auto_unbox = T),
     "&token=", widget$token[1],
-    "&tz=360"
+    "&tz=300"
   )
 
   # ****************************************************************************
