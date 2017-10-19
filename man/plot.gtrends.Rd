@@ -19,6 +19,8 @@ A ggplot2 object is returned silently.
 Plot Google Trends interest over time
 }
 \examples{
+\dontrun{
 res <- gtrends("nhl", geo = c("CA", "US"))
 plot(res)
+}
 }

@@ -49,6 +49,8 @@
 #'   
 #' @examples
 #' 
+#' \dontrun{
+#' 
 #' head(gtrends("NHL")$interest_over_time)
 #' head(gtrends("NHL")$related_topics)
 #' head(gtrends("NHL")$related_queries)
@@ -62,8 +64,6 @@
 #' categories[grepl("^Sport", categories$name), ]
 #' gtrends(c("NHL", "NFL"), geo = c("CA", "US"), category = 20)
 #'  
-#' \dontrun{
-#' 
 #' ## Playing with time format
 #' 
 #' gtrends(c("NHL", "NFL"), time = "now 1-H") # last hour
@@ -188,8 +188,10 @@ gtrends <- function(
 #' @export
 #' 
 #' @examples
+#' \dontrun{
 #' res <- gtrends("nhl", geo = c("CA", "US"))
 #' plot(res)
+#' }
 plot.gtrends <- function(x, ...) {
 
   df <- x$interest_over_time

@@ -60,6 +60,8 @@ geolocation and category can also be supplied.
 
 \examples{
 
+\dontrun{
+
 head(gtrends("NHL")$interest_over_time)
 head(gtrends("NHL")$related_topics)
 head(gtrends("NHL")$related_queries)
@@ -73,8 +75,6 @@ data(categories)
 categories[grepl("^Sport", categories$name), ]
 gtrends(c("NHL", "NFL"), geo = c("CA", "US"), category = 20)
  
-\dontrun{
-
 ## Playing with time format
 
 gtrends(c("NHL", "NFL"), time = "now 1-H") # last hour
