@@ -7,8 +7,4 @@
 
 ## R CMD check results
 
-There were no ERRORS or WARNINGS. There is one note about the execution time of examples.
-
-> Examples with CPU or elapsed time > 5s
-
-We reduced to a minimum the number of executed examples.
+There were no ERRORS, WARNINGS or NOTES.
