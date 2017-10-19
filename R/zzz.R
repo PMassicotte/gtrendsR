@@ -55,20 +55,22 @@ check_time <- function(time) {
 }
 
 
-get_widget <- function(comparison_item, category, gprop) {
+get_widget <- function(comparison_item, category, gprop, hl) {
 
   token_payload <- list()
   token_payload$comparisonItem <- comparison_item
   token_payload$category <- category
   token_payload$property <- gprop
+  tz = 100
 
   url <- URLencode(paste0("https://www.google.com/trends/api/explore?property=&req=",
                           jsonlite::toJSON(token_payload, auto_unbox = TRUE),
-                          "&tz=300&hl=en-US")) ## Need better than this
+                          "&tz=300&hl=", hl)) ## Need better than this
 
   widget <- curl::curl_fetch_memory(url)
 
   stopifnot(widget$status_code == 200)
+
   
   ## Fix encoding issue for keywords like österreich"
   temp <- rawToChar(widget$content)
