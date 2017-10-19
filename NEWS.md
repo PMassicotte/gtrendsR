@@ -1,3 +1,5 @@
+# gtrendsR 1.4.1 (unreleased)
+# 
 # gtrendsR 1.4.0
 
 ## Major change
@@ -10,7 +12,7 @@
 
 - gtrendsR now correctly use the `hl` (local) parameter to retreive data (@antaldaniel).
 
-# - Better support for queries using non-ascii keywords (`gtrends("österreich")`).
+- Better support for queries using non-ascii keywords (`gtrends("österreich")`).
 
 # gtrendsR 1.3.5
 
