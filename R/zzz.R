@@ -61,11 +61,12 @@ get_widget <- function(comparison_item, category, gprop, hl) {
   token_payload$comparisonItem <- comparison_item
   token_payload$category <- category
   token_payload$property <- gprop
-  tz = 100
 
   url <- URLencode(paste0("https://www.google.com/trends/api/explore?property=&req=",
                           jsonlite::toJSON(token_payload, auto_unbox = TRUE),
-                          "&tz=300&hl=", hl)) ## Need better than this
+                          "&tz=300&hl=", hl)) ## The tz part is unclear but different
+                                              ## valid values do not change the result:
+                                              ## clarification needed.
 
   widget <- curl::curl_fetch_memory(url)
 
@@ -95,10 +96,10 @@ interest_over_time <- function(widget, comparison_item) {
 
 
   url <- paste0(
-    "https://www.google.fr/trends/api/widgetdata/multiline/csv?req=",
+    "https://www.google.com/trends/api/widgetdata/multiline/csv?req=",
     jsonlite::toJSON(payload2, auto_unbox = T),
     "&token=", widget$token[1],
-    "&tz=360"
+    "&tz=300"
   )
 
   # ****************************************************************************
