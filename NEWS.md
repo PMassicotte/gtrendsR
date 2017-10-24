@@ -1,5 +1,7 @@
 # gtrendsR 1.4.1 (unreleased)
-# 
+
+- It is now possible to use DMA (`gtrends(keyword="obama",geo="US-AL-630")`) (#238)
+
 # gtrendsR 1.4.0
 
 ## Major change

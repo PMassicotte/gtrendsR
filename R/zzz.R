@@ -174,8 +174,12 @@ interest_by_region <- function(widget, comparison_item) {
   }
 
   ## US top metro
-  dma <- lapply(i, create_geo_payload, widget = widget, resolution = "DMA")
-  dma <- do.call(rbind, dma)
+  if (any(grepl("metro", widget$title))) {
+    dma <- lapply(i, create_geo_payload, widget = widget, resolution = "DMA")
+    dma <- do.call(rbind, dma)
+  } else {
+    dma <- NULL
+  }
 
   ## Top city
   city <- lapply(i, create_geo_payload, widget = widget, resolution = "CITY")

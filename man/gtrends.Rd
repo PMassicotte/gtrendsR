@@ -70,6 +70,10 @@ head(gtrends(c("NHL", "NFL"))$interest_over_time)
 
 head(gtrends(c("NHL", "NFL"), geo = c("CA", "US"))$interest_over_time)
 
+## Interest by city
+
+gtrends(keyword="obama",geo="US-AL-630")
+
 ## Sport category (20)
 data(categories)
 categories[grepl("^Sport", categories$name), ]
