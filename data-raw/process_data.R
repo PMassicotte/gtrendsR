@@ -5,9 +5,6 @@ library(data.tree)
 # Process categories data
 get_categories <- function() {
 
-  
-  
-    
   file <- system.file("extdata", "categories.json", package = "gtrendsR")
   
   res <- fromJSON(file, simplifyDataFrame =  FALSE)
@@ -26,46 +23,21 @@ get_categories <- function() {
 # Process countries
 get_countries <- function() {
   
-  # source: http://www.unece.org/cefact/codesfortrade/codes_index.html
-  
-  dir <- tempdir()
-  destfile <- paste0(dir, "/isocodes.zip")
+  destfile <- tempfile(fileext = ".csv")
   
   ret <- download.file(
-    "http://www.unece.org/fileadmin/DAM/cefact/locode/loc161csv.zip",
+    "https://raw.githubusercontent.com/olahol/iso-3166-2.json/master/data/eQuest.csv",
     destfile
   )
   
   # Was the file found?
   stopifnot(ret == 0)
+
+  # , col.names = c("country_code", "sub_code", "country")
+  df <- read.csv(destfile, sep = ",", header = FALSE, fileEncoding = "utf8", stringsAsFactors = FALSE)
+  df <- tidyr::unite(df, "sub_code", V2, V3, sep = "")
+  names(df) <- c("country_code", "sub_code", "country")
   
-  file <- unzip(destfile, exdir = dir)
-  file <- file[grepl("part\\d.csv", file, ignore.case = TRUE)]
-  
-  # df <- read.table(file[3], sep = ",", header = FALSE, fileEncoding = "latin1")
-  
-  countries <-
-    lapply(
-      file,
-      read.table,
-      header = FALSE,
-      stringsAsFactors = FALSE,
-      sep = ",",
-      fileEncoding = "latin1"
-    )
-  
-  # Bind everything
-  countries <- do.call(rbind, countries)
-  countries <- countries[, c(2, 4, 6)]
-  countries <- unique(countries)
-  names(countries) <- c("country_code", "description", "sub_code")
-  
-  # Remove entries without sub_code and format the data
-  index <- which(grepl("^\\.", countries$description) | countries$sub_code != "")
-  countries <- countries[index, ]
-  countries$sub_code <- ifelse(countries$sub_code != "",
-                               paste(countries$country_code, countries$sub_code, sep = "-"),
-                               "")
   
   # *************************************************************************
   # USA metro codes
@@ -88,7 +60,7 @@ get_countries <- function() {
       lapply(regmatches(usa$Metro, regexec(", (\\S{2})", usa$Metro)), "[", 2),
       usa$`Metro code`,
       sep = "-"
-    )
+    ), stringsAsFactors = FALSE
   )
   
   usa <- na.omit(usa)
@@ -96,7 +68,13 @@ get_countries <- function() {
   # *************************************************************************
   # Merge together
   # *************************************************************************
-  countries <- rbind(countries, usa)
+  countries <- dplyr::bind_rows(df, usa)
+
+  # *************************************************************************
+  # Final format
+  # *************************************************************************
+  countries$country_code <- ifelse(countries$country_code == "", NA, countries$country_code)
+  countries <- tidyr::fill(countries, country_code)
   
   # Fix the encoding
   countries <- data.frame(sapply(countries, iconv, to = "ASCII//TRANSLIT"))
