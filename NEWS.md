@@ -1,6 +1,7 @@
 # gtrendsR 1.4.1 (unreleased)
 
 - It is now possible to use DMA (`gtrends(keyword="obama",geo="US-AL-630")`) (#238)
+- Update the country list ISO-CODES (2017 version https://www.unece.org/cefact/codesfortrade/codes_index.html).
 
 # gtrendsR 1.4.0
 

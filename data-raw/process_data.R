@@ -26,13 +26,13 @@ get_categories <- function() {
 # Process countries
 get_countries <- function() {
   
-  # source: http://www.unece.org/cefact/codesfortrade/codes_index.html
+  # source: https://www.unece.org/cefact/codesfortrade/codes_index.html
   
   dir <- tempdir()
   destfile <- paste0(dir, "/isocodes.zip")
   
   ret <- download.file(
-    "http://www.unece.org/fileadmin/DAM/cefact/locode/loc161csv.zip",
+    "http://www.unece.org/fileadmin/DAM/cefact/locode/loc171csv.zip",
     destfile
   )
   
