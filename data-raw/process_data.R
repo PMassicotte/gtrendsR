@@ -26,7 +26,7 @@ get_countries <- function() {
   destfile <- tempfile(fileext = ".csv")
   
   ret <- download.file(
-    "https://raw.githubusercontent.com/olahol/iso-3166-2.json/master/data/eQuest.csv",
+    "https://raw.githubusercontent.com/CharlotteWoolley/Comprehensive_ISO_Location_Codes/master/ISO_codes.csv",
     destfile
   )
   
@@ -34,10 +34,10 @@ get_countries <- function() {
   stopifnot(ret == 0)
 
   # , col.names = c("country_code", "sub_code", "country")
-  df <- read.csv(destfile, sep = ",", header = FALSE, fileEncoding = "utf8", stringsAsFactors = FALSE)
-  df <- tidyr::unite(df, "sub_code", V2, V3, sep = "")
-  names(df) <- c("country_code", "sub_code", "country")
+  countries <- read.csv(destfile)
   
+  # Fix the encoding
+  countries <- data.frame(sapply(countries, iconv, to = "ASCII//TRANSLIT"))
   
   # *************************************************************************
   # USA metro codes
@@ -60,24 +60,17 @@ get_countries <- function() {
       lapply(regmatches(usa$Metro, regexec(", (\\S{2})", usa$Metro)), "[", 2),
       usa$`Metro code`,
       sep = "-"
-    ), stringsAsFactors = FALSE
+    )
   )
   
   usa <- na.omit(usa)
+  usa <- usa[, c(1, 3, 2)]
+  names(usa) <- names(countries)
   
   # *************************************************************************
   # Merge together
   # *************************************************************************
-  countries <- dplyr::bind_rows(df, usa)
-
-  # *************************************************************************
-  # Final format
-  # *************************************************************************
-  countries$country_code <- ifelse(countries$country_code == "", NA, countries$country_code)
-  countries <- tidyr::fill(countries, country_code)
-  
-  # Fix the encoding
-  countries <- data.frame(sapply(countries, iconv, to = "ASCII//TRANSLIT"))
+  countries <- rbind(countries, usa)
   
   return(countries)
   
