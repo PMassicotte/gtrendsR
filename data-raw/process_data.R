@@ -23,12 +23,14 @@ get_categories <- function() {
 # Process countries
 get_countries <- function() {
   
+
   destfile <- tempfile(fileext = ".csv")
   
-  ret <- download.file(
-    "https://raw.githubusercontent.com/CharlotteWoolley/Comprehensive_ISO_Location_Codes/master/ISO_codes.csv",
-    destfile
-  )
+  ret <-
+    download.file(
+      "https://raw.githubusercontent.com/CharlotteWoolley/Comprehensive_ISO_Location_Codes/master/ISO_codes.csv",
+      destfile = destfile
+    )
   
   # Was the file found?
   stopifnot(ret == 0)
