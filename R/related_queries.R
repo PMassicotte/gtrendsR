@@ -1,16 +1,15 @@
-related_queries <- function(widget, comparison_item) {
+related_queries <- function(widget, comparison_item, handle) {
   
   i <- which(grepl("queries", widget$title) == TRUE)
   
-  res <- lapply(i, create_related_queries_payload, widget = widget)
+  res <- lapply(i, create_related_queries_payload, widget = widget, handle)
   res <- do.call(rbind, res)
   
   return(res)
 }
 
 
-create_related_queries_payload <- function(i, widget) {
-  
+create_related_queries_payload <- function(i, widget, handle) {
   payload2 <- list()
   payload2$restriction$geo <-  as.list(widget$request$restriction$geo[i, , drop = FALSE])
   payload2$restriction$time <- widget$request$restriction$time[[i]]
@@ -31,8 +30,7 @@ create_related_queries_payload <- function(i, widget) {
   )
   
 
-  res <- curl::curl_fetch_memory(URLencode(url))
-  
+  res <- curl::curl_fetch_memory(URLencode(url), handle)
   stopifnot(res$status_code == 200)
   
   res <- readLines(textConnection(rawToChar(res$content)))
