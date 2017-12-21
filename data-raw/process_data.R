@@ -5,9 +5,6 @@ library(data.tree)
 # Process categories data
 get_categories <- function() {
 
-  
-  
-    
   file <- system.file("extdata", "categories.json", package = "gtrendsR")
   
   res <- fromJSON(file, simplifyDataFrame =  FALSE)
@@ -26,46 +23,23 @@ get_categories <- function() {
 # Process countries
 get_countries <- function() {
   
-  # source: https://www.unece.org/cefact/codesfortrade/codes_index.html
+
+  destfile <- tempfile(fileext = ".csv")
   
-  dir <- tempdir()
-  destfile <- paste0(dir, "/isocodes.zip")
-  
-  ret <- download.file(
-    "http://www.unece.org/fileadmin/DAM/cefact/locode/loc171csv.zip",
-    destfile
-  )
+  ret <-
+    download.file(
+      "https://raw.githubusercontent.com/CharlotteWoolley/Comprehensive_ISO_Location_Codes/master/ISO_codes.csv",
+      destfile = destfile
+    )
   
   # Was the file found?
   stopifnot(ret == 0)
+
+  # , col.names = c("country_code", "sub_code", "country")
+  countries <- read.csv(destfile)
   
-  file <- unzip(destfile, exdir = dir)
-  file <- file[grepl("part\\d.csv", file, ignore.case = TRUE)]
-  
-  # df <- read.table(file[3], sep = ",", header = FALSE, fileEncoding = "latin1")
-  
-  countries <-
-    lapply(
-      file,
-      read.table,
-      header = FALSE,
-      stringsAsFactors = FALSE,
-      sep = ",",
-      fileEncoding = "latin1"
-    )
-  
-  # Bind everything
-  countries <- do.call(rbind, countries)
-  countries <- countries[, c(2, 4, 6)]
-  countries <- unique(countries)
-  names(countries) <- c("country_code", "description", "sub_code")
-  
-  # Remove entries without sub_code and format the data
-  index <- which(grepl("^\\.", countries$description) | countries$sub_code != "")
-  countries <- countries[index, ]
-  countries$sub_code <- ifelse(countries$sub_code != "",
-                               paste(countries$country_code, countries$sub_code, sep = "-"),
-                               "")
+  # Fix the encoding
+  countries <- data.frame(sapply(countries, iconv, to = "ASCII//TRANSLIT"))
   
   # *************************************************************************
   # USA metro codes
@@ -92,14 +66,13 @@ get_countries <- function() {
   )
   
   usa <- na.omit(usa)
+  usa <- usa[, c(1, 3, 2)]
+  names(usa) <- names(countries)
   
   # *************************************************************************
   # Merge together
   # *************************************************************************
   countries <- rbind(countries, usa)
-  
-  # Fix the encoding
-  countries <- data.frame(sapply(countries, iconv, to = "ASCII//TRANSLIT"))
   
   return(countries)
   
