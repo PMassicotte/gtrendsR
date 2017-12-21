@@ -162,35 +162,19 @@ interest_by_region <- function(widget, comparison_item) {
 
   ## Interest by region need to be retreived individually
 
+  resolution <- sub(".* (\\w+)$", "\\1", widget$title[i])
+  resolution[resolution == "subregion"] <- "region"
+
   ## If no country is specified, resolution should be "COUNTRY"
-  resolution <- ifelse("world" %in% widget$geo, "COUNTRY", "REGION")
+  resolution[grepl("world", na.omit(widget$geo))] <- "country"
+  resolution <- toupper(resolution)
+      
+    # ifelse("world" %in% widget$geo, "COUNTRY", "REGION")
+  
+  res <- mapply(create_geo_payload, i, resolution, MoreArgs = list(widget = widget), SIMPLIFY = FALSE)
 
-  ## if searching within US metro, there is no region data. Return NULL.
-  if (any(grepl("region", widget$title))) {
-    region <- lapply(i, create_geo_payload, widget = widget, resolution = resolution)
-    region <- do.call(rbind, region)
-  } else {
-    region <- NULL
-  }
-
-  ## US top metro
-  if (any(grepl("metro", widget$title))) {
-    dma <- lapply(i, create_geo_payload, widget = widget, resolution = "DMA")
-    dma <- do.call(rbind, dma)
-  } else {
-    dma <- NULL
-  }
-
-  ## Top city
-  city <- lapply(i, create_geo_payload, widget = widget, resolution = "CITY")
-  city <- do.call(rbind, city)
-
-  res <- list(
-    region = region,
-    dma = dma,
-    city = city
-  )
-
+  setNames(res, tolower(resolution))
+  
   return(res)
 }
 
@@ -204,7 +188,7 @@ create_geo_payload <- function(i, widget, resolution) {
   payload2$requestOptions$backend <- widget$request$requestOptions$backend[i]
   payload2$requestOptions$property <- widget$request$requestOptions$property[i]
   payload2$requestOptions$category <- widget$request$requestOptions$category[i]
-  payload2$geo <- as.list(widget$request$geo[i, , drop = FALSE])
+  payload2$geo <- as.list(na.omit.list(widget$request$geo[i, , drop = FALSE]))
 
 
   url <- paste0(
@@ -258,3 +242,10 @@ create_geo_payload <- function(i, widget, resolution) {
 
   return(df)
 }
+
+## Remove NA from list
+na.omit.list <-
+  function(y) {
+    return(y[!sapply(y, function(x)
+      all(is.na(x)))])
+  }

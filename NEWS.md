@@ -4,6 +4,8 @@
 
 - Added missing country codes (#213)
 
+- Can now mix both country and sub country codes (`plot(gtrends("pizza", geo = c("CA", "GB-ENG")))`) (#218)
+
 # gtrendsR 1.4.0
 
 ## Major change

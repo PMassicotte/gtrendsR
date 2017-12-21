@@ -41,7 +41,7 @@
 #' @section Related topics: Note that *related topics* are not retrieved when
 #'   more than one keyword is provided due to Google restriction.
 #'   
-#' @importFrom stats na.omit reshape
+#' @importFrom stats na.omit reshape setNames
 #' @importFrom utils URLencode read.csv
 #'   
 #' @return An object of class \sQuote{gtrends} (basically a list of data
@@ -118,8 +118,7 @@ gtrends <- function(
   
   ## Check if valide geo
   if (geo != "" &&
-      !all(geo %in% countries[, "country_code"]) &&
-      !all(geo %in% countries[, "sub_code"])) {
+      !all(geo %in% c(as.character(countries[, "country_code"]), as.character(countries[, "sub_code"])))) {
     stop("Country code not valid. Please use 'data(countries)' to retreive valid codes.",
          call. = FALSE)
   }
