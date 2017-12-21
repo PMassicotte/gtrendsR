@@ -101,7 +101,9 @@ gtrends <- function(
   time = "today+5-y", 
   gprop = c("web", "news", "images", "froogle", "youtube"), 
   category = 0,
-  hl = "en-US") {
+  hl = "en-US",
+  handle=NULL) {
+
   
   stopifnot(
     # One  vector should be a multiple of the other
@@ -153,17 +155,15 @@ gtrends <- function(
   # ****************************************************************************
   
   comparison_item <- data.frame(keyword, geo, time, stringsAsFactors = FALSE)
-  
-  widget <- get_widget(comparison_item, category, gprop, hl)
+  widget <- get_widget(comparison_item, category, gprop, hl, handle)
   
   # ****************************************************************************
   # Now that we have tokens, we can process the queries
   # ****************************************************************************
-  
-  interest_over_time <- interest_over_time(widget, comparison_item)
-  interest_by_region <- interest_by_region(widget, comparison_item)
-  related_topics <- related_topics(widget, comparison_item, hl)
-  related_queries <- related_queries(widget, comparison_item)
+  interest_over_time <- interest_over_time(widget, comparison_item, handle)
+  interest_by_region <- interest_by_region(widget, comparison_item, handle)
+  related_topics <- related_topics(widget, comparison_item, hl, handle)
+  related_queries <- related_queries(widget, comparison_item, handle)
     
   res <- list(
     interest_over_time = interest_over_time, 
