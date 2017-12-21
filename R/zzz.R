@@ -55,7 +55,7 @@ check_time <- function(time) {
 }
 
 
-get_widget <- function(comparison_item, category, gprop, hl) {
+get_widget <- function(comparison_item, category, gprop, hl, handle) {
 
   token_payload <- list()
   token_payload$comparisonItem <- comparison_item
@@ -68,7 +68,7 @@ get_widget <- function(comparison_item, category, gprop, hl) {
                                               ## valid values do not change the result:
                                               ## clarification needed.
 
-  widget <- curl::curl_fetch_memory(url)
+  widget <- curl::curl_fetch_memory(url,handle)
 
   stopifnot(widget$status_code == 200)
 
@@ -83,8 +83,7 @@ get_widget <- function(comparison_item, category, gprop, hl) {
 
 }
 
-interest_over_time <- function(widget, comparison_item) {
-
+interest_over_time <- function(widget, comparison_item, handle) {
   payload2 <- list()
   payload2$locale <- widget$request$locale[1]
   payload2$comparisonItem <- widget$request$comparisonItem[[1]]
@@ -106,8 +105,7 @@ interest_over_time <- function(widget, comparison_item) {
   # Downoad the results
   # ****************************************************************************
 
-  res <- curl::curl_fetch_memory(URLencode(url))
-
+  res <- curl::curl_fetch_memory(URLencode(url), handle)
   stopifnot(res$status_code == 200)
 
   # ****************************************************************************
@@ -156,7 +154,7 @@ interest_over_time <- function(widget, comparison_item) {
 }
 
 
-interest_by_region <- function(widget, comparison_item) {
+interest_by_region <- function(widget, comparison_item, handle) {
 
   i <- which(grepl("Interest by", widget$title) == TRUE)
 
@@ -167,7 +165,7 @@ interest_by_region <- function(widget, comparison_item) {
 
   ## if searching within US metro, there is no region data. Return NULL.
   if (any(grepl("region", widget$title))) {
-    region <- lapply(i, create_geo_payload, widget = widget, resolution = resolution)
+    region <- lapply(i, create_geo_payload, widget = widget, resolution = resolution, handle)
     region <- do.call(rbind, region)
   } else {
     region <- NULL
@@ -175,14 +173,14 @@ interest_by_region <- function(widget, comparison_item) {
 
   ## US top metro
   if (any(grepl("metro", widget$title))) {
-    dma <- lapply(i, create_geo_payload, widget = widget, resolution = "DMA")
+    dma <- lapply(i, create_geo_payload, widget = widget, resolution = "DMA", handle)
     dma <- do.call(rbind, dma)
   } else {
     dma <- NULL
   }
 
   ## Top city
-  city <- lapply(i, create_geo_payload, widget = widget, resolution = "CITY")
+  city <- lapply(i, create_geo_payload, widget = widget, resolution = "CITY", handle)
   city <- do.call(rbind, city)
 
   res <- list(
@@ -195,7 +193,7 @@ interest_by_region <- function(widget, comparison_item) {
 }
 
 
-create_geo_payload <- function(i, widget, resolution) {
+create_geo_payload <- function(i, widget, resolution, handle) {
 
   payload2 <- list()
   payload2$locale <- unique(na.omit(widget$request$locale))
@@ -214,7 +212,7 @@ create_geo_payload <- function(i, widget, resolution) {
     "&tz=300&hl=en-US"
   )
 
-  res <- curl::curl_fetch_memory(URLencode(url))
+  res <- curl::curl_fetch_memory(URLencode(url), handle)
 
   stopifnot(res$status_code == 200)
 
