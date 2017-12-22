@@ -174,7 +174,7 @@ interest_by_region <- function(widget, comparison_item, low_search_volume) {
       grepl("world", na.omit(widget$geo)), "country", "region"
     ), "city", "dma"), stringsAsFactors = FALSE)
   
-  # resolution <- unique(resolution)
+  resolution <- unique(resolution)
   
   i <- resolution$Var1
   resolution <- resolution$Var2
