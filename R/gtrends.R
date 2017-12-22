@@ -34,6 +34,8 @@
 #'   \dQuote{fr}). Default is \dQuote{en-US}. Note that this is only influencing
 #'   the data returned by related topics.
 #'   
+#' @param low_search_volume Logical. Should include low search volume regions?
+#'   
 #' @section Categories: The package includes a complete list of categories that 
 #'   can be used to narrow requests. These can be accessed using 
 #'   \code{data("categories")}.
@@ -101,7 +103,8 @@ gtrends <- function(
   time = "today+5-y", 
   gprop = c("web", "news", "images", "froogle", "youtube"), 
   category = 0,
-  hl = "en-US") {
+  hl = "en-US",
+  low_search_volume = FALSE) {
   
   stopifnot(
     # One  vector should be a multiple of the other
@@ -160,18 +163,22 @@ gtrends <- function(
   # ****************************************************************************
   
   interest_over_time <- interest_over_time(widget, comparison_item)
-  interest_by_region <- interest_by_region(widget, comparison_item)
+  interest_by_region <- interest_by_region(widget, comparison_item, low_search_volume)
   related_topics <- related_topics(widget, comparison_item, hl)
   related_queries <- related_queries(widget, comparison_item)
     
   res <- list(
     interest_over_time = interest_over_time, 
-    interest_by_region = interest_by_region$region,
-    interest_by_dma = interest_by_region$dma,
-    interest_by_city = interest_by_region$city,
+    interest_by_country = do.call(rbind, interest_by_region[names(interest_by_region) == "country"]),
+    interest_by_region = do.call(rbind, interest_by_region[names(interest_by_region) == "region"]),
+    interest_by_dma = do.call(rbind, interest_by_region[names(interest_by_region) == "dma"]),
+    interest_by_city = do.call(rbind, interest_by_region[names(interest_by_region) == "city"]),
     related_topics = related_topics, 
     related_queries = related_queries
   )
+  
+  ## Remove row.names
+  res <- lapply(res, function(x){ row.names(x) <- NULL; x})
   
   class(res) <- c("gtrends", "list")
  

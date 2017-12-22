@@ -5,7 +5,8 @@
 \title{Google Trends Query}
 \usage{
 gtrends(keyword, geo = "", time = "today+5-y", gprop = c("web", "news",
-  "images", "froogle", "youtube"), category = 0, hl = "en-US")
+  "images", "froogle", "youtube"), category = 0, hl = "en-US",
+  low_search_volume = FALSE)
 }
 \arguments{
 \item{keyword}{A character vector with the actual Google Trends query 
@@ -37,6 +38,8 @@ trend query if preformed. Valid options are:
 \item{hl}{A string specifying the ISO language code (ex.: \dQuote{en-US} or 
 \dQuote{fr}). Default is \dQuote{en-US}. Note that this is only influencing
 the data returned by related topics.}
+
+\item{low_search_volume}{Logical. Should include low search volume regions?}
 }
 \value{
 An object of class \sQuote{gtrends} (basically a list of data

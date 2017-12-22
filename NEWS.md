@@ -6,6 +6,8 @@
 
 - Can now mix both country and sub country codes (`plot(gtrends("pizza", geo = c("CA", "GB-ENG")))`) (#218)
 
+- New parameter `low_search_volume` allowing low search volume regions (#229). 
+
 # gtrendsR 1.4.0
 
 ## Major change
