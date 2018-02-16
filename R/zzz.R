@@ -224,7 +224,7 @@ create_geo_payload <- function(i, widget, resolution, low_search_volume) {
   payload2$requestOptions$backend <- widget$request$requestOptions$backend[i]
   payload2$requestOptions$property <- widget$request$requestOptions$property[i]
   payload2$requestOptions$category <- widget$request$requestOptions$category[i]
-  payload2$geo <- as.list(na.omit.list(widget$request$geo[i, , drop = FALSE]))
+  payload2$geo <- as.list((widget$request$geo[i, , drop = FALSE]))
   payload2$includeLowSearchVolumeGeos <- low_search_volume
 
 
@@ -284,8 +284,7 @@ create_geo_payload <- function(i, widget, resolution, low_search_volume) {
 }
 
 ## Remove NA from list
-na.omit.list <-
-  function(y) {
-    return(y[!sapply(y, function(x)
-      all(is.na(x)))])
-  }
+na.omit.list <- function(y) {
+  return(y[!sapply(y, function(x)
+    all(is.na(x)))])
+}

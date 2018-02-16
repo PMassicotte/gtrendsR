@@ -14,6 +14,7 @@ create_related_topics_payload <- function(i, widget, hl) {
   payload2 <- list()
   payload2$restriction$geo <-  as.list(widget$request$restriction$geo[i, , drop = FALSE])
   payload2$restriction$time <- widget$request$restriction$time[[i]]
+  payload2$restriction$originalTimeRangeForExploreUrl <- widget$request$restriction$originalTimeRangeForExploreUrl[[i]]
   payload2$restriction$complexKeywordsRestriction$keyword <- widget$request$restriction$complexKeywordsRestriction$keyword[[i]]
   payload2$keywordType <- widget$request$keywordType[[i]]
   payload2$metric <- widget$request$metric[[i]]
@@ -24,7 +25,8 @@ create_related_topics_payload <- function(i, widget, hl) {
   payload2$language <- widget$request$language[[i]]
   
   url <- paste0(
-    "https://www.google.com/trends/api/widgetdata/relatedsearches/csv?req=",
+    "https://trends.google.com/trends/api/widgetdata/relatedsearches/csv?req=",
+    # "https://www.google.com/trends/api/widgetdata/relatedsearches/csv?req=",
     jsonlite::toJSON(payload2, auto_unbox = T),
     "&token=", widget$token[i],
     "&tz=300&hl=", hl

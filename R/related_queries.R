@@ -14,6 +14,7 @@ create_related_queries_payload <- function(i, widget) {
   payload2 <- list()
   payload2$restriction$geo <-  as.list(widget$request$restriction$geo[i, , drop = FALSE])
   payload2$restriction$time <- widget$request$restriction$time[[i]]
+  payload2$restriction$originalTimeRangeForExploreUrl <- widget$request$restriction$originalTimeRangeForExploreUrl[[i]]
   payload2$restriction$complexKeywordsRestriction$keyword <- widget$request$restriction$complexKeywordsRestriction$keyword[[i]]
   payload2$keywordType <- widget$request$keywordType[[i]]
   payload2$metric <- widget$request$metric[[i]]
