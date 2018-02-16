@@ -5,7 +5,7 @@
 #'   \item description Description of the location
 #'   \item sub_code ISO3166-2 country codes
 #' }
-#' 
+#'
 #' @docType data
 #' @keywords datasets
 #' @name countries
