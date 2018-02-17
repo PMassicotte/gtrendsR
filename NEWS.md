@@ -8,6 +8,8 @@
 
 - New parameter `low_search_volume` allowing low search volume regions (#229). 
 
+- Fixing breaking changes that were introduced by Google Trends (#252) @kevinmager65.
+
 # gtrendsR 1.4.0
 
 ## Major change
