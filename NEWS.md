@@ -1,14 +1,16 @@
-# gtrendsR 1.4.1 (unreleased)
+# gtrendsR 1.4.1
 
-- It is now possible to use DMA (`gtrends(keyword="obama",geo="US-AL-630")`) (#238)
+- It is now possible to use DMA (`gtrends(keyword="obama",geo="US-AL-630")`) (#238).
 
-- Added missing country codes (#213)
+- Added missing country codes (#213).
 
-- Can now mix both country and sub country codes (`plot(gtrends("pizza", geo = c("CA", "GB-ENG")))`) (#218)
+- Can now mix both country and sub country codes (`plot(gtrends("pizza", geo = c("CA", "GB-ENG")))`) (#218).
 
 - New parameter `low_search_volume` allowing low search volume regions (#229). 
 
-- Fixing breaking changes that were introduced by Google Trends (#252) @kevinmager65.
+- Fixing breaking changes that were introduced by Google Trends (#252) @kevinmager65. 
+
+- Can now search without keywords (`gtrends(geo = c("CA"), category = 20)`).
 
 # gtrendsR 1.4.0
 
@@ -20,7 +22,7 @@
 
 - Added missing all DMAs within the US (#146).
 
-- gtrendsR now correctly use the `hl` (local) parameter to retreive data (@antaldaniel).
+- gtrendsR now correctly use the `hl` (local) parameter to retrieve data (@antaldaniel).
 
 - Better support for queries using non-ascii keywords (`gtrends("österreich")`).
 
@@ -28,7 +30,7 @@
 
 - Added some missing country codes (#94). `data("countries")`.
 
-- Now able to specify for which Google products the request is performed using the `gprop` parameter (#112). Possible values are `froogle` for Google shopping, `new` for Google news, `youtube` for Youtube videos and `images` for Google images.
+- Now able to specify for which Google products the request is performed using the `gprop` parameter (#112). Possible values are `froogle` for Google shopping, `new` for Google news, `youtube` for YouTube videos and `images` for Google images.
 
 - Now able to query using Google categories `?gtrends` (#89).
 
@@ -42,7 +44,7 @@
 
 - Fixing login issue due to backend changes made by Google (#103). Thanks to @MrLoh for initial implementation and suggestions.
 
-- Fixing crash occuring when monthly data was returned (#81).
+- Fixing crash occurring when monthly data was returned (#81).
 
 - `gtrends()` will throw a warning if data is returned monthly (#80).
 
@@ -54,7 +56,7 @@
 
 - Support for hourly and daily data (#67). For example, it is now possible to have hourly data for the last seven days with `gtrends("nhl", geo = "CA", res = "7d")`. Use `?gtrends` for more information about the time resolution supported by the package.
 
-- Support for categorties (#46). Ex.: `gtrends("NHL", geo = "US", cat = "0-20")` will search only in the *sport* category.
+- Support for categories (#46). Ex.: `gtrends("NHL", geo = "US", cat = "0-20")` will search only in the *sport* category.
 
 - Some countries (ex: Hong Kong) were missing from the list (#69).
 
