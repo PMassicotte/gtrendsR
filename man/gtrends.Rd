@@ -4,38 +4,38 @@
 \alias{gtrends}
 \title{Google Trends Query}
 \usage{
-gtrends(keyword, geo = "", time = "today+5-y", gprop = c("web", "news",
-  "images", "froogle", "youtube"), category = 0, hl = "en-US",
+gtrends(keyword = NA, geo = "", time = "today+5-y", gprop = c("web",
+  "news", "images", "froogle", "youtube"), category = 0, hl = "en-US",
   low_search_volume = FALSE)
 }
 \arguments{
-\item{keyword}{A character vector with the actual Google Trends query 
-keywords. Multiple keywords are possible using \code{gtrends(c("NHL", 
+\item{keyword}{A character vector with the actual Google Trends query
+keywords. Multiple keywords are possible using \code{gtrends(c("NHL",
 "NBA", "MLB", "MLS"))}.}
 
-\item{geo}{A character vector denoting geographic regions for the query, 
-default to \dQuote{all} for global queries. Multiple regions are possible 
+\item{geo}{A character vector denoting geographic regions for the query,
+default to \dQuote{all} for global queries. Multiple regions are possible
 using \code{gtrends("NHL", c("CA", "US"))}.}
 
 \item{time}{A string specifying the time span of the query. Possible values
-are:
+  are:
 
-\describe{ \item{"now 1-H"}{Last hour} \item{"now 4-H"}{Last four hours} 
-\item{"now 1-d"}{Last day} \item{"now 7-d"}{Last seven days} \item{"today
-1-m"}{Past 30 days} \item{"today 3-m"}{Past 90 days} \item{"today
-12-m"}{Past 12 months} \item{"today+5-y"}{Last five years (default)} 
-\item{"all"}{Since the beginning of Google Trends (2004)} \item{"Y-m-d
-Y-m-d"}{Time span between two dates (ex.: "2010-01-01 2010-04-03")} }}
+  \describe{ \item{"now 1-H"}{Last hour} \item{"now 4-H"}{Last four hours}
+  \item{"now 1-d"}{Last day} \item{"now 7-d"}{Last seven days} \item{"today
+  1-m"}{Past 30 days} \item{"today 3-m"}{Past 90 days} \item{"today
+  12-m"}{Past 12 months} \item{"today+5-y"}{Last five years (default)}
+  \item{"all"}{Since the beginning of Google Trends (2004)} \item{"Y-m-d
+  Y-m-d"}{Time span between two dates (ex.: "2010-01-01 2010-04-03")} }}
 
-\item{gprop}{A character string defining the Google product for which the 
-trend query if preformed. Valid options are:
+\item{gprop}{A character string defining the Google product for which the
+  trend query if preformed. Valid options are:
 
-\itemize{ \item "web" (default) \item "news" \item "images" \item "froogle"
-\item "youtube" }}
+  \itemize{ \item "web" (default) \item "news" \item "images" \item "froogle"
+  \item "youtube" }}
 
 \item{category}{A character denoting the category, defaults to \dQuote{0}.}
 
-\item{hl}{A string specifying the ISO language code (ex.: \dQuote{en-US} or 
+\item{hl}{A string specifying the ISO language code (ex.: \dQuote{en-US} or
 \dQuote{fr}). Default is \dQuote{en-US}. Note that this is only influencing
 the data returned by related topics.}
 
@@ -46,13 +46,13 @@ An object of class \sQuote{gtrends} (basically a list of data
   frames).
 }
 \description{
-The \code{gtrends} default method performs a Google Trends query for the 
-\sQuote{query} argument and session \sQuote{session}. Optional arguments for 
+The \code{gtrends} default method performs a Google Trends query for the
+\sQuote{query} argument and session \sQuote{session}. Optional arguments for
 geolocation and category can also be supplied.
 }
 \section{Categories}{
- The package includes a complete list of categories that 
-  can be used to narrow requests. These can be accessed using 
+ The package includes a complete list of categories that
+  can be used to narrow requests. These can be accessed using
   \code{data("categories")}.
 }
 
@@ -81,7 +81,8 @@ gtrends(keyword="obama",geo="US-AL-630")
 data(categories)
 categories[grepl("^Sport", categories$name), ]
 gtrends(c("NHL", "NFL"), geo = c("CA", "US"), category = 20)
- 
+gtrends(geo = c("CA"), category = 20)
+
 ## Playing with time format
 
 gtrends(c("NHL", "NFL"), time = "now 1-H") # last hour
@@ -96,7 +97,7 @@ gtrends(c("NHL", "NFL"), time = "all") # since 2004
 
 ## Custom date format
 
-gtrends(c("NHL", "NFL"), time = "2010-01-01 2010-04-03") 
+gtrends(c("NHL", "NFL"), time = "2010-01-01 2010-04-03")
 
 ## Search from various Google's services
 

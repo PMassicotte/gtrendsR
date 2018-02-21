@@ -157,6 +157,10 @@ interest_over_time <- function(widget, comparison_item) {
 interest_by_region <- function(widget, comparison_item, low_search_volume) {
   i <- which(grepl("Interest by", widget$title) == TRUE)
 
+  if (length(i) == 0) {
+    return(list(NULL))
+  }
+  
   ## Interest by region need to be retreived individually
 
   # resolution <- sub(".* (\\w+)$", "\\1", widget$title[i])

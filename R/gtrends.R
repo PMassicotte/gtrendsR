@@ -69,6 +69,7 @@
 #' data(categories)
 #' categories[grepl("^Sport", categories$name), ]
 #' gtrends(c("NHL", "NFL"), geo = c("CA", "US"), category = 20)
+#' gtrends(geo = c("CA"), category = 20)
 #'
 #' ## Playing with time format
 #'
@@ -98,7 +99,7 @@
 #' }
 #' @export
 gtrends <- function(
-                    keyword,
+                    keyword = NA,
                     geo = "",
                     time = "today+5-y",
                     gprop = c("web", "news", "images", "froogle", "youtube"),
