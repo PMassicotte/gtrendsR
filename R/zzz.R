@@ -272,7 +272,7 @@ create_geo_payload <- function(i, widget, resolution, low_search_volume) {
 
   df$temp <- NULL
   # df$geo <- widget$geo[i]
-  df$geo <- na.omit(unlist(widget$request$geo[i, ]))
+  df$geo <- suppressWarnings(na.omit(unlist(widget$request$geo[i, ])))
 
   df$geo <- ifelse(is.null(df$geo), "world", df$geo)
   df$gprop <- ifelse(widget$request$requestOptions$property[i] == "", "web", widget$request$requestOptions$property[i])
