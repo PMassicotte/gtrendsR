@@ -1,8 +1,8 @@
 Package: gtrendsR
 Type: Package
 Title: Perform and Display Google Trends Queries
-Version: 1.4.1
-Date: 2018-02-26
+Version: 1.4.2
+Date: 2018-03-15
 Authors@R: c(person("Philippe", 
          "Massicotte", 
          email = "pmassicotte@hotmail.com",
@@ -18,7 +18,7 @@ License: GPL (>= 2)
 BugReports: https://github.com/PMassicotte/gtrendsR/issues
 URL: https://github.com/PMassicotte/gtrendsR
 Depends:
-    R (>= 3.0)
+    R (>= 3.2.0)
 LazyData: yes
 Imports:
     ggplot2,
