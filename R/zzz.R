@@ -59,6 +59,8 @@ get_widget <- function(comparison_item, category, gprop, hl) {
   token_payload$category <- category
   token_payload$property <- gprop
 
+  # token_payload$comparisonItem$keyword <- curl::curl_escape(token_payload$comparisonItem$keyword)
+  
   url <- URLencode(paste0(
     "https://www.google.com/trends/api/explore?property=&req=",
     jsonlite::toJSON(token_payload, auto_unbox = TRUE),
@@ -66,7 +68,9 @@ get_widget <- function(comparison_item, category, gprop, hl) {
   )) ## The tz part is unclear but different
   ## valid values do not change the result:
   ## clarification needed.
-
+  
+  url <- encode_keyword(url)
+  
   widget <- curl::curl_fetch_memory(url)
 
   stopifnot(widget$status_code == 200)
@@ -92,18 +96,19 @@ interest_over_time <- function(widget, comparison_item) {
   payload2$requestOptions$property <- widget$request$requestOptions$property[1]
 
 
-  url <- paste0(
+  url <- URLencode(paste0(
     "https://www.google.com/trends/api/widgetdata/multiline/csv?req=",
     jsonlite::toJSON(payload2, auto_unbox = T),
     "&token=", widget$token[1],
     "&tz=300"
-  )
+  ))
 
   # ****************************************************************************
   # Downoad the results
   # ****************************************************************************
-
-  res <- curl::curl_fetch_memory(URLencode(url))
+  url <- encode_keyword(url)
+  
+  res <- curl::curl_fetch_memory(url)
 
   stopifnot(res$status_code == 200)
 
@@ -228,14 +233,15 @@ create_geo_payload <- function(i, widget, resolution, low_search_volume) {
   payload2$includeLowSearchVolumeGeos <- low_search_volume
 
 
-  url <- paste0(
+  url <- URLencode(paste0(
     "https://www.google.com/trends/api/widgetdata/comparedgeo/csv?req=",
     jsonlite::toJSON(payload2, auto_unbox = T),
     "&token=", widget$token[i],
     "&tz=300&hl=en-US"
-  )
+  ))
 
-  res <- curl::curl_fetch_memory(URLencode(url))
+  url <- encode_keyword(url)
+  res <- curl::curl_fetch_memory(url)
 
   if (res$status_code != 200) {
     return(NULL)
@@ -289,4 +295,9 @@ create_geo_payload <- function(i, widget, resolution, low_search_volume) {
 na.omit.list <- function(y) {
   return(y[!sapply(y, function(x)
     all(is.na(x)))])
+}
+
+## Replace special characters in keywords like P&500 -> P%26500 
+encode_keyword <- function(url) {
+  gsub("(?:\\G(?!^)|\\[\\s*)[^][\\s]*\\K\\&(?!])(?=[^][]*])", "%26", url, perl = TRUE)
 }

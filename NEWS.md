@@ -1,5 +1,7 @@
 # gtrendsR 1.4.2 (unreleased)
 
+- Now able to search with "&" character (#267). `gtrends("A&W", geo = "CA")`
+
 - gtrendsR now depends on R >= 3.2.0 (#264)
 
 # gtrendsR 1.4.1
