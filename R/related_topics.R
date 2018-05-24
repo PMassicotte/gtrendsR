@@ -22,15 +22,16 @@ create_related_topics_payload <- function(i, widget, hl) {
   payload2$requestOptions$category <- widget$request$requestOptions$category[[i]]
   payload2$language <- widget$request$language[[i]]
 
-  url <- paste0(
+  url <- URLencode(paste0(
     "https://trends.google.com/trends/api/widgetdata/relatedsearches/csv?req=",
     # "https://www.google.com/trends/api/widgetdata/relatedsearches/csv?req=",
     jsonlite::toJSON(payload2, auto_unbox = T),
     "&token=", widget$token[i],
     "&tz=300&hl=", hl
-  )
+  ))
 
-  res <- curl::curl_fetch_memory(URLencode(url))
+  url <- encode_keyword(url)
+  res <- curl::curl_fetch_memory(url)
 
   stopifnot(res$status_code == 200)
 
