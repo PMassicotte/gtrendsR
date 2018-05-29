@@ -1,3 +1,14 @@
+# function to create cookie_handler, which is necessary to run get_widget()
+get_api_cookies <- function() {
+  cookie_handler <- curl::new_handle()
+  cookie_req <- curl::curl_fetch_memory("http://apis.google.com/Cookies/OTZ", handle = cookie_handler)
+  # according to @RKushnir, one could do this instead (https://github.com/GeneralMills/pytrends/issues/243#issuecomment-392872309):
+  # cookie_req <- curl_fetch_memory("http://trends.google.com/Cookies/NID", handle = cookie_handler)
+  curl::handle_cookies(cookie_handler)
+  assign("cookie_handler", cookie_handler, pos = -1) # not sure what I'm doing, hopefully this works?
+  return(NULL)
+}
+
 check_time <- function(time) {
   stopifnot(is.character(time))
 
@@ -71,7 +82,10 @@ get_widget <- function(comparison_item, category, gprop, hl) {
   
   url <- encode_keyword(url)
   
-  widget <- curl::curl_fetch_memory(url)
+  # if cookie_handler hasn't been set up, get the requisite cookies from Google's API
+  if(!exists("cookie_handler", where = -1)){ get_api_cookies() }
+  
+  widget <- curl::curl_fetch_memory(url, handle = cookie_handler)
 
   stopifnot(widget$status_code == 200)
 
