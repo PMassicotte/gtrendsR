@@ -5,9 +5,11 @@ get_api_cookies <- function() {
   # according to @RKushnir, one could do this instead (https://github.com/GeneralMills/pytrends/issues/243#issuecomment-392872309):
   # cookie_req <- curl_fetch_memory("http://trends.google.com/Cookies/NID", handle = cookie_handler)
   curl::handle_cookies(cookie_handler)
-  cookie_handler <<- cookie_handler
-  # assign("cookie_handler", cookie_handler, envir = as.environment('package:gtrendsR')) # not sure what I'm doing, hopefully this works?
+  # cookie_handler <<- cookie_handler
   # assignInMyNamespace("cookie_handler", cookie_handler)
+  unlockBinding("cookie_handler", envir = as.environment('package:gtrendsR'))
+  assign("cookie_handler", cookie_handler, envir = as.environment('package:gtrendsR'))
+  lockEnvironment(as.environment('package:gtrendsR'))
   return(NULL)
 }
 
@@ -85,11 +87,11 @@ get_widget <- function(comparison_item, category, gprop, hl) {
   url <- encode_keyword(url)
   
   # if cookie_handler hasn't been set up, get the requisite cookies from Google's API
-  # if(!exists("cookie_handler", envir = as.environment('package:gtrendsR'))){ get_api_cookies() }
-  if(!exists("cookie_handler")){ get_api_cookies() }
+  if(!exists("cookie_handler", envir = as.environment('package:gtrendsR'))){ get_api_cookies() }
+  # if(!exists("cookie_handler")){ get_api_cookies() }
   
-  # widget <- curl::curl_fetch_memory(url, handle = as.environment('package:gtrendsR')$cookie_handler)
-  widget <- curl::curl_fetch_memory(url, handle = cookie_handler)
+  widget <- curl::curl_fetch_memory(url, handle = as.environment('package:gtrendsR')$cookie_handler)
+  # widget <- curl::curl_fetch_memory(url, handle = cookie_handler)
   # widget <- curl::curl_fetch_memory(url, handle = get("cookie_handler"))
 
   stopifnot(widget$status_code == 200)
