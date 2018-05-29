@@ -7,7 +7,7 @@ get_api_cookies <- function() {
   curl::handle_cookies(cookie_handler)
   # cookie_handler <<- cookie_handler
   # assignInMyNamespace("cookie_handler", cookie_handler)
-  unlockBinding("cookie_handler", envir = as.environment('package:gtrendsR'))
+  unlockBinding("cookie_handler", env = as.environment('package:gtrendsR'))
   assign("cookie_handler", cookie_handler, envir = as.environment('package:gtrendsR'))
   lockEnvironment(as.environment('package:gtrendsR'))
   return(NULL)
