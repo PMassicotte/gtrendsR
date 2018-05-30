@@ -1,16 +1,18 @@
-#.pkgenv <- new.env(parent=emptyenv())
+.pkgenv <- new.env(parent=emptyenv())
 
-cookie_handler <- curl::new_handle()
-cookie_req <- curl::curl_fetch_memory("http://apis.google.com/Cookies/OTZ", handle = cookie_handler)
-curl::handle_cookies(cookie_handler)
+#cookie_handler <- curl::new_handle()
+#cookie_req <- curl::curl_fetch_memory("http://apis.google.com/Cookies/OTZ", handle = cookie_handler)
+#curl::handle_cookies(cookie_handler)
 
 # function to create cookie_handler, which is necessary to run get_widget()
-#get_api_cookies <- function() {
-#  cookie_handler <- curl::new_handle()
-#  cookie_req <- curl::curl_fetch_memory("http://apis.google.com/Cookies/OTZ", handle = cookie_handler)
+get_api_cookies <- function() {
+  cookie_handler <- curl::new_handle()
+  cookie_req <- curl::curl_fetch_memory("http://apis.google.com/Cookies/OTZ", handle = cookie_handler)
   # according to @RKushnir, one could do this instead (https://github.com/GeneralMills/pytrends/issues/243#issuecomment-392872309):
   # cookie_req <- curl_fetch_memory("http://trends.google.com/Cookies/NID", handle = cookie_handler)
-#  curl::handle_cookies(cookie_handler)
+  curl::handle_cookies(cookie_handler)
+  .pkgenv[["cookie_handler"]] <- cookie_handler
+  #assign("cookie_handler", cookie_handler, envir = .pkgenv)
   # cookie_handler <<- cookie_handler
   # assignInMyNamespace("cookie_handler", cookie_handler)
   #unlockBinding("cookie_handler", env = as.environment('package:gtrendsR'))
@@ -19,8 +21,8 @@ curl::handle_cookies(cookie_handler)
 #  assign("cookie_handler", cookie_handler, envir = gtrendsR:::.__NAMESPACE__.) # i'm guessing this is bad practice but it works
   # assign("cookie_handler", cookie_handler, envir = asNamespace('gtrendsR'))
   #lockEnvironment(as.environment('package:gtrendsR'))
-#  return(NULL)
-#}
+  return(NULL)
+}
 
 check_time <- function(time) {
   stopifnot(is.character(time))
@@ -101,7 +103,8 @@ get_widget <- function(comparison_item, category, gprop, hl) {
   # if(!exists("cookie_handler")){ get_api_cookies() }
   
   #widget <- curl::curl_fetch_memory(url, handle = gtrendsR:::.__NAMESPACE__.$cookie_handler) # I'm not sure you're supposed to do this but it works
-   widget <- curl::curl_fetch_memory(url, handle = cookie_handler)
+  # widget <- curl::curl_fetch_memory(url, handle = cookie_handler)
+  widget <- curl::curl_fetch_memory(url, handle = .pkgenv[["cookie_handler"]])
 
   stopifnot(widget$status_code == 200)
 
