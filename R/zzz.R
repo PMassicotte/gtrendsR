@@ -98,6 +98,7 @@ get_widget <- function(comparison_item, category, gprop, hl) {
   url <- encode_keyword(url)
   
   # if cookie_handler hasn't been set up, get the requisite cookies from Google's API
+  if(!exists("cookie_handler", envir = .pkgenv)){ get_api_cookies() }
   #if(!exists("cookie_handler", envir = gtrendsR:::.__NAMESPACE__.)){ get_api_cookies() }
   # if(!exists("cookie_handler", envir = as.environment('package:gtrendsR'))){ get_api_cookies() }
   # if(!exists("cookie_handler")){ get_api_cookies() }
