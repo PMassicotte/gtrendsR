@@ -1,12 +1,16 @@
 # create environment in which to put cookie_handler
 .pkgenv <- new.env(parent=emptyenv())
 
+# specify the cookie URL; can be overwritten by user by changing gtrendsR:::.pkgenv$cookie_url
+# e.g., alternative url is "http://apis.google.com/Cookies/OTZ"
+.pkgenv[["cookie_url"]] <- "http://trends.google.com/Cookies/NID"
+
 # function to create cookie_handler, which is necessary to run get_widget()
 get_api_cookies <- function() {
   # create new handler
   cookie_handler <- curl::new_handle()
   # fetch API cookies
-  cookie_req <- curl::curl_fetch_memory("http://apis.google.com/Cookies/OTZ", handle = cookie_handler)
+  cookie_req <- curl::curl_fetch_memory(.pkgenv[["cookie_url"]], handle = cookie_handler)
   # according to @RKushnir, one could do this instead (https://github.com/GeneralMills/pytrends/issues/243#issuecomment-392872309):
   # cookie_req <- curl_fetch_memory("http://trends.google.com/Cookies/NID", handle = cookie_handler)
   curl::handle_cookies(cookie_handler)
