@@ -1,11 +1,13 @@
+#.pkgenv <- new.env(parent=emptyenv())
+
 cookie_handler <- curl::new_handle()
-  curl::curl_fetch_memory("http://apis.google.com/Cookies/OTZ", handle = cookie_handler)
-  curl::handle_cookies(cookie_handler)
+cookie_req <- curl::curl_fetch_memory("http://apis.google.com/Cookies/OTZ", handle = cookie_handler)
+curl::handle_cookies(cookie_handler)
 
 # function to create cookie_handler, which is necessary to run get_widget()
 #get_api_cookies <- function() {
-  #cookie_handler <- curl::new_handle()
- # cookie_req <- curl::curl_fetch_memory("http://apis.google.com/Cookies/OTZ", handle = cookie_handler)
+#  cookie_handler <- curl::new_handle()
+#  cookie_req <- curl::curl_fetch_memory("http://apis.google.com/Cookies/OTZ", handle = cookie_handler)
   # according to @RKushnir, one could do this instead (https://github.com/GeneralMills/pytrends/issues/243#issuecomment-392872309):
   # cookie_req <- curl_fetch_memory("http://trends.google.com/Cookies/NID", handle = cookie_handler)
 #  curl::handle_cookies(cookie_handler)
@@ -13,6 +15,7 @@ cookie_handler <- curl::new_handle()
   # assignInMyNamespace("cookie_handler", cookie_handler)
   #unlockBinding("cookie_handler", env = as.environment('package:gtrendsR'))
   # assign("cookie_handler", cookie_handler, envir = as.environment('package:gtrendsR'))
+#  assign("cookie_handler", cookie_handler, envir = gtrendsR:::.__NAMESPACE__.) # i'm guessing this is bad practice but it works
 #  assign("cookie_handler", cookie_handler, envir = gtrendsR:::.__NAMESPACE__.) # i'm guessing this is bad practice but it works
   # assign("cookie_handler", cookie_handler, envir = asNamespace('gtrendsR'))
   #lockEnvironment(as.environment('package:gtrendsR'))
