@@ -1,3 +1,20 @@
+# create environment in which to put cookie_handler
+.pkgenv <- new.env(parent=emptyenv())
+
+# function to create cookie_handler, which is necessary to run get_widget()
+get_api_cookies <- function() {
+  # create new handler
+  cookie_handler <- curl::new_handle()
+  # fetch API cookies
+  cookie_req <- curl::curl_fetch_memory("http://apis.google.com/Cookies/OTZ", handle = cookie_handler)
+  # according to @RKushnir, one could do this instead (https://github.com/GeneralMills/pytrends/issues/243#issuecomment-392872309):
+  # cookie_req <- curl_fetch_memory("http://trends.google.com/Cookies/NID", handle = cookie_handler)
+  curl::handle_cookies(cookie_handler)
+  # assign handler to .pkgenv environment
+  .pkgenv[["cookie_handler"]] <- cookie_handler
+  return(NULL)
+}
+
 check_time <- function(time) {
   stopifnot(is.character(time))
 
@@ -71,10 +88,12 @@ get_widget <- function(comparison_item, category, gprop, hl) {
   
   url <- encode_keyword(url)
   
-  widget <- curl::curl_fetch_memory(url)
+  # if cookie_handler hasn't been set up, get the requisite cookies from Google's API
+  if(!exists("cookie_handler", envir = .pkgenv)){ get_api_cookies() }
+  # get the tokens etc., using the URL and the cookie_handler
+  widget <- curl::curl_fetch_memory(url, handle = .pkgenv[["cookie_handler"]])
 
   stopifnot(widget$status_code == 200)
-
 
   ## Fix encoding issue for keywords like österreich"
   temp <- rawToChar(widget$content)
