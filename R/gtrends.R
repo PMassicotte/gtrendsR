@@ -36,6 +36,9 @@
 #'
 #' @param low_search_volume Logical. Should include low search volume regions?
 #'
+#' @param cookie_url A string specifying the URL from which to obtain cookies.
+#'   Default should work in general; should only be changed by advanced users.
+#'
 #' @section Categories: The package includes a complete list of categories that
 #'   can be used to narrow requests. These can be accessed using
 #'   \code{data("categories")}.
@@ -105,7 +108,8 @@ gtrends <- function(
                     gprop = c("web", "news", "images", "froogle", "youtube"),
                     category = 0,
                     hl = "en-US",
-                    low_search_volume = FALSE) {
+                    low_search_volume = FALSE,
+                    cookie_url = "http://trends.google.com/Cookies/NID") {
   stopifnot(
     # One  vector should be a multiple of the other
     (length(keyword) %% length(geo) == 0) || (length(geo) %% length(keyword) == 0),
@@ -115,7 +119,9 @@ gtrends <- function(
     length(time) == 1,
     length(hl) == 1,
     is.character(hl),
-    hl %in% language_codes$code
+    hl %in% language_codes$code,
+    length(cookie_url) == 1,
+    is.character(cookie_url)
   )
 
 
@@ -160,7 +166,7 @@ gtrends <- function(
 
   comparison_item <- data.frame(keyword, geo, time, stringsAsFactors = FALSE)
 
-  widget <- get_widget(comparison_item, category, gprop, hl)
+  widget <- get_widget(comparison_item, category, gprop, hl, cookie_url)
 
   # ****************************************************************************
   # Now that we have tokens, we can process the queries
