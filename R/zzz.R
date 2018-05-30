@@ -1,18 +1,13 @@
 # create environment in which to put cookie_handler
 .pkgenv <- new.env(parent=emptyenv())
 
-# specify the cookie URL; can be overwritten by user by changing gtrendsR:::.pkgenv$cookie_url
-# e.g., alternative url is "http://apis.google.com/Cookies/OTZ"
-.pkgenv[["cookie_url"]] <- "http://trends.google.com/Cookies/NID"
-
+# alternative url is "http://apis.google.com/Cookies/OTZ"
 # function to create cookie_handler, which is necessary to run get_widget()
-get_api_cookies <- function() {
+get_api_cookies <- function(cookie_url) {
   # create new handler
   cookie_handler <- curl::new_handle()
   # fetch API cookies
-  cookie_req <- curl::curl_fetch_memory(.pkgenv[["cookie_url"]], handle = cookie_handler)
-  # according to @RKushnir, one could do this instead (https://github.com/GeneralMills/pytrends/issues/243#issuecomment-392872309):
-  # cookie_req <- curl_fetch_memory("http://trends.google.com/Cookies/NID", handle = cookie_handler)
+  cookie_req <- curl::curl_fetch_memory(cookie_url, handle = cookie_handler)
   curl::handle_cookies(cookie_handler)
   # assign handler to .pkgenv environment
   .pkgenv[["cookie_handler"]] <- cookie_handler
@@ -74,7 +69,7 @@ check_time <- function(time) {
 }
 
 
-get_widget <- function(comparison_item, category, gprop, hl) {
+get_widget <- function(comparison_item, category, gprop, hl, cookie_url) {
   token_payload <- list()
   token_payload$comparisonItem <- comparison_item
   token_payload$category <- category
@@ -93,7 +88,7 @@ get_widget <- function(comparison_item, category, gprop, hl) {
   url <- encode_keyword(url)
   
   # if cookie_handler hasn't been set up, get the requisite cookies from Google's API
-  if(!exists("cookie_handler", envir = .pkgenv)){ get_api_cookies() }
+  if(!exists("cookie_handler", envir = .pkgenv)){ get_api_cookies(cookie_url) }
   # get the tokens etc., using the URL and the cookie_handler
   widget <- curl::curl_fetch_memory(url, handle = .pkgenv[["cookie_handler"]])
 
