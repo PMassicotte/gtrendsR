@@ -6,7 +6,7 @@
 \usage{
 gtrends(keyword = NA, geo = "", time = "today+5-y", gprop = c("web",
   "news", "images", "froogle", "youtube"), category = 0, hl = "en-US",
-  low_search_volume = FALSE)
+  low_search_volume = FALSE, cookie_url = "http://trends.google.com/Cookies/NID")
 }
 \arguments{
 \item{keyword}{A character vector with the actual Google Trends query
@@ -40,6 +40,9 @@ using \code{gtrends("NHL", c("CA", "US"))}.}
 the data returned by related topics.}
 
 \item{low_search_volume}{Logical. Should include low search volume regions?}
+  
+\item{cookie_url}{A string specifying the URL from which to obtain cookies. 
+Default should work in general; should only be changed by advanced users.}
 }
 \value{
 An object of class \sQuote{gtrends} (basically a list of data
