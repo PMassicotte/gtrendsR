@@ -216,7 +216,11 @@ gtrends <- function(
 #' }
 plot.gtrends <- function(x, ...) {
   df <- x$interest_over_time
-  df$hits <- as.numeric(gsub('<','',df$hits))
+  df$hits <- if(typeof(df$hits) == 'character'){
+    as.numeric(gsub('<','',df$hits))
+    } else {
+    df$hits
+    }
 
   df$legend <- paste(df$keyword, " (", df$geo, ")", sep = "")
 
