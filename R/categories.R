@@ -4,7 +4,7 @@
 #'   \item name  Names of the categories
 #'   \item id IDs of the categories
 #' }
-#' 
+#'
 #' @docType data
 #' @keywords datasets
 #' @name categories
