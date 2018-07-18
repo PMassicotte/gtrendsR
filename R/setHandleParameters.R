@@ -4,7 +4,7 @@ setHandleParameters<-function(
 		domain=NULL,
 		proxyhost=NULL,
 		proxyport=8080,
-		proxyauth=9
+		proxyauth=15
 ){
 	.pkgenv[["handle_user"]]<-user
 	.pkgenv[["handle_password"]]<-password
