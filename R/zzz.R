@@ -6,9 +6,13 @@
 get_api_cookies <- function(cookie_url) {
   # create new handler
   cookie_handler <- curl::new_handle()
+  # VY. set options for the proxy
+  curl::handle_setopt(handle=cookie_handler,.list=list(ssl_verifypeer=0L,proxyuserpwd=paste(.pkgenv[["handle_domain"]],"\\",.pkgenv[["handle_user"]],":",.pkgenv[["handle_password"]],sep=""),proxyauth=.pkgenv[["handle_proxyauth"]],proxy=.pkgenv[["handle_proxyhost"]],proxyport=.pkgenv[["handle_proxyport"]]))
+
   # fetch API cookies
   cookie_req <- curl::curl_fetch_memory(cookie_url, handle = cookie_handler)
   curl::handle_cookies(cookie_handler)
+
   # assign handler to .pkgenv environment
   .pkgenv[["cookie_handler"]] <- cookie_handler
   return(NULL)
@@ -125,9 +129,10 @@ interest_over_time <- function(widget, comparison_item) {
   # Downoad the results
   # ****************************************************************************
   url <- encode_keyword(url)
-  
-  res <- curl::curl_fetch_memory(url)
 
+  # VY. use the handler with proxy options.
+  res <- curl::curl_fetch_memory(url, handle = .pkgenv[["cookie_handler"]])
+  
   stopifnot(res$status_code == 200)
 
   # ****************************************************************************
@@ -259,7 +264,9 @@ create_geo_payload <- function(i, widget, resolution, low_search_volume) {
   ))
 
   url <- encode_keyword(url)
-  res <- curl::curl_fetch_memory(url)
+  # VY. use the handler with proxy options.
+  res <- curl::curl_fetch_memory(url, handle = .pkgenv[["cookie_handler"]])
+
 
   if (res$status_code != 200) {
     return(NULL)

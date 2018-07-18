@@ -31,7 +31,9 @@ create_related_topics_payload <- function(i, widget, hl) {
   ))
 
   url <- encode_keyword(url)
-  res <- curl::curl_fetch_memory(url)
+  # VY. use the handler with proxy options.
+  res <- curl::curl_fetch_memory(url, handle = .pkgenv[["cookie_handler"]])
+
 
   stopifnot(res$status_code == 200)
 

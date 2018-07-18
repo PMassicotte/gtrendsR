@@ -30,7 +30,8 @@ create_related_queries_payload <- function(i, widget) {
   ))
 
   url <- encode_keyword(url)
-  res <- curl::curl_fetch_memory(URLencode(url))
+  # VY. use the handler with proxy options.
+  res <- curl::curl_fetch_memory(URLencode(url), handle = .pkgenv[["cookie_handler"]])
 
   stopifnot(res$status_code == 200)
 
