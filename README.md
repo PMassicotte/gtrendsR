@@ -1,6 +1,4 @@
-## Changes in Google Trends API
-
-Using gtrendsR behind a PROXY. 
+## Using gtrendsR behind a PROXY.
 
 The function "setHandleParameters" is needed to set proxy parameters
 
