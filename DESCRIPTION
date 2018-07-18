@@ -1,8 +1,8 @@
 Package: gtrendsR
 Type: Package
 Title: Perform and Display Google Trends Queries
-Version: 1.4.1
-Date: 2017-10-19
+Version: 1.4.3
+Date: 2018-07-18
 Authors@R: c(person("Philippe", 
          "Massicotte", 
          email = "pmassicotte@hotmail.com",
@@ -10,6 +10,10 @@ Authors@R: c(person("Philippe",
   person("Dirk",
          "Eddelbuettel",
          email = "edd@debian.org",
+         role = "aut"),
+  person("Victor",
+         "Yammouni",
+         email = "victoryammouni@yahoo.fr",
          role = "aut"))
 Description: An interface for retrieving and displaying the information returned
     online by Google Trends is provided. Trends (number of hits) over the time as
@@ -18,7 +22,7 @@ License: GPL (>= 2)
 BugReports: https://github.com/PMassicotte/gtrendsR/issues
 URL: https://github.com/PMassicotte/gtrendsR
 Depends:
-    R (>= 3.0)
+    R (>= 3.2.0)
 LazyData: yes
 Imports:
     ggplot2,
