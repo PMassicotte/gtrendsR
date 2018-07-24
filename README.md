@@ -47,7 +47,7 @@ devtools::install_github("PMassicotte/gtrendsR")
 
 ## Using gtrendsR behind a PROXY.
 
-If you want to use gtrendsR behind a proxy, especially with NTLM authentication mode,
+If gtrendsR should be used behind a proxy, especially with NTLM authentication mode,
 you need to set the proxy parameters using "setHandleParameters" function
 
 ### Example
@@ -55,7 +55,7 @@ you need to set the proxy parameters using "setHandleParameters" function
 ``` {.r}
 library(gtrendsR)
 
-gtrendsR::setHandleParameters(user="xxxx",password="*******",domain="mydomain",proxyhost = "10.111.124.113",proxyport = 8080)
+setHandleParameters(user="xxxx",password="*******",domain="mydomain",proxyhost = "10.111.124.113",proxyport = 8080)
 res <- gtrends(c("nhl", "nba"), geo = c("CA", "US"))
 ```
 
