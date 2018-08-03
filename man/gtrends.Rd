@@ -4,9 +4,9 @@
 \alias{gtrends}
 \title{Google Trends Query}
 \usage{
-gtrends(keyword = NA, geo = "", time = "today+5-y", gprop = c("web",
-  "news", "images", "froogle", "youtube"), category = 0, hl = "en-US",
-  low_search_volume = FALSE,
+gtrends(keyword = NA, geo = "", time = "today+5-y",
+  gprop = c("web", "news", "images", "froogle", "youtube"),
+  category = 0, hl = "en-US", low_search_volume = FALSE,
   cookie_url = "http://trends.google.com/Cookies/NID")
 }
 \arguments{

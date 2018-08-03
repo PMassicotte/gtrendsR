@@ -55,7 +55,7 @@ you need to set the proxy parameters using "setHandleParameters" function
 ``` {.r}
 library(gtrendsR)
 
-setHandleParameters(user="xxxx",password="*******",domain="mydomain",proxyhost = "10.111.124.113",proxyport = 8080)
+setHandleParameters(user = "xxxx", password = "*******", domain = "mydomain", proxyhost = "10.111.124.113", proxyport = 8080)
 res <- gtrends(c("nhl", "nba"), geo = c("CA", "US"))
 ```
 

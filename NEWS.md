@@ -1,4 +1,6 @@
-# gtrendsR 1.4.2 (unreleased)
+# gtrendsR 1.4.2
+
+- gtrendsR can now be used behind a proxy, see `setHandleParameters()` (#245) @VictorYammouni
 
 - Fixes breaking changes introduced by Google Trends (#273, #274)
 
