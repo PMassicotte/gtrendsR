@@ -107,19 +107,39 @@ get_widget <- function(comparison_item, category, gprop, hl, cookie_url) {
 
 interest_over_time <- function(widget, comparison_item) {
   payload2 <- list()
-  payload2$locale <- widget$request$locale[1]
-  payload2$comparisonItem <- widget$request$comparisonItem[[1]]
-  payload2$resolution <- widget$request$resolution[1]
-  payload2$requestOptions$category <- widget$request$requestOptions$category[1]
-  payload2$requestOptions$backend <- widget$request$requestOptions$backend[1]
-  payload2$time <- widget$request$time[1]
-  payload2$requestOptions$property <- widget$request$requestOptions$property[1]
+  # if there is a mix of search and topic terms requests are all shifted by one
+  # for some reason. Maybe there is a better fix for this. I don't understand
+  # precisely the structure of the widget.
+  # try this example:
+  # topicKeys <- c("/m/05s_khw", "Assassins Creed Brotherhood", "/m/0gmg6lv")
+  # vs.
+  # topicKeys <- c("Assassins Creed", "Assassins Creed Brotherhood", "Assassins Creed Rogue")
+  # gtrends(topicKeys, time = "all")
+  if(!is.na(widget$request$locale[1])){
+    payload2$locale <- widget$request$locale[1]
+    payload2$comparisonItem <- widget$request$comparisonItem[[1]]
+    payload2$resolution <- widget$request$resolution[1]
+    payload2$requestOptions$category <- widget$request$requestOptions$category[1]
+    payload2$requestOptions$backend <- widget$request$requestOptions$backend[1]
+    payload2$time <- widget$request$time[1]
+    payload2$requestOptions$property <- widget$request$requestOptions$property[1]
+    token_payload2 <- widget$token[1]
+  } else {
+    payload2$locale <- widget$request$locale[2]
+    payload2$comparisonItem <- widget$request$comparisonItem[[2]]
+    payload2$resolution <- widget$request$resolution[2]
+    payload2$requestOptions$category <- widget$request$requestOptions$category[2]
+    payload2$requestOptions$backend <- widget$request$requestOptions$backend[2]
+    payload2$time <- widget$request$time[2]
+    payload2$requestOptions$property <- widget$request$requestOptions$property[2]
+    token_payload2 <- widget$token[2]
+  }
 
 
   url <- URLencode(paste0(
     "https://www.google.com/trends/api/widgetdata/multiline/csv?req=",
     jsonlite::toJSON(payload2, auto_unbox = T),
-    "&token=", widget$token[1],
+    "&token=", token_payload2,
     "&tz=300"
   ))
 

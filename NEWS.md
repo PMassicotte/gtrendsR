@@ -8,6 +8,8 @@
 
 - gtrendsR now depends on R >= 3.2.0 (#264)
 
+- Fixes error when mixing topic and search terms in query (#284) @mamut86
+
 # gtrendsR 1.4.1
 
 - It is now possible to use DMA (`gtrends(keyword="obama",geo="US-AL-630")`) (#238).
