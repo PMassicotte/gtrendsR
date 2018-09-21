@@ -45,8 +45,13 @@ check_time <- function(time) {
     return(FALSE)
   }
 
-  start_date <- anytime::anydate(time[1])
-  end_date <- anytime::anydate(time[2])
+  if(!grepl("T",time[1])){
+    start_date <- as.POSIXct(anytime::anydate(time[1]))
+    end_date <- as.POSIXct(anytime::anydate(time[2]))
+  }else{
+    start_date <- anytime::anytime(time[1])
+    end_date <- anytime::anytime(time[2])
+  }
 
   if (is.na(start_date) | is.na(end_date)) {
     return(FALSE)
@@ -57,13 +62,13 @@ check_time <- function(time) {
     return(FALSE)
   }
 
-  ## Start date can't be before 204-01-01
-  if (start_date < as.Date("2004-01-01")) {
+  ## Start date can't be before 2004-01-01
+  if (start_date < as.POSIXct("2004-01-01")) {
     return(FALSE)
   }
 
   ## End date can't be after today
-  if (end_date > Sys.Date()) {
+  if (end_date > as.POSIXct(Sys.Date())) {
     return(FALSE)
   }
 
