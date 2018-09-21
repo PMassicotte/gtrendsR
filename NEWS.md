@@ -1,3 +1,7 @@
+# gtrendsR 1.4.3 (unreleased)
+
+- Added more options to specify time interval of the searh (#289) @JBleher
+
 # gtrendsR 1.4.2
 
 - gtrendsR can now be used behind a proxy, see `setHandleParameters()` (#245) @VictorYammouni
