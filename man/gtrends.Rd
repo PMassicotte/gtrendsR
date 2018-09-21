@@ -25,9 +25,25 @@ using \code{gtrends("NHL", c("CA", "US"))}.}
   \item{"now 1-d"}{Last day} \item{"now 7-d"}{Last seven days} \item{"today
   1-m"}{Past 30 days} \item{"today 3-m"}{Past 90 days} \item{"today
   12-m"}{Past 12 months} \item{"today+5-y"}{Last five years (default)}
-  \item{"all"}{Since the beginning of Google Trends (2004)} \item{"Y-m-d
-  Y-m-d"}{Time span between two dates (ex.: "2010-01-01 2010-04-03")} }}
-
+  \item{"all"}{Since the beginning of Google Trends (2004)} \item{"\%Y-\%m-\%d
+  \%Y-\%m-\%d"}{Time span between two dates (ex.: "2010-01-01 2010-04-03").
+  \item{"\%Y-\%m-\%dT\%H
+  \%Y-\%m-\%dT\%H"}{Time span between two dates (ex.: "2016-01-01T01 2016-01-01T04"). } }}
+  
+  NB: The time frame, T,  e determines the frequency of Google's Search Volume Index (SVI). 
+  \itemize{
+  \item T < 5 hours --> frequency: 1min
+  \item 5 hours < T < 36 hours --> frequency: 8min
+  \item 36 hours < T < 72 hours --> frequency: 16min
+  \item 72 hours < T < 8 days --> frequency: hourly
+  \item 8 days < T< 210 days --> frequency: daily
+  \item 210 days < T < 5 years --> frequency: weekly 
+  \item 5 years < T --> frequency: monthly
+  }
+  Intraday data is available only for time frames post 01-01-2015.
+  }
+  
+  
 \item{gprop}{A character string defining the Google product for which the
   trend query if preformed. Valid options are:
 
@@ -99,9 +115,11 @@ gtrends(c("NHL", "NFL"), time = "today+5-y") # last five years (default)
 gtrends(c("NHL", "NFL"), time = "all") # since 2004
 
 
-## Custom date format
-
+## Custom date format (daily)
 gtrends(c("NHL", "NFL"), time = "2010-01-01 2010-04-03")
+
+## Custom date format (1 minute)
+gtrends(c("NHL", "NFL"), time = "2016-01-01H01 2016-01-01H05")
 
 ## Search from various Google's services
 
