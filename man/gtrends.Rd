@@ -56,6 +56,8 @@ using \code{gtrends("NHL", c("CA", "US"))}.}
 \dQuote{fr}). Default is \dQuote{en-US}. Note that this is only influencing
 the data returned by related topics.}
 
+\item{tz}{A number specifying the minutes the returned dates should be offset to UTC. Note the parameter 'time' above is specified in UTC. E.g. choosing 'time=2018-01-01T01 2018-01-01T03' and 'tz=-120' will yield data between 2018-01-01T03 and 2018-01-01T05, i.e. data specified to be in UTC+2.}
+
 \item{low_search_volume}{Logical. Should include low search volume regions?}
 
 \item{cookie_url}{A string specifying the URL from which to obtain cookies.
