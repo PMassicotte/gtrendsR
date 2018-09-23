@@ -28,7 +28,7 @@ using \code{gtrends("NHL", c("CA", "US"))}.}
   \item{"all"}{Since the beginning of Google Trends (2004)} \item{"\%Y-\%m-\%d
   \%Y-\%m-\%d"}{Time span between two dates (ex.: "2010-01-01 2010-04-03").
   \item{"\%Y-\%m-\%dT\%H
-  \%Y-\%m-\%dT\%H"}{Time span between two dates (ex.: "2016-01-01T01 2016-01-01T04"). } }}
+  \%Y-\%m-\%dT\%H"}{Time span between two dates (ex.: "2016-01-01T01 2016-01-01T04"). If you want to retrieve intraday data, you need to use this format.} }}
   
   NB: The time frame, T,  e determines the frequency of Google's Search Volume Index (SVI). 
   \itemize{
@@ -40,7 +40,7 @@ using \code{gtrends("NHL", c("CA", "US"))}.}
   \item 210 days < T < 5 years --> frequency: weekly 
   \item 5 years < T --> frequency: monthly
   }
-  Intraday data is available only for time frames post 01-01-2015.
+  Intraday data is available only for time frames post 01-01-2015:00:00:00.
   }
   
   

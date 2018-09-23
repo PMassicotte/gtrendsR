@@ -76,7 +76,7 @@ check_time <- function(time) {
 }
 
 
-get_widget <- function(comparison_item, category, gprop, hl, cookie_url) {
+get_widget <- function(comparison_item, category, gprop, hl, cookie_url, tz) {
   token_payload <- list()
   token_payload$comparisonItem <- comparison_item
   token_payload$category <- category
@@ -87,7 +87,7 @@ get_widget <- function(comparison_item, category, gprop, hl, cookie_url) {
   url <- URLencode(paste0(
     "https://www.google.com/trends/api/explore?property=&req=",
     jsonlite::toJSON(token_payload, auto_unbox = TRUE),
-    "&tz=300&hl=", hl
+    "&tz=",tz,"&hl=", hl
   )) ## The tz part is unclear but different
   ## valid values do not change the result:
   ## clarification needed.
@@ -110,7 +110,7 @@ get_widget <- function(comparison_item, category, gprop, hl, cookie_url) {
   widget <- myjs$widgets
 }
 
-interest_over_time <- function(widget, comparison_item) {
+interest_over_time <- function(widget, comparison_item,tz) {
   payload2 <- list()
   # if there is a mix of search and topic terms requests are all shifted by one
   # for some reason. Maybe there is a better fix for this. I don't understand
@@ -145,7 +145,7 @@ interest_over_time <- function(widget, comparison_item) {
     "https://www.google.com/trends/api/widgetdata/multiline/csv?req=",
     jsonlite::toJSON(payload2, auto_unbox = T),
     "&token=", token_payload2,
-    "&tz=300"
+    "&tz=",tz
   ))
 
   # ****************************************************************************
@@ -205,7 +205,7 @@ interest_over_time <- function(widget, comparison_item) {
 }
 
 
-interest_by_region <- function(widget, comparison_item, low_search_volume) {
+interest_by_region <- function(widget, comparison_item, low_search_volume,tz) {
   i <- which(grepl("Interest by", widget$title) == TRUE)
 
   if (length(i) == 0) {
@@ -246,7 +246,7 @@ interest_by_region <- function(widget, comparison_item, low_search_volume) {
       create_geo_payload,
       i,
       resolution,
-      MoreArgs = list(widget = widget, low_search_volume = low_search_volume),
+      MoreArgs = list(widget = widget, low_search_volume = low_search_volume, tz = tz),
       SIMPLIFY = FALSE
     )
 
@@ -267,7 +267,7 @@ interest_by_region <- function(widget, comparison_item, low_search_volume) {
 }
 
 
-create_geo_payload <- function(i, widget, resolution, low_search_volume) {
+create_geo_payload <- function(i, widget, resolution, low_search_volume,tz) {
   payload2 <- list()
   payload2$locale <- unique(na.omit(widget$request$locale))
   payload2$comparisonItem <- widget$request$comparisonItem[[i]]
@@ -283,7 +283,7 @@ create_geo_payload <- function(i, widget, resolution, low_search_volume) {
     "https://www.google.com/trends/api/widgetdata/comparedgeo/csv?req=",
     jsonlite::toJSON(payload2, auto_unbox = T),
     "&token=", widget$token[i],
-    "&tz=300&hl=en-US"
+    "&tz=",tz,"&hl=en-US"
   ))
 
   url <- encode_keyword(url)
