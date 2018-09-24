@@ -115,15 +115,15 @@ gtrends <- function(
                     hl = "en-US",
                     low_search_volume = FALSE,
                     cookie_url = "http://trends.google.com/Cookies/NID",
-                    TZ=-120 # This equals UTC+2
+                    TZ=0 # This equals UTC
                     ) {
   stopifnot(
     # One  vector should be a multiple of the other
-    (length(keyword) %% length(geo) == 0) || (length(geo) %% length(keyword) == 0),
+    (length(keyword) %% length(geo) == 0) || (length(geo) %% length(keyword) == 0) || (length(time) %% length(keyword) == 0),
     is.vector(keyword),
     length(keyword) <= 5,
     length(geo) <= 5,
-    length(time) == 1,
+    length(time) <= 5,
     length(hl) == 1,
     is.character(hl),
     hl %in% language_codes$code,
@@ -153,6 +153,7 @@ gtrends <- function(
   if (!check_time(time)) {
     stop("Can not parse the supplied time format.", call. = FALSE)
   }
+  
 
   # time <- "today+5-y"
   # time <- "2017-02-09 2017-02-18"
@@ -170,8 +171,7 @@ gtrends <- function(
   # ****************************************************************************
   # Request a token from Google
   # ****************************************************************************
-
-  comparison_item <- data.frame(keyword, geo, time, stringsAsFactors = FALSE)
+  comparison_item <- data.frame(geo, time,keyword, stringsAsFactors = FALSE)
 
   widget <- get_widget(comparison_item, category, gprop, hl, cookie_url,TZ)
 
