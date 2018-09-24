@@ -390,3 +390,8 @@ na.omit.list <- function(y) {
 encode_keyword <- function(url) {
   gsub("(?:\\G(?!^)|\\[\\s*)[^][\\s]*\\K\\&(?!])(?=[^][]*])", "%26", url, perl = TRUE)
 }
+
+
+map_tz2min <- function(timezone){
+  (unclass(as.POSIXct("2018-01-01",tz="UTC"))-unclass(as.POSIXct("2018-01-01",tz=timezone)))/60
+}

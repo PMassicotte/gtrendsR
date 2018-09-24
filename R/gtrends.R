@@ -154,7 +154,13 @@ gtrends <- function(
     stop("Can not parse the supplied time format.", call. = FALSE)
   }
   
-
+  if(!(is.numeric(TZ)&(TZ%%60==0)){
+    if (TZ %in% OlsonNames()){
+      TZ <- map_tz2min(TZ)
+    }else{
+      stop("Given timezone not known. Ceck function OlsonNames().", call. = FALSE)
+    }
+  }
   # time <- "today+5-y"
   # time <- "2017-02-09 2017-02-18"
   # time <- "now 7-d"
