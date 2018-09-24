@@ -18,8 +18,7 @@ keywords. Multiple keywords are possible using \code{gtrends(c("NHL",
 default to \dQuote{all} for global queries. Multiple regions are possible
 using \code{gtrends("NHL", c("CA", "US"))}.}
 
-\item{time}{A string specifying the time span of the query. Possible values
-  are:
+\item{time}{A vector of string specifying the time span of the query. You can chose up to 5 different time spans that you would like to compare. Possible values are:
 
   \describe{ \item{"now 1-H"}{Last hour} \item{"now 4-H"}{Last four hours}
   \item{"now 1-d"}{Last day} \item{"now 7-d"}{Last seven days} \item{"today
