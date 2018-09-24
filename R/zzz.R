@@ -221,10 +221,8 @@ interest_over_time <- function(widget, comparison_item,tz) {
     kw <- payload2$comparisonItem$complexKeywordsRestriction[[1]][[1]]$value
     dates <- df[,which(!grepl(kw,names(df)))]
     dates <- data.frame(lapply(dates,as.POSIXct))
-    names(dates) <- sapply(1:NCOL(dates),function(x) paste0("date",x))
     
     hits <- df[,which(grepl(kw,names(df)))]
-    names(hits) <- sapply(1:NCOL(hits),function(x) paste0("hits",x))
     
     for(jj in 1:NCOL(dates)){
       df_tmp <- data.frame(dates[jj],hits[jj])
@@ -233,11 +231,13 @@ interest_over_time <- function(widget, comparison_item,tz) {
       df_tmp2[,1] <- ifelse(df_tmp2[,1] == "", "world", df_tmp2[,1])
       df_tmp2[,3] <- ifelse(widget$request$requestOptions$property[1] == "", "web", widget$request$requestOptions$property[1])
       df_tmp2[,4] <- widget$request$requestOptions$category[1]
-      names(df_tmp2) <- sapply(c("geo","time","gprop","category"),paste0,jj)
       if(jj==1){
         df_res <- cbind(df_tmp,df_tmp2)
+        names(df_res) <- c("date","hits","geo","time","gprop","category")
       }else{
-        df_res <- cbind(df_res,df_tmp,df_tmp2)
+        df_tmp3 <- cbind(df_tmp,df_tmp2)
+        names(df_tmp3) <- c("date","hits","geo","time","gprop","category")
+        df_res <- rbind(df_res,df_tmp3)
       }
     }
     df <- df_res
