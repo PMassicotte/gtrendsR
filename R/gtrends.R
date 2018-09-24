@@ -33,6 +33,11 @@
 #' @param hl A string specifying the ISO language code (ex.: \dQuote{en-US} or
 #'   \dQuote{fr}). Default is \dQuote{en-US}. Note that this is only influencing
 #'   the data returned by related topics.
+#'   
+#' @param tz A number specifying the minutes the returned dates should be offset to UTC. 
+#' Note the parameter 'time' above is specified in UTC. 
+#' E.g. choosing "time=2018-01-01T01 2018-01-01T03" and "tz=-120" will yield data between 2018-01-01T03 and 2018-01-01T05, 
+#' i.e. data specified to be in UTC+2.
 #'
 #' @param low_search_volume Logical. Should include low search volume regions?
 #'
@@ -109,7 +114,9 @@ gtrends <- function(
                     category = 0,
                     hl = "en-US",
                     low_search_volume = FALSE,
-                    cookie_url = "http://trends.google.com/Cookies/NID") {
+                    cookie_url = "http://trends.google.com/Cookies/NID",
+                    TZ=-120 # This equals UTC+2
+                    ) {
   stopifnot(
     # One  vector should be a multiple of the other
     (length(keyword) %% length(geo) == 0) || (length(geo) %% length(keyword) == 0),
@@ -166,16 +173,16 @@ gtrends <- function(
 
   comparison_item <- data.frame(keyword, geo, time, stringsAsFactors = FALSE)
 
-  widget <- get_widget(comparison_item, category, gprop, hl, cookie_url)
+  widget <- get_widget(comparison_item, category, gprop, hl, cookie_url,TZ)
 
   # ****************************************************************************
   # Now that we have tokens, we can process the queries
   # ****************************************************************************
 
-  interest_over_time <- interest_over_time(widget, comparison_item)
-  interest_by_region <- interest_by_region(widget, comparison_item, low_search_volume)
-  related_topics <- related_topics(widget, comparison_item, hl)
-  related_queries <- related_queries(widget, comparison_item)
+  interest_over_time <- interest_over_time(widget, comparison_item,TZ)
+  interest_by_region <- interest_by_region(widget, comparison_item, low_search_volume,TZ)
+  related_topics <- related_topics(widget, comparison_item, hl,TZ)
+  related_queries <- related_queries(widget, comparison_item,TZ)
 
   res <- list(
     interest_over_time = interest_over_time,
