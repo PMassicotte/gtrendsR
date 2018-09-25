@@ -158,7 +158,7 @@ gtrends <- function(
     if (TZ %in% OlsonNames()){
       TZ <- map_tz2min(TZ)
     }else{
-      stop("Given timezone not known. Ceck function OlsonNames().", call. = FALSE)
+      stop("Given timezone not known. Check function OlsonNames().", call. = FALSE)
     }
   }
   # time <- "today+5-y"
