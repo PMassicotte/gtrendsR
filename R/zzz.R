@@ -69,7 +69,7 @@ check_time <- function(time_ranges) {
     }
     
     ## End date can't be after today
-    if (end_date > as.POSIXct(Sys.Date())) {
+    if (end_date > as.POSIXct(Sys.time())) {
       return(FALSE)
     }
   }
@@ -219,8 +219,9 @@ interest_over_time <- function(widget, comparison_item,tz) {
   }else{
     n <- nrow(df) # used to reshape the data
     kw <- payload2$comparisonItem$complexKeywordsRestriction[[1]][[1]]$value
+    kw <- gsub("[[:blank:]-]",".",kw)
     dates <- df[,which(!grepl(kw,names(df)))]
-    dates <- data.frame(lapply(dates,as.POSIXct))
+    dates <- data.frame(lapply(dates,anytime::anytime))
     
     hits <- df[,which(grepl(kw,names(df)))]
     

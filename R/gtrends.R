@@ -115,7 +115,8 @@ gtrends <- function(
                     hl = "en-US",
                     low_search_volume = FALSE,
                     cookie_url = "http://trends.google.com/Cookies/NID",
-                    TZ=0 # This equals UTC
+                    TZ=0, # This equals UTC
+                    onlyInterest=FALSE
                     ) {
   stopifnot(
     # One  vector should be a multiple of the other
@@ -151,7 +152,7 @@ gtrends <- function(
 
   ## Check if time format is ok
   if (!check_time(time)) {
-    stop("Can not parse the supplied time format.", call. = FALSE)
+    stop("Cannot parse the supplied time format.", call. = FALSE)
   }
   
   if(!(is.numeric(TZ)&(TZ%%60==0))){
@@ -187,19 +188,23 @@ gtrends <- function(
   # ****************************************************************************
 
   interest_over_time <- interest_over_time(widget, comparison_item,TZ)
-  interest_by_region <- interest_by_region(widget, comparison_item, low_search_volume,TZ)
-  related_topics <- related_topics(widget, comparison_item, hl,TZ)
-  related_queries <- related_queries(widget, comparison_item,TZ)
-
-  res <- list(
-    interest_over_time = interest_over_time,
-    interest_by_country = do.call(rbind, interest_by_region[names(interest_by_region) == "country"]),
-    interest_by_region = do.call(rbind, interest_by_region[names(interest_by_region) == "region"]),
-    interest_by_dma = do.call(rbind, interest_by_region[names(interest_by_region) == "dma"]),
-    interest_by_city = do.call(rbind, interest_by_region[names(interest_by_region) == "city"]),
-    related_topics = related_topics,
-    related_queries = related_queries
-  )
+  
+  if(!onlyInterest){
+    interest_by_region <- interest_by_region(widget, comparison_item, low_search_volume,TZ)
+    related_topics <- related_topics(widget, comparison_item, hl,TZ)
+    related_queries <- related_queries(widget, comparison_item,TZ)
+    res <- list(
+      interest_over_time = interest_over_time,
+      interest_by_country = do.call(rbind, interest_by_region[names(interest_by_region) == "country"]),
+      interest_by_region = do.call(rbind, interest_by_region[names(interest_by_region) == "region"]),
+      interest_by_dma = do.call(rbind, interest_by_region[names(interest_by_region) == "dma"]),
+      interest_by_city = do.call(rbind, interest_by_region[names(interest_by_region) == "city"]),
+      related_topics = related_topics,
+      related_queries = related_queries
+    )
+  }else{
+    res <- list(interest_over_time = interest_over_time)
+  }
 
   ## Remove row.names
   res <- lapply(res, function(x) {
