@@ -120,7 +120,8 @@ interest_over_time <- function(widget, comparison_item,tz) {
   # vs.
   # topicKeys <- c("Assassins Creed", "Assassins Creed Brotherhood", "Assassins Creed Rogue")
   # gtrends(topicKeys, time = "all")
-  if(length(widget$request$comparisonItem[[2]]$time)!=1){
+  if((length(widget$request$comparisonItem[[2]]$time)!=1)&
+     (length(unique(widget$request$comparisonItem[[2]]$time))!=1)){
     payload2$resolution <- widget$request$resolution[1]
     payload2$locale <- widget$request$locale[2]
     payload2$comparisonItem <- widget$request$comparisonItem[[2]]
@@ -184,7 +185,9 @@ interest_over_time <- function(widget, comparison_item,tz) {
   if (nrow(df) < 1) {
     return(NULL) ## No data
   }
-  if(length(widget$request$comparisonItem[[2]]$time)==1){
+  
+  if((length(widget$request$comparisonItem[[2]]$time)==1)|
+     (length(unique(widget$request$comparisonItem[[2]]$time))==1)){
     n <- nrow(df) # used to reshape the data
     
     df <- reshape(
