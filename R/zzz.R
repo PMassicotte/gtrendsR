@@ -124,7 +124,7 @@ interest_over_time <- function(widget, comparison_item,tz) {
     payload2$resolution <- widget$request$resolution[1]
     payload2$locale <- widget$request$locale[2]
     payload2$comparisonItem <- widget$request$comparisonItem[[2]]
-    payload2$comparisonItem$geo <- list(NULL)
+    payload2$comparisonItem$geo <- widget$request$comparisonItem[[1]]$geo
     payload2$requestOptions$property <- widget$request$requestOptions$property[2]
     payload2$requestOptions$backend <- widget$request$requestOptions$backend[2]
     payload2$requestOptions$category <- widget$request$requestOptions$category[2]
@@ -148,7 +148,7 @@ interest_over_time <- function(widget, comparison_item,tz) {
       token_payload2 <- widget$token[1]
     } else {
       payload2$locale <- widget$request$locale[2]
-      payload2$comparisonItem <- widget$request$comparisonItem[[2]]
+      payload2$comparisonItem <- widget$request$comparisonItem[[1]]
       payload2$resolution <- widget$request$resolution[2]
       payload2$requestOptions$category <- widget$request$requestOptions$category[2]
       payload2$requestOptions$backend <- widget$request$requestOptions$backend[2]
