@@ -155,7 +155,7 @@ gtrends <- function(
     stop("Cannot parse the supplied time format.", call. = FALSE)
   }
   
-  if(!(is.numeric(TZ)&(TZ%%60==0))){
+  if(!(is.numeric(TZ))){
     if (TZ %in% OlsonNames()){
       TZ <- map_tz2min(TZ)
     }else{

@@ -214,17 +214,42 @@ interest_over_time <- function(widget, comparison_item,tz) {
     df$id <- NULL
     
     # Format the returned date
-    if (unique(comparison_item$time) == "all") {
-      df$date <- anytime::anydate(df$date)
-    } else {
-      df$date <- anytime::anytime(df$date)
+    if(all(grepl("^[0-9]{4}-[0-9]{2}-[0-9]{2}$",df$date))){
+      df$date <- as.POSIXct(df$date,format="%Y-%m-%d",tz=paste0("GMT",ifelse(tz>=0,"+","-"),(abs(tz)/60)),asUTC=T)
+    }else if(all(grepl("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}$",df$date))){
+      df$date <- as.POSIXct(df$date,format="%Y-%m-%dT%H",tz=paste0("GMT",ifelse(tz>=0,"+","-"),(abs(tz)/60)),asUTC=T)
+    }else{
+      df$date <- gsub("^([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}).*$","\\1",df$date)
+      df$date <- as.POSIXct(df$date,format="%Y-%m-%dT%H:%M:%S",tz=paste0("GMT",ifelse(tz>=0,"+","-"),(abs(tz)/60)),asUTC=T)
     }
+
   }else{
     n <- nrow(df) # used to reshape the data
     kw <- payload2$comparisonItem$complexKeywordsRestriction[[1]][[1]]$value
     kw <- gsub("[[:blank:]-]",".",kw)
     dates <- df[,which(!grepl(kw,names(df)))]
-    dates <- data.frame(lapply(dates,anytime::anytime))
+    
+    if(all(sapply(lapply(dates,function(x) grepl("^[0-9]{4}-[0-9]{2}-[0-9]{2}$",x)),function(y) all(y)))){
+      dates <- data.frame(lapply(dates,
+                                 function(x) as.POSIXct(x,
+                                                format="%Y-%m-%d",
+                                                tz=paste0("GMT",ifelse(tz>=0,"+","-"),(abs(tz)/60)))))
+    }else if(all(sapply(lapply(dates,function(x) grepl("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}$",x)),function(y) all(y)))){
+      dates <- data.frame(lapply(dates,
+                                 function(x) as.POSIXct(x,
+                                                        format="%Y-%m-%dT%H",
+                                                        tz=paste0("GMT",ifelse(tz>=0,"+","-"),(abs(tz)/60)))))
+    }else{
+      dates <- data.frame(lapply(dates,
+                                 function(x)
+                                   gsub("^([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}).*$","\\1",x)))
+      dates <- data.frame(lapply(dates,
+                                 function(x) as.POSIXct(x,
+                                              format="%Y-%m-%dT%H:%M:%S",
+                                              tz=paste0("GMT",ifelse(tz>=0,"+","-"),(abs(tz)/60)))))
+    }
+    
+    # dates <- data.frame(lapply(dates,function(x) anytime::anytime(x,tz=paste0("GMT",ifelse(tz>=0,"+","-"),(abs(tz)/60)),asUTC=T)))
     
     hits <- df[,which(grepl(kw,names(df)))]
     
@@ -397,5 +422,9 @@ encode_keyword <- function(url) {
 
 
 map_tz2min <- function(timezone){
-  (unclass(as.POSIXct("2018-01-01",tz="UTC"))-unclass(as.POSIXct("2018-01-01",tz=timezone)))/60
+  round((unclass(as.POSIXct(format(Sys.time(),"%Y-%m-%d %H:%M:%S",tz="UTC")))-unclass(as.POSIXct(format(Sys.time(),"%Y-%m-%d %H:%M:%S",tz=timezone))))/60)
+}
+
+map_min2tz <- function(min){
+    
 }
