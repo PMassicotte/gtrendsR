@@ -1,3 +1,13 @@
+# gtrendsR 1.4.3
+
+- grendsR is now able to return the search volume over time for a chosen timezone
+
+- Fixed also issues with different results when requests were issued from different time zones and different locale settings
+
+- gtrendsR is now also able to handle multiple time ranges and compare them
+
+- Now also an option to only download interest over time is added
+
 # gtrendsR 1.4.2
 
 - gtrendsR can now be used behind a proxy, see `setHandleParameters()` (#245) @VictorYammouni
