@@ -121,7 +121,7 @@ gtrends(c("NHL", "NFL"), time = "2010-01-01 2010-04-03")
 gtrends(c("NHL", "NFL"), time = "2016-01-01H01 2016-01-01H05")
 
 ## Download several time periods -- only possible for one searchterm at a time
-head(gtrends(keyword="NHL",time=c("2018-05-01 2018-05-31","2018-03-01 2018-03-31"),onlyInterest=TRUE))
+gtrends(keyword="NHL",time=c("2018-05-01 2018-05-31","2018-03-01 2018-03-31"),onlyInterest=TRUE)
 
 ## Search from various Google's services
 
@@ -132,5 +132,9 @@ head(gtrends(c("NHL", "NFL"), gprop = "youtube")$interest_over_time)
 
 head(gtrends("NHL", hl = "en")$related_topics)
 head(gtrends("NHL", hl = "fr")$related_topics)
+
+## Timezone settings
+gtrends("NFL",time = c("2018-03-24T23 2018-03-25T03"),gprop="web",TZ="UTC",onlyInterest = T)
+gtrends("NFL",time = c("2018-03-24T23 2018-03-25T03"),gprop="web",TZ="Europe/Berlin",onlyInterest = T)
 }
 }
