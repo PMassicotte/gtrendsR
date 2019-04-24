@@ -44,6 +44,8 @@
 #' @param cookie_url A string specifying the URL from which to obtain cookies.
 #'   Default should work in general; should only be changed by advanced users.
 #'
+#' @param onlyInterest If you only want the interest over time set it to TRUE.
+#' 
 #' @section Categories: The package includes a complete list of categories that
 #'   can be used to narrow requests. These can be accessed using
 #'   \code{data("categories")}.
@@ -115,15 +117,16 @@ gtrends <- function(
                     hl = "en-US",
                     low_search_volume = FALSE,
                     cookie_url = "http://trends.google.com/Cookies/NID",
-                    TZ=-120 # This equals UTC+2
+                    TZ=0, # This equals UTC
+                    onlyInterest=FALSE
                     ) {
   stopifnot(
     # One  vector should be a multiple of the other
-    (length(keyword) %% length(geo) == 0) || (length(geo) %% length(keyword) == 0),
+    (length(keyword) %% length(geo) == 0) || (length(geo) %% length(keyword) == 0) || (length(time) %% length(keyword) == 0),
     is.vector(keyword),
     length(keyword) <= 5,
     length(geo) <= 5,
-    length(time) == 1,
+    length(time) <= 5,
     length(hl) == 1,
     is.character(hl),
     hl %in% language_codes$code,
@@ -151,7 +154,15 @@ gtrends <- function(
 
   ## Check if time format is ok
   if (!check_time(time)) {
-    stop("Can not parse the supplied time format.", call. = FALSE)
+    stop("Cannot parse the supplied time format.", call. = FALSE)
+  }
+  
+  if(!(is.numeric(TZ))){
+    if (TZ %in% OlsonNames()){
+      TZ <- map_tz2min(TZ)
+    }else{
+      stop("Given timezone not known. Check function OlsonNames().", call. = FALSE)
+    }
   }
 
   # time <- "today+5-y"
@@ -170,8 +181,7 @@ gtrends <- function(
   # ****************************************************************************
   # Request a token from Google
   # ****************************************************************************
-
-  comparison_item <- data.frame(keyword, geo, time, stringsAsFactors = FALSE)
+  comparison_item <- data.frame(geo, time,keyword, stringsAsFactors = FALSE)
 
   widget <- get_widget(comparison_item, category, gprop, hl, cookie_url,TZ)
 
@@ -180,19 +190,23 @@ gtrends <- function(
   # ****************************************************************************
 
   interest_over_time <- interest_over_time(widget, comparison_item,TZ)
-  interest_by_region <- interest_by_region(widget, comparison_item, low_search_volume,TZ)
-  related_topics <- related_topics(widget, comparison_item, hl,TZ)
-  related_queries <- related_queries(widget, comparison_item,TZ)
-
-  res <- list(
-    interest_over_time = interest_over_time,
-    interest_by_country = do.call(rbind, interest_by_region[names(interest_by_region) == "country"]),
-    interest_by_region = do.call(rbind, interest_by_region[names(interest_by_region) == "region"]),
-    interest_by_dma = do.call(rbind, interest_by_region[names(interest_by_region) == "dma"]),
-    interest_by_city = do.call(rbind, interest_by_region[names(interest_by_region) == "city"]),
-    related_topics = related_topics,
-    related_queries = related_queries
-  )
+  
+  if(!onlyInterest){
+    interest_by_region <- interest_by_region(widget, comparison_item, low_search_volume,TZ)
+    related_topics <- related_topics(widget, comparison_item, hl,TZ)
+    related_queries <- related_queries(widget, comparison_item,TZ)
+    res <- list(
+      interest_over_time = interest_over_time,
+      interest_by_country = do.call(rbind, interest_by_region[names(interest_by_region) == "country"]),
+      interest_by_region = do.call(rbind, interest_by_region[names(interest_by_region) == "region"]),
+      interest_by_dma = do.call(rbind, interest_by_region[names(interest_by_region) == "dma"]),
+      interest_by_city = do.call(rbind, interest_by_region[names(interest_by_region) == "city"]),
+      related_topics = related_topics,
+      related_queries = related_queries
+    )
+  }else{
+    res <- list(interest_over_time = interest_over_time)
+  }
 
   ## Remove row.names
   res <- lapply(res, function(x) {
