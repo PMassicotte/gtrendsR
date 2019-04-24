@@ -117,7 +117,7 @@ gtrends <- function(
                     hl = "en-US",
                     low_search_volume = FALSE,
                     cookie_url = "http://trends.google.com/Cookies/NID",
-                    TZ=0, # This equals UTC
+                    tz=0, # This equals UTC
                     onlyInterest=FALSE
                     ) {
   stopifnot(
@@ -157,9 +157,9 @@ gtrends <- function(
     stop("Cannot parse the supplied time format.", call. = FALSE)
   }
   
-  if(!(is.numeric(TZ))){
-    if (TZ %in% OlsonNames()){
-      TZ <- map_tz2min(TZ)
+  if(!(is.numeric(tz))){
+    if (tz %in% OlsonNames()){
+      tz <- map_tz2min(tz)
     }else{
       stop("Given timezone not known. Check function OlsonNames().", call. = FALSE)
     }
@@ -183,18 +183,18 @@ gtrends <- function(
   # ****************************************************************************
   comparison_item <- data.frame(geo, time,keyword, stringsAsFactors = FALSE)
 
-  widget <- get_widget(comparison_item, category, gprop, hl, cookie_url,TZ)
+  widget <- get_widget(comparison_item, category, gprop, hl, cookie_url,tz)
 
   # ****************************************************************************
   # Now that we have tokens, we can process the queries
   # ****************************************************************************
 
-  interest_over_time <- interest_over_time(widget, comparison_item,TZ)
+  interest_over_time <- interest_over_time(widget, comparison_item,tz)
   
   if(!onlyInterest){
-    interest_by_region <- interest_by_region(widget, comparison_item, low_search_volume,TZ)
-    related_topics <- related_topics(widget, comparison_item, hl,TZ)
-    related_queries <- related_queries(widget, comparison_item,TZ)
+    interest_by_region <- interest_by_region(widget, comparison_item, low_search_volume,tz)
+    related_topics <- related_topics(widget, comparison_item, hl,tz)
+    related_queries <- related_queries(widget, comparison_item,tz)
     res <- list(
       interest_over_time = interest_over_time,
       interest_by_country = do.call(rbind, interest_by_region[names(interest_by_region) == "country"]),

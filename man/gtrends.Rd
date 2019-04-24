@@ -7,7 +7,8 @@
 gtrends(keyword = NA, geo = "", time = "today+5-y",
   gprop = c("web", "news", "images", "froogle", "youtube"),
   category = 0, hl = "en-US", low_search_volume = FALSE,
-  cookie_url = "http://trends.google.com/Cookies/NID")
+  cookie_url = "http://trends.google.com/Cookies/NID", tz = 0,
+  onlyInterest = FALSE)
 }
 \arguments{
 \item{keyword}{A character vector with the actual Google Trends query
@@ -18,30 +19,16 @@ keywords. Multiple keywords are possible using \code{gtrends(c("NHL",
 default to \dQuote{all} for global queries. Multiple regions are possible
 using \code{gtrends("NHL", c("CA", "US"))}.}
 
-\item{time}{A vector of string specifying the time span of the query. You can chose up to 5 different time spans that you would like to compare. You can only specify several time periods if the keyword argument contains one keyword only. Possible values are:
+\item{time}{A string specifying the time span of the query. Possible values
+  are:
 
   \describe{ \item{"now 1-H"}{Last hour} \item{"now 4-H"}{Last four hours}
   \item{"now 1-d"}{Last day} \item{"now 7-d"}{Last seven days} \item{"today
   1-m"}{Past 30 days} \item{"today 3-m"}{Past 90 days} \item{"today
   12-m"}{Past 12 months} \item{"today+5-y"}{Last five years (default)}
-  \item{"all"}{Since the beginning of Google Trends (2004)} 
-  \item{"\%Y-\%m-\%d \%Y-\%m-\%d" or "\%Y-\%m-\%dT\%H  \%Y-\%m-\%dT\%H"}{Time span between two dates (ex.: "2016-01-01T01 2016-01-01T04"). If you want to retrieve intraday data, you need to use this format.}
-  
-  NB: The time frame, T,  e determines the frequency of Google's Search Volume Index (SVI). 
-  \itemize{
-  \item T < 5 hours --> frequency: 1min
-  \item 5 hours < T < 36 hours --> frequency: 8min
-  \item 36 hours < T < 72 hours --> frequency: 16min
-  \item 72 hours < T < 8 days --> frequency: hourly
-  \item 8 days < T< 210 days --> frequency: daily
-  \item 210 days < T < 5 years --> frequency: weekly 
-  \item 5 years < T --> frequency: monthly
-  }
-  Intraday data is available only for time frames post 01-01-2015:00:00:00.
-  }
-}
-\item{onlyInterest}{TRUE if only interest over time should be returned.}
-  
+  \item{"all"}{Since the beginning of Google Trends (2004)} \item{"Y-m-d
+  Y-m-d"}{Time span between two dates (ex.: "2010-01-01 2010-04-03")} }}
+
 \item{gprop}{A character string defining the Google product for which the
   trend query if preformed. Valid options are:
 
@@ -54,12 +41,17 @@ using \code{gtrends("NHL", c("CA", "US"))}.}
 \dQuote{fr}). Default is \dQuote{en-US}. Note that this is only influencing
 the data returned by related topics.}
 
-\item{tz}{A number specifying the minutes the returned dates should be offset to UTC. Note the parameter 'time' above is specified in UTC. E.g. choosing 'time=2018-01-01T01 2018-01-01T03' and 'tz=-120' will yield data between 2018-01-01T03 and 2018-01-01T05, i.e. data specified to be in UTC+2.}
-
 \item{low_search_volume}{Logical. Should include low search volume regions?}
 
 \item{cookie_url}{A string specifying the URL from which to obtain cookies.
 Default should work in general; should only be changed by advanced users.}
+
+\item{tz}{A number specifying the minutes the returned dates should be offset to UTC. 
+Note the parameter 'time' above is specified in UTC. 
+E.g. choosing "time=2018-01-01T01 2018-01-01T03" and "tz=-120" will yield data between 2018-01-01T03 and 2018-01-01T05, 
+i.e. data specified to be in UTC+2.}
+
+\item{onlyInterest}{If you only want the interest over time set it to TRUE.}
 }
 \value{
 An object of class \sQuote{gtrends} (basically a list of data
@@ -114,14 +106,10 @@ gtrends(c("NHL", "NFL"), time = "today 12-m") # last 12 months
 gtrends(c("NHL", "NFL"), time = "today+5-y") # last five years (default)
 gtrends(c("NHL", "NFL"), time = "all") # since 2004
 
-## Custom date format (daily)
+
+## Custom date format
+
 gtrends(c("NHL", "NFL"), time = "2010-01-01 2010-04-03")
-
-## Custom date format (1 minute)
-gtrends(c("NHL", "NFL"), time = "2016-01-01H01 2016-01-01H05")
-
-## Download several time periods -- only possible for one searchterm at a time
-gtrends(keyword="NHL",time=c("2018-05-01 2018-05-31","2018-03-01 2018-03-31"),onlyInterest=TRUE)
 
 ## Search from various Google's services
 
@@ -132,9 +120,5 @@ head(gtrends(c("NHL", "NFL"), gprop = "youtube")$interest_over_time)
 
 head(gtrends("NHL", hl = "en")$related_topics)
 head(gtrends("NHL", hl = "fr")$related_topics)
-
-## Timezone settings
-gtrends("NFL",time = c("2018-03-24T23 2018-03-25T03"),gprop="web",TZ="UTC",onlyInterest = T)
-gtrends("NFL",time = c("2018-03-24T23 2018-03-25T03"),gprop="web",TZ="Europe/Berlin",onlyInterest = T)
 }
 }
