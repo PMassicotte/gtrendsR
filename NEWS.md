@@ -1,14 +1,16 @@
 # gtrendsR 1.4.3 (unreleased)
 
-- Added more options to specify time interval of the search (#289) @JBleher
+- Added more options to specify time interval of the search (#289). @JBleher
 
-- Fixed dangling time zone parameters (#290) @JBleher
+- Fixed dangling time zone parameters (#290). @JBleher
 
-- Fixed also issues with different results when requests were issued from different time zones and different locale settings
+- Fixed also issues with different results when requests were issued from different time zones and different locale settings.
 
-- Download multiple time ranges for direct comparison 
+- Download multiple time ranges for direct comparison.
 
-- Now also an option to only download interest over time is added
+- Now also an option to only download interest over time is added.
+
+- Showing the returned status code when it is failing (i.e. not 200) (#304).
 
 # gtrendsR 1.4.2
 

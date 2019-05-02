@@ -34,9 +34,11 @@ create_related_topics_payload <- function(i, widget, hl,tz) {
   # VY. use the handler with proxy options.
   res <- curl::curl_fetch_memory(url, handle = .pkgenv[["cookie_handler"]])
 
-
-  stopifnot(res$status_code == 200)
-
+  # Something went wrong
+  if (res$status_code != 200) {
+    stop("Status code was not 200. Returned status code:", res$status_code)
+  }
+  
   res <- readLines(textConnection(rawToChar(res$content)))
 
   start_top <- which(grepl("TOP", res))

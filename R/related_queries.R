@@ -33,8 +33,11 @@ create_related_queries_payload <- function(i, widget,tz) {
   # VY. use the handler with proxy options.
   res <- curl::curl_fetch_memory(URLencode(url), handle = .pkgenv[["cookie_handler"]])
 
-  stopifnot(res$status_code == 200)
-
+  # Something went wrong
+  if (res$status_code != 200) {
+    stop("Status code was not 200. Returned status code:", res$status_code)
+  }
+  
   res <- readLines(textConnection(rawToChar(res$content)))
 
   ## Not enough data
