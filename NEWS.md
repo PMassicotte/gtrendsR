@@ -1,4 +1,4 @@
-# gtrendsR 1.4.3 (unreleased)
+# gtrendsR 1.4.3
 
 - Added more options to specify time interval of the search (#289). @JBleher
 
