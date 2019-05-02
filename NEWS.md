@@ -12,6 +12,8 @@
 
 - Showing the returned status code when it is failing (i.e. not 200) (#304).
 
+- Bug fix keyword encoding when there are multiple keywords with '&'. (#300, #301) @ThiesDS
+
 # gtrendsR 1.4.2
 
 - gtrendsR can now be used behind a proxy, see `setHandleParameters()` (#245) @VictorYammouni
