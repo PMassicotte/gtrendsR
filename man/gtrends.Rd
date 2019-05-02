@@ -18,16 +18,14 @@ keywords. Multiple keywords are possible using \code{gtrends(c("NHL",
 default to \dQuote{all} for global queries. Multiple regions are possible
 using \code{gtrends("NHL", c("CA", "US"))}.}
 
-\item{time}{A vector of string specifying the time span of the query. You can chose up to 5 different time spans that you would like to compare. Possible values are:
+\item{time}{A vector of string specifying the time span of the query. You can chose up to 5 different time spans that you would like to compare. You can only specify several time periods if the keyword argument contains one keyword only. Possible values are:
 
   \describe{ \item{"now 1-H"}{Last hour} \item{"now 4-H"}{Last four hours}
   \item{"now 1-d"}{Last day} \item{"now 7-d"}{Last seven days} \item{"today
   1-m"}{Past 30 days} \item{"today 3-m"}{Past 90 days} \item{"today
   12-m"}{Past 12 months} \item{"today+5-y"}{Last five years (default)}
-  \item{"all"}{Since the beginning of Google Trends (2004)} \item{"\%Y-\%m-\%d
-  \%Y-\%m-\%d"}{Time span between two dates (ex.: "2010-01-01 2010-04-03").
-  \item{"\%Y-\%m-\%dT\%H
-  \%Y-\%m-\%dT\%H"}{Time span between two dates (ex.: "2016-01-01T01 2016-01-01T04"). If you want to retrieve intraday data, you need to use this format.} }}
+  \item{"all"}{Since the beginning of Google Trends (2004)} 
+  \item{"\%Y-\%m-\%d \%Y-\%m-\%d" or "\%Y-\%m-\%dT\%H  \%Y-\%m-\%dT\%H"}{Time span between two dates (ex.: "2016-01-01T01 2016-01-01T04"). If you want to retrieve intraday data, you need to use this format.}
   
   NB: The time frame, T,  e determines the frequency of Google's Search Volume Index (SVI). 
   \itemize{
@@ -41,7 +39,8 @@ using \code{gtrends("NHL", c("CA", "US"))}.}
   }
   Intraday data is available only for time frames post 01-01-2015:00:00:00.
   }
-  
+}
+\item{onlyInterest}{TRUE if only interest over time should be returned.}
   
 \item{gprop}{A character string defining the Google product for which the
   trend query if preformed. Valid options are:
@@ -115,12 +114,14 @@ gtrends(c("NHL", "NFL"), time = "today 12-m") # last 12 months
 gtrends(c("NHL", "NFL"), time = "today+5-y") # last five years (default)
 gtrends(c("NHL", "NFL"), time = "all") # since 2004
 
-
 ## Custom date format (daily)
 gtrends(c("NHL", "NFL"), time = "2010-01-01 2010-04-03")
 
 ## Custom date format (1 minute)
 gtrends(c("NHL", "NFL"), time = "2016-01-01H01 2016-01-01H05")
+
+## Download several time periods -- only possible for one searchterm at a time
+gtrends(keyword="NHL",time=c("2018-05-01 2018-05-31","2018-03-01 2018-03-31"),onlyInterest=TRUE)
 
 ## Search from various Google's services
 
@@ -131,5 +132,9 @@ head(gtrends(c("NHL", "NFL"), gprop = "youtube")$interest_over_time)
 
 head(gtrends("NHL", hl = "en")$related_topics)
 head(gtrends("NHL", hl = "fr")$related_topics)
+
+## Timezone settings
+gtrends("NFL",time = c("2018-03-24T23 2018-03-25T03"),gprop="web",TZ="UTC",onlyInterest = T)
+gtrends("NFL",time = c("2018-03-24T23 2018-03-25T03"),gprop="web",TZ="Europe/Berlin",onlyInterest = T)
 }
 }

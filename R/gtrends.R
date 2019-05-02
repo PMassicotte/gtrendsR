@@ -44,6 +44,8 @@
 #' @param cookie_url A string specifying the URL from which to obtain cookies.
 #'   Default should work in general; should only be changed by advanced users.
 #'
+#' @param onlyInterest If you only want the interest over time set it to TRUE.
+#' 
 #' @section Categories: The package includes a complete list of categories that
 #'   can be used to narrow requests. These can be accessed using
 #'   \code{data("categories")}.

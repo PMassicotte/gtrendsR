@@ -1,3 +1,12 @@
+
+# gtrendsR 1.4.3 (unreleased)
+
+- Added more options to specify time interval of the search (#289) @JBleher
+- Fixed dangling time zone parameters (#290) JBleher
+- Fixed also issues with different results when requests were issued from different time zones and different locale settings
+- Download multiple time ranges afor direct comparison 
+- Now also an option to only download interest over time is added
+
 # gtrendsR 1.4.2
 
 - gtrendsR can now be used behind a proxy, see `setHandleParameters()` (#245) @VictorYammouni

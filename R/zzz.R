@@ -203,7 +203,7 @@ interest_over_time <- function(widget, comparison_item,tz) {
     
     df <- cbind(
       df,
-      comparison_item[rep(seq_len(nrow(comparison_item)), each = n), 1:2],
+      comparison_item[rep(seq_len(nrow(comparison_item)), each = n), 1:3],
       row.names = NULL
     )
     
@@ -255,7 +255,7 @@ interest_over_time <- function(widget, comparison_item,tz) {
     
     for(jj in 1:NCOL(dates)){
       df_tmp <- data.frame(dates[jj],hits[jj])
-      df_tmp2 <- comparison_item[rep(jj,n), 1:2]
+      df_tmp2 <- comparison_item[rep(jj,n), 1:3]
       
       df_tmp2[,1] <- ifelse(df_tmp2[,1] == "", "world", df_tmp2[,1])
       df_tmp2[,3] <- ifelse(widget$request$requestOptions$property[1] == "", "web", widget$request$requestOptions$property[1])
