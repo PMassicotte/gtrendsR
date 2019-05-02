@@ -121,7 +121,9 @@ interest_over_time <- function(widget, comparison_item,tz) {
   # topicKeys <- c("Assassins Creed", "Assassins Creed Brotherhood", "Assassins Creed Rogue")
   # gtrends(topicKeys, time = "all")
   if((length(widget$request$comparisonItem[[2]]$time)!=1)&
-     (length(unique(widget$request$comparisonItem[[2]]$time))!=1)){
+     (length(unique(widget$request$comparisonItem[[2]]$time))!=1)&
+     (!is.null(widget$request$comparisonItem[[2]]) )
+     ){
     payload2$resolution <- widget$request$resolution[1]
     payload2$locale <- widget$request$locale[2]
     payload2$comparisonItem <- widget$request$comparisonItem[[2]]
@@ -138,7 +140,7 @@ interest_over_time <- function(widget, comparison_item,tz) {
       "&tz=",tz
     ))
   }else{
-    if(!is.na(widget$request$locale[1])){
+    if(!is.na(widget$request$locale[1])|(length(unique(unlist(widget$request$comparisonItem[[1]]$geo)))>1)){
       payload2$locale <- widget$request$locale[1]
       payload2$comparisonItem <- widget$request$comparisonItem[[1]]
       payload2$resolution <- widget$request$resolution[1]
@@ -187,7 +189,9 @@ interest_over_time <- function(widget, comparison_item,tz) {
   }
   
   if((length(widget$request$comparisonItem[[2]]$time)==1)|
-     (length(unique(widget$request$comparisonItem[[2]]$time))==1)){
+     (length(unique(widget$request$comparisonItem[[2]]$time))==1)|
+     (is.null(widget$request$comparisonItem[[2]]) )
+     ){
     n <- nrow(df) # used to reshape the data
     
     df <- reshape(
