@@ -2,11 +2,11 @@
 
 - Added more options to specify time interval of the search (#289) @JBleher
 
-- Fixed dangling time zone parameters (#290) JBleher
+- Fixed dangling time zone parameters (#290) @JBleher
 
 - Fixed also issues with different results when requests were issued from different time zones and different locale settings
 
-- Download multiple time ranges afor direct comparison 
+- Download multiple time ranges for direct comparison 
 
 - Now also an option to only download interest over time is added
 
