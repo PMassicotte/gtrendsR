@@ -214,7 +214,7 @@ gtrends <- function(
     x
   })
 
-  class(res) <- c("gtrends", "list")
+  #class(res) <- c("gtrends", "list")
 
   return(res)
 }
