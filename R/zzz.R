@@ -1,3 +1,8 @@
+if(getRversion() >= "2.15.1")  {
+  
+  utils::globalVariables(c("trend_date"))
+}
+
 # create environment in which to put cookie_handler
 .pkgenv <- new.env(parent=emptyenv())
 
