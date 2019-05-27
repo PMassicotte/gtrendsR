@@ -11,7 +11,7 @@ query_trends(search_terms, from = NA, to = NA, ...)
 
 \item{from}{The beginning date of the query}
 
-\item{to}{The beginning date of the query}
+\item{to}{The end date of the query}
 
 \item{...}{arguments passed to \code{gtrends()}. See ?gtrends for more information including geography, language, and time-zone.}
 }
