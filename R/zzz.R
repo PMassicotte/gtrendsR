@@ -198,7 +198,7 @@ interest_over_time <- function(widget, comparison_item, tz) {
     
     df <- tibble::as_tibble(df)
     
-    names(df) <- c("trend_date",  str_extract(df_names, keyword))
+    names(df) <- c("trend_date",  str_extract(names(df[2:ncol(df)]), comparison_item$keyword))
     
     df <-df %>% 
       tidyr::gather(keyword, hits, -trend_date) %>% 
