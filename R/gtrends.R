@@ -256,3 +256,30 @@ plot.gtrends <- function(x, ...) {
   print(p)
   invisible(p)
 }
+
+
+
+
+#' Create print method for trendy object
+#' 
+#' @param x trendy object
+#' @importFrom dplyr pull group_by summarise
+#' @export
+print.gtrends <- function(x, ...) {
+  cat((crayon::bold("~ Google Trends Results ~\n")))
+  cat("\nSearch Terms: ")
+  cat(paste(get_interest(x) %>%
+              dplyr::pull(keyword) %>%
+              unique(),
+            sep = " "), sep = ", ")
+  cat("\n\n~~~~~~~~~~~~~~~~~~~~~~~ summary ~~~~~~~~~~~~~~~~~~~~~~~\n")
+  print(x %>%
+          get_interest() %>%
+          group_by(keyword) %>%
+          summarise(max_hits = max(hits),
+                    min_hits = min(hits),
+                    from = as.Date(min(date)),
+                    to = as.Date(max(date))))
+  invisible(x)
+}
+
