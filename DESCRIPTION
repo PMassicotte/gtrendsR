@@ -3,16 +3,22 @@ Type: Package
 Title: Perform and Display Google Trends Queries
 Version: 1.4.3
 Date: 2019-05-02
-Authors@R: c(person("Philippe", 
-         "Massicotte", 
-         email = "pmassicotte@hotmail.com",
-         role = c("aut", "cre")),
-  person("Dirk",
-         "Eddelbuettel",
+Authors@R: c(
+  person("Philippe", "Massicotte",
+          email = "pmassicotte@hotmail.com", 
+          role = c("aut", "cre")),
+          
+  person("Dirk", "Eddelbuettel",
          email = "edd@debian.org",
-         role = "aut"))
+         role = "aut"),
+         
+  person("Josiah", "Parry",
+         email = "josiah.parry@gmail.com",
+         role = "aut"
+         )
+        )
 Description: An interface for retrieving and displaying the information returned
-    online by Google Trends is provided. Trends (number of hits) over the time as
+    online by Google Trends is provided. Trends (relative number of hits) over time as
     well as geographic representation of the results can be displayed.
 License: GPL (>= 2)
 BugReports: https://github.com/PMassicotte/gtrendsR/issues
@@ -24,7 +30,13 @@ Imports:
     ggplot2,
     jsonlite,
     anytime,
-    curl
+    curl,
+    crayon,
+    dplyr,
+    magrittr,
+    purrr,
+    stringr,
+    tibble
 RoxygenNote: 6.1.1
 Suggests: knitr,
     rmarkdown
