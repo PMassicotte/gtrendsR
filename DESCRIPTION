@@ -34,7 +34,8 @@ Imports:
     magrittr,
     purrr,
     stringr,
-    tibble
+    tibble,
+    tidyr
 RoxygenNote: 6.1.1
 Suggests: knitr,
     rmarkdown
