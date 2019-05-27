@@ -1,6 +1,6 @@
 if(getRversion() >= "2.15.1")  {
   
-  utils::globalVariables(c("category", "hits", "id", "keyword", "name", "pull"))
+  utils::globalVariables(c("category", "hits", "id", "keyword", "name", "pull", "value"))
 }
 
 #' Retrieve related queries
