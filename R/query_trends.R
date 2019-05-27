@@ -5,14 +5,13 @@
 #' @param search_terms A character vector containing the search terms of interest
 #' @param from The beginning date of the query
 #' @param to The beginning date of the query
-#' @param ... arguments passed to \code{gtrendsR::gtrends()}. See ?gtrendsR::gtrends for more information including geography, language, and time-zone.
+#' @param ... arguments passed to \code{gtrends()}. See ?gtrends for more information including geography, language, and time-zone.
 #'
 #' @export
 #' @importFrom purrr map map_chr pluck
 #' @importFrom dplyr group_by summarise
 #' @importFrom crayon bold
 #' @importFrom magrittr %>%
-#' @importFrom gtrendsR gtrends
 #' @return An object of class `gtrends`
 #'
 #' @examples
@@ -31,11 +30,11 @@ query_trends <- function(search_terms, from = NA, to = NA, ...) {
   
   
   if (length(search_terms) <= 5) {
-    searched_trends <- gtrendsR::gtrends(search_terms, time = time, ...) %>%
+    searched_trends <- gtrends(search_terms, time = time, ...) %>%
       list()
   } else {
     searched_trends <- search_terms %>%
-      map(gtrendsR::gtrends, time = time, ...)
+      map(gtrends, time = time, ...)
   }
   
   

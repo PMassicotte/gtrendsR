@@ -4,17 +4,17 @@
 \alias{get_interest}
 \title{Retrieve interest over time}
 \usage{
-get_interest(trendy)
+get_interest(gtrends)
 }
 \arguments{
-\item{trendy}{An object of class trendy created via \code{trendy()}}
+\item{gtrends}{An object of class gtrends created via \code{query_trends()}}
 }
 \description{
 Extract a tibble of interest over time
 }
 \examples{
 \dontrun{
-ob <- trendy("obama")
+ob <- query_trends("obama")
 get_interest(ob)
 }
 

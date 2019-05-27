@@ -4,17 +4,17 @@
 \alias{get_related_topics}
 \title{Retrieve related topics}
 \usage{
-get_related_topics(trendy)
+get_related_topics(gtrends)
 }
 \arguments{
-\item{trendy}{An object of class trendy created via \code{trendy()}}
+\item{gtrends}{An object of class gtrends created via \code{query_trends()}}
 }
 \description{
-Extract a tibble of related topics from trendy object
+Extract a tibble of related topics from gtrends object
 }
 \examples{
 \dontrun{
-ob <- trendy("obama")
+ob <- query_trends("obama")
 get_related_topics(ob)
 }
 

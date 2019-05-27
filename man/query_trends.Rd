@@ -13,7 +13,7 @@ query_trends(search_terms, from = NA, to = NA, ...)
 
 \item{to}{The beginning date of the query}
 
-\item{...}{arguments passed to \code{gtrendsR::gtrends()}. See ?gtrendsR::gtrends for more information including geography, language, and time-zone.}
+\item{...}{arguments passed to \code{gtrends()}. See ?gtrends for more information including geography, language, and time-zone.}
 }
 \value{
 An object of class `gtrends`

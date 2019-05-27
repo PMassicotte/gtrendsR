@@ -4,17 +4,17 @@
 \alias{get_interest_country}
 \title{Retrieve interest by country}
 \usage{
-get_interest_country(trendy)
+get_interest_country(gtrends)
 }
 \arguments{
-\item{trendy}{An object of class trendy created via \code{trendy()}}
+\item{gtrends}{An object of class gtrends created via \code{query_trends()}}
 }
 \description{
-Extract a tibble of interest by country from trendy object
+Extract a tibble of interest by country from gtrends object
 }
 \examples{
 \dontrun{
-ob <- trendy("obama")
+ob <- query_trends("obama")
 get_interest_country(ob)
 }
 

@@ -4,17 +4,17 @@
 \alias{get_interest_region}
 \title{Retrieve interest by region}
 \usage{
-get_interest_region(trendy)
+get_interest_region(gtrends)
 }
 \arguments{
-\item{trendy}{An object of class trendy created via \code{trendy()}}
+\item{gtrends}{An object of class gtrends created via \code{query_trends()}}
 }
 \description{
-Extract a tibble of interest by region from trendy object
+Extract a tibble of interest by region from gtrends object
 }
 \examples{
 \dontrun{
-ob <- trendy("obama")
+ob <- query_trends("obama")
 get_interest_region(ob)
 }
 }

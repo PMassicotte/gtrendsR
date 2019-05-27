@@ -4,20 +4,20 @@
 \alias{get_related_queries}
 \title{Retrieve related queries}
 \usage{
-get_related_queries(trendy)
+get_related_queries(gtrends)
 }
 \arguments{
-\item{trendy}{An object of class trendy created via \code{trendy()}}
+\item{gtrends}{An object of class gtrends created via \code{query_trends()}}
 }
 \value{
 A tibble containing related search terms
 }
 \description{
-Extract tibble of related queries from trendy object
+Extract tibble of related queries from gtrends object
 }
 \examples{
 \dontrun{
-ob <- trendy("obama")
+ob <- query_trends("obama")
 get_related_queries(ob)
 }
 
