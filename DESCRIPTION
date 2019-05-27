@@ -7,11 +7,9 @@ Authors@R: c(
   person("Philippe", "Massicotte",
           email = "pmassicotte@hotmail.com", 
           role = c("aut", "cre")),
-          
   person("Dirk", "Eddelbuettel",
          email = "edd@debian.org",
          role = "aut"),
-         
   person("Josiah", "Parry",
          email = "josiah.parry@gmail.com",
          role = "aut"
