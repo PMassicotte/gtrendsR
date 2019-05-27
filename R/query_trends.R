@@ -43,7 +43,7 @@ query_trends <- function(search_terms, from = NA, to = NA, ...) {
   
   structure(
     searched_trends,
-    class = "gtrends"
+    class = c("gtrends", "list")
   )
   
 }
@@ -73,11 +73,12 @@ plot.gtrends <- function(x, ...) {
   
   p <- ggplot(df, aes_string(x = "date", y = "hits", color = "legend")) +
     geom_line() +
-    xlab("Date") +
-    ylab("Search hits") +
-    ggtitle("Interest over time") +
+    labs(x = "",
+         y = "Relative Search Interest",
+         title = "Interest Over Time")
     theme_bw() +
-    theme(legend.title = element_blank())
+    theme(legend.title = element_blank(),
+          legend.position = "bottom")
   
   print(p)
   invisible(p)
@@ -104,7 +105,7 @@ print.gtrends <- function(x, ...) {
                     min_hits = min(hits),
                     from = as.Date(min(date)),
                     to = as.Date(max(date))),
-        width = 0)
+        width = 70)
   invisible(x)
 }
 
