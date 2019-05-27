@@ -62,7 +62,7 @@ query_trends <- function(search_terms, from = NA, to = NA, ...) {
 #'
 #' @examples
 #' \dontrun{
-#' res <- gtrends("nhl", geo = c("CA", "US"))
+#' res <- query_trends("nhl", geo = c("CA", "US"))
 #' plot(res)
 #' }
 plot.gtrends <- function(x, ...) {

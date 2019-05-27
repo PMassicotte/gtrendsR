@@ -20,7 +20,7 @@ Plot Google Trends interest over time
 }
 \examples{
 \dontrun{
-res <- gtrends("nhl", geo = c("CA", "US"))
+res <- query_trends("nhl", geo = c("CA", "US"))
 plot(res)
 }
 }
