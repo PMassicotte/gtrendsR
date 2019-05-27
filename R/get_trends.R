@@ -29,10 +29,11 @@ get_related_queries <- function(gtrends) {
   }
   
   map_dfr(gtrends, pluck("related_queries")) %>%
-    left_join(mutate(gtrendsR::categories, id = as.integer(id)),
+    left_join(mutate(categories, id = as.integer(id)),
               by = c("category" = "id")) %>%
     select(-category) %>%
-    rename(category = name) %>%
+    rename(category = name,
+           search_term = value) %>%
     as_tibble() %>%
     return()
 }
@@ -64,7 +65,7 @@ get_related_topics <- function(gtrends) {
   }
   
   map_dfr(gtrends, pluck("related_topics")) %>%
-    left_join(mutate(gtrendsR::categories, id = as.integer(id)),
+    left_join(mutate(categories, id = as.integer(id)),
               by = c("category" = "id")) %>%
     select(-category) %>%
     rename(category = name) %>%
@@ -99,12 +100,13 @@ get_interest <- function(gtrends) {
   
   map_dfr(.x = gtrends, ~pluck(.x, "interest_over_time") %>%
             mutate(hits = str_extract(hits, "[0-9]+"))) %>%
-    left_join(mutate(gtrendsR::categories, id = as.integer(id)),
+    left_join(mutate(categories, id = as.integer(id)),
               by = c("category" = "id")) %>%
     select(-category) %>%
     rename(category = name) %>%
     as_tibble() %>%
-    mutate(hits = as.integer(hits))
+    mutate(hits = as.integer(hits),
+           date = as.Date(date))
 }
 
 
