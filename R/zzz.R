@@ -195,14 +195,15 @@ interest_over_time <- function(widget, comparison_item, tz) {
      (length(unique(widget$request$comparisonItem[[2]]$time))==1)|
      (is.null(widget$request$comparisonItem[[2]]) )
      ){
-    df <- as_tibble(df)
+    
+    df <- tibble::as_tibble(df)
     
     names(df) <- c("trend_date",  str_extract(df_names, keyword))
     
     df <-df %>% 
-      gather(keyword, hits, -trend_date) %>% 
-      rename(date = trend_date) %>% 
-      mutate(gprop = ifelse(widget$request$requestOptions$property[1] == "", 
+      tidyr::gather(keyword, hits, -trend_date) %>% 
+      dplyr::rename(date = trend_date) %>% 
+      dplyr::mutate(gprop = ifelse(widget$request$requestOptions$property[1] == "", 
                           "web",
                           widget$request$requestOptions$property[1]),
              category = widget$request$requestOptions$category[1],
