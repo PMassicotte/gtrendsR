@@ -88,6 +88,8 @@ plot.gtrends <- function(x, ...) {
 #'  Print gtrends object
 #' 
 #' @param x gtrends object
+#' @param ... Additional parameters passed on in method dispatch. Currently not
+#'   used.
 #' @importFrom dplyr pull group_by summarise
 #' @export
 print.gtrends <- function(x, ...) {

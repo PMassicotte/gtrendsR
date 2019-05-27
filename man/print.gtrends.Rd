@@ -8,6 +8,9 @@
 }
 \arguments{
 \item{x}{gtrends object}
+
+\item{...}{Additional parameters passed on in method dispatch. Currently not
+used.}
 }
 \description{
 Print gtrends object
