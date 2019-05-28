@@ -225,6 +225,10 @@ interest_over_time <- function(widget, comparison_item,tz) {
       df$date <- as.POSIXct(df$date,format="%Y-%m-%d",tz=paste0("GMT",ifelse(tz>=0,"+","-"),(abs(tz)/60)),asUTC=T)
     }else if(all(grepl("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}$",df$date))){
       df$date <- as.POSIXct(df$date,format="%Y-%m-%dT%H",tz=paste0("GMT",ifelse(tz>=0,"+","-"),(abs(tz)/60)),asUTC=T)
+    }else if(all(grepl("^[0-9]{4}-[0-9]{2}$",df$date))){
+      df$date <- df$date <- as.POSIXct(paste0(df$date,"-01"), 
+                                       format = "%Y-%m-%d", tz = paste0("GMT", ifelse(tz >= 0, "+", "-"), 
+                                                   (abs(tz)/60)), asUTC = T)
     }else{
       df$date <- gsub("^([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}).*$","\\1",df$date)
       df$date <- as.POSIXct(df$date,format="%Y-%m-%dT%H:%M:%S",tz=paste0("GMT",ifelse(tz>=0,"+","-"),(abs(tz)/60)),asUTC=T)
