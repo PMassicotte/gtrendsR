@@ -80,15 +80,12 @@ check_time <- function(time_ranges) {
 
 get_widget <- function(comparison_item, category, gprop, hl, cookie_url, tz) {
   token_payload <- list()
-  #comparison_item$keyword <- gsub(pattern="\\+",replacement="%2B",comparison_item$keyword)
   token_payload$comparisonItem <- comparison_item
   token_payload$category <- category
   token_payload$property <- gprop
-
-  # token_payload$comparisonItem$keyword <- curl::curl_escape(token_payload$comparisonItem$keyword)
   
   url <- paste0(URLencode("https://www.google.com/trends/api/explore?property=&req="),
-                URLencode(paste0(jsonlite::toJSON(token_payload, auto_unbox = TRUE)),reserved=T),
+                URLencode(paste0(jsonlite::toJSON(token_payload, auto_unbox = TRUE)),reserved=TRUE),
                 URLencode(paste0("&tz=",tz,"&hl=", hl))
   )
   
