@@ -1,3 +1,7 @@
+# gtrendsR 1.4.4 (unreleased)
+
+- Dates are parsed correctly when `time = "all"` (#309). @JBleher
+
 # gtrendsR 1.4.3
 
 - Added more options to specify time interval of the search (#289). @JBleher
