@@ -1,3 +1,5 @@
+# gtrendsR (development version)
+
 # gtrendsR 1.4.4
 
 - Dates are parsed correctly when `time = "all"` (#309). @JBleher
