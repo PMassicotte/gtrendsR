@@ -1,19 +1,20 @@
-related_queries <- function(widget, comparison_item,tz) {
+related_queries <- function(widget, comparison_item,tz,hl) {
   i <- which(grepl("queries", widget$title) == TRUE)
 
-  res <- lapply(i, create_related_queries_payload, widget = widget,tz=tz)
+  res <- lapply(i, create_related_queries_payload, widget = widget,tz=tz, hl = hl)
   res <- do.call(rbind, res)
 
   return(res)
 }
 
 
-create_related_queries_payload <- function(i, widget,tz) {
+create_related_queries_payload <- function(i, widget,tz,hl) {
   payload2 <- list()
   payload2$restriction$geo <- as.list(widget$request$restriction$geo[i, , drop = FALSE])
   payload2$restriction$time <- widget$request$restriction$time[[i]]
   payload2$restriction$originalTimeRangeForExploreUrl <- widget$request$restriction$originalTimeRangeForExploreUrl[[i]]
   payload2$restriction$complexKeywordsRestriction$keyword <- widget$request$restriction$complexKeywordsRestriction$keyword[[i]]
+  payload2$restriction$complexKeywordsRestriction$operator <- widget$request$restriction$complexKeywordsRestriction$operator[[i]]
   payload2$keywordType <- widget$request$keywordType[[i]]
   payload2$metric <- widget$request$metric[[i]]
   payload2$trendinessSettings$compareTime <- widget$request$trendinessSettings$compareTime[[i]]
@@ -21,15 +22,14 @@ create_related_queries_payload <- function(i, widget,tz) {
   payload2$requestOptions$backend <- widget$request$requestOptions$backend[[i]]
   payload2$requestOptions$category <- widget$request$requestOptions$category[[i]]
   payload2$language <- widget$request$language[[i]]
+  
+  url <- paste0(URLencode("https://www.google.com/trends/api/widgetdata/relatedsearches/csv?req="),
+                URLencode(paste0(jsonlite::toJSON(payload2, auto_unbox = TRUE)),reserved=TRUE),
+                URLencode(paste0("&token=", widget$token[i])),
+                URLencode(paste0("&tz=",tz,"&hl=",hl))
+  )
 
-  url <- URLencode(paste0(
-    "https://www.google.com/trends/api/widgetdata/relatedsearches/csv?req=",
-    jsonlite::toJSON(payload2, auto_unbox = T),
-    "&token=", widget$token[i],
-    "&tz=",tz,"&hl=en-US"
-  ))
-
-  url <- encode_keyword(url)
+  #url <- encode_keyword(url)
   # VY. use the handler with proxy options.
   res <- curl::curl_fetch_memory(URLencode(url), handle = .pkgenv[["cookie_handler"]])
 
