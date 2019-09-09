@@ -130,12 +130,16 @@ interest_over_time <- function(widget, comparison_item,tz) {
     payload2$requestOptions$category <- widget$request$requestOptions$category[2]
     token_payload2 <- widget$token[which(widget$id == "TIMESERIES")]
 
-    url <- URLencode(paste0(
-      "https://www.google.com/trends/api/widgetdata/multirange/csv?req=",
-      jsonlite::toJSON(payload2, auto_unbox = T,null="list"),
-      "&token=", token_payload2,
-      "&tz=",tz
-    ))
+    
+    url <- paste0(URLencode("https://www.google.com/trends/api/widgetdata/multirange/csv?req="),
+                  URLencode(jsonlite::toJSON(payload2, auto_unbox = T,null="list"),reserved = TRUE),
+                  URLencode(paste0("&token=", token_payload2,"&tz=",tz)))
+    # url <- URLencode(paste0(
+    #   "https://www.google.com/trends/api/widgetdata/multirange/csv?req=",
+    #   jsonlite::toJSON(payload2, auto_unbox = T,null="list"),
+    #   "&token=", token_payload2,
+    #   "&tz=",tz
+    # ))
   }else{
     if(!is.na(widget$request$locale[1])|(length(unique(unlist(widget$request$comparisonItem[[1]]$geo)))>1)){
       payload2$locale <- widget$request$locale[1]
@@ -156,18 +160,15 @@ interest_over_time <- function(widget, comparison_item,tz) {
       payload2$requestOptions$property <- widget$request$requestOptions$property[2]
       token_payload2 <- widget$token[2]
     }
-    url <- URLencode(paste0(
-      "https://www.google.com/trends/api/widgetdata/multiline/csv?req=",
-      jsonlite::toJSON(payload2, auto_unbox = T),
-      "&token=", token_payload2,
-      "&tz=",tz
-    ))
+    url <- paste0(URLencode("https://www.google.com/trends/api/widgetdata/multiline/csv?req="),
+                  URLencode(jsonlite::toJSON(payload2, auto_unbox = T,null="list"),reserved = TRUE),
+                  URLencode(paste0("&token=", token_payload2,"&tz=",tz)))
   }
 
   # ****************************************************************************
   # Downoad the results
   # ****************************************************************************
-  url <- encode_keyword(url)
+  #url <- encode_keyword(url)
   
   # VY. use the handler with proxy options.
   res <- curl::curl_fetch_memory(url, handle = .pkgenv[["cookie_handler"]])
@@ -358,14 +359,18 @@ create_geo_payload <- function(i, widget, resolution, low_search_volume,tz) {
   payload2$includeLowSearchVolumeGeos <- low_search_volume
 
 
-  url <- URLencode(paste0(
-    "https://www.google.com/trends/api/widgetdata/comparedgeo/csv?req=",
-    jsonlite::toJSON(payload2, auto_unbox = T,null="list"),
-    "&token=", widget$token[i],
-    "&tz=",tz,"&hl=en-US"
-  ))
+  url <- paste0(URLencode("https://www.google.com/trends/api/widgetdata/comparedgeo/csv?req="),
+                URLencode(jsonlite::toJSON(payload2, auto_unbox = T,null="list"),reserved = TRUE),
+                URLencode(paste0("&token=",widget$token[i],"&tz=",tz,"&hl=en-US")))
+  
+  # url <- URLencode(paste0(
+  #   "https://www.google.com/trends/api/widgetdata/comparedgeo/csv?req=",
+  #   jsonlite::toJSON(payload2, auto_unbox = T,null="list"),
+  #   "&token=", widget$token[i],
+  #   "&tz=",tz,"&hl=en-US"
+  # ))
 
-  url <- encode_keyword(url)
+  # url <- encode_keyword(url)
   # VY. use the handler with proxy options.
   res <- curl::curl_fetch_memory(url, handle = .pkgenv[["cookie_handler"]])
 
@@ -391,9 +396,15 @@ create_geo_payload <- function(i, widget, resolution, low_search_volume,tz) {
     timevar = "temp",
     times = names(df)[2:ncol(df)]
   )
+  if(length(widget$request$comparisonItem[[i]]$complexKeywordsRestriction$operator)==0){
+    kw <- do.call(rbind, widget$request$comparisonItem[[i]]$complexKeywordsRestriction$keyword)
+  }else{
+    value <- paste(widget$request$comparisonItem[[i]]$complexKeywordsRestriction$keyword[[1]]$value,collapse=" + ")
+    type <- unique(widget$request$comparisonItem[[i]]$complexKeywordsRestriction$keyword[[1]]$type)
+    kw <- data.frame(type=type,value=value)
+  }
 
-
-  kw <- do.call(rbind, widget$request$comparisonItem[[i]]$complexKeywordsRestriction$keyword)
+  #kw <- do.call(rbind, widget$request$comparisonItem[[i]]$complexKeywordsRestriction$keyword)
 
   df <- cbind(
     df,

@@ -1,3 +1,6 @@
+# gtrendsR 1.4.4
+- Added the possibility to use search operators like "+" and "-"
+
 # gtrendsR 1.4.3
 
 - Added more options to specify time interval of the search (#289). @JBleher

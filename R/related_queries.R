@@ -86,7 +86,12 @@ create_related_queries_payload <- function(i, widget,tz,hl) {
   res <- rbind(top, rising)
   res$id <- NULL
   res$geo <- unlist(payload2$restriction$geo, use.names = FALSE)
-  res$keyword <- payload2$restriction$complexKeywordsRestriction$keyword$value
+  if(is.na(widget$request$restriction$complexKeywordsRestriction$operator[[i]])){
+    res$keyword <- widget$request$restriction$complexKeywordsRestriction$keyword[[i]]$value
+  }else{
+    res$keyword <- paste(widget$request$restriction$complexKeywordsRestriction$keyword[[i]]$value,collapse="+")
+  }
+  
   res$category <- payload2$requestOptions$category
 
   return(res)
