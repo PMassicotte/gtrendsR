@@ -80,7 +80,15 @@ create_related_topics_payload <- function(i, widget, hl,tz) {
   res <- rbind(top, rising)
   res$id <- NULL
   res$geo <- unlist(payload2$restriction$geo, use.names = FALSE)
-  res$keyword <- payload2$restriction$complexKeywordsRestriction$keyword$value
+  if(length(widget$request$restriction$complexKeywordsRestriction$operator)!=0){
+    if(is.na(widget$request$restriction$complexKeywordsRestriction$operator[[i]])){
+      res$keyword <- widget$request$restriction$complexKeywordsRestriction$keyword[[i]]$value
+    }else{
+      res$keyword <- paste(widget$request$restriction$complexKeywordsRestriction$keyword[[i]]$value,collapse="+")
+    }
+  }else{
+    res$keyword <- widget$request$restriction$complexKeywordsRestriction$keyword[[i]]$value
+  }
   res$category <- payload2$requestOptions$category
 
   return(res)
