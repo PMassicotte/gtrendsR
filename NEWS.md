@@ -1,5 +1,8 @@
+# gtrendsR (development version)
+
 # gtrendsR 1.4.4
 - Added the possibility to use search operators like "+" and "-"
+- Dates are parsed correctly when `time = "all"` (#309). @JBleher
 
 # gtrendsR 1.4.3
 
