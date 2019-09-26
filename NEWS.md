@@ -1,5 +1,7 @@
 # gtrendsR (development version)
 
+- Added unit test using the tinytest package (#316).
+
 # gtrendsR 1.4.4
 
 - Dates are parsed correctly when `time = "all"` (#309). @JBleher
