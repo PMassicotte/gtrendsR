@@ -11,7 +11,7 @@ before_install:
   - ./run.sh bootstrap
 
 install:
-  - ./run.sh install_aptget r-cran-ggplot2 r-cran-jsonlite r-cran-anytime r-cran-curl r-cran-knitr r-cran-rmarkdown
+  - ./run.sh install_aptget r-cran-ggplot2 r-cran-jsonlite r-cran-anytime r-cran-curl r-cran-knitr r-cran-rmarkdown r-cran-tinytest
 
 script:
   - ./run.sh run_tests
