@@ -181,7 +181,13 @@ gtrends <- function(
   # ****************************************************************************
   # Request a token from Google
   # ****************************************************************************
-  comparison_item <- data.frame(geo, time,keyword, stringsAsFactors = FALSE)
+  keyword <- sapply(keyword,function(x){
+    y <- gsub("[+]","%2B",x)
+    z <- gsub(" ","+",y)
+    return(z)
+    })
+  names(keyword) <- NULL
+  comparison_item <- data.frame(keyword,geo,time, stringsAsFactors = FALSE)
 
   widget <- get_widget(comparison_item, category, gprop, hl, cookie_url,tz)
 
