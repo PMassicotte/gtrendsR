@@ -14,6 +14,7 @@ create_related_topics_payload <- function(i, widget, hl,tz) {
   payload2$restriction$time <- widget$request$restriction$time[[i]]
   payload2$restriction$originalTimeRangeForExploreUrl <- widget$request$restriction$originalTimeRangeForExploreUrl[[i]]
   payload2$restriction$complexKeywordsRestriction$keyword <- widget$request$restriction$complexKeywordsRestriction$keyword[[i]]
+  payload2$restriction$complexKeywordsRestriction$operator <- widget$request$restriction$complexKeywordsRestriction$operator[[i]]
   payload2$keywordType <- widget$request$keywordType[[i]]
   payload2$metric <- widget$request$metric[[i]]
   payload2$trendinessSettings$compareTime <- widget$request$trendinessSettings$compareTime[[i]]
@@ -22,15 +23,13 @@ create_related_topics_payload <- function(i, widget, hl,tz) {
   payload2$requestOptions$category <- widget$request$requestOptions$category[[i]]
   payload2$language <- widget$request$language[[i]]
 
-  url <- URLencode(paste0(
-    "https://trends.google.com/trends/api/widgetdata/relatedsearches/csv?req=",
-    # "https://www.google.com/trends/api/widgetdata/relatedsearches/csv?req=",
-    jsonlite::toJSON(payload2, auto_unbox = T),
-    "&token=", widget$token[i],
-    "&tz=",tz,"&hl=", hl
-  ))
+  url <- paste0(URLencode("https://www.google.com/trends/api/widgetdata/relatedsearches/csv?req="),
+                URLencode(paste0(jsonlite::toJSON(payload2, auto_unbox = TRUE)),reserved=TRUE),
+                URLencode(paste0("&token=", widget$token[i])),
+                URLencode(paste0("&tz=",tz,"&hl=",hl))
+  )
 
-  url <- encode_keyword(url)
+ # url <- encode_keyword(url)
   # VY. use the handler with proxy options.
   res <- curl::curl_fetch_memory(url, handle = .pkgenv[["cookie_handler"]])
 
@@ -81,7 +80,15 @@ create_related_topics_payload <- function(i, widget, hl,tz) {
   res <- rbind(top, rising)
   res$id <- NULL
   res$geo <- unlist(payload2$restriction$geo, use.names = FALSE)
-  res$keyword <- payload2$restriction$complexKeywordsRestriction$keyword$value
+  if(length(widget$request$restriction$complexKeywordsRestriction$operator)!=0){
+    if(is.na(widget$request$restriction$complexKeywordsRestriction$operator[[i]])){
+      res$keyword <- widget$request$restriction$complexKeywordsRestriction$keyword[[i]]$value
+    }else{
+      res$keyword <- paste(widget$request$restriction$complexKeywordsRestriction$keyword[[i]]$value,collapse="+")
+    }
+  }else{
+    res$keyword <- widget$request$restriction$complexKeywordsRestriction$keyword[[i]]$value
+  }
   res$category <- payload2$requestOptions$category
 
   return(res)
