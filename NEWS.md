@@ -1,5 +1,5 @@
 # gtrendsR (development version)
-- Added the possibility to use search operators like "+" and "-"
+- Added the possibility to use search operators like "+" and "-". @JBleher
 
 - Added unit test using the tinytest package (#316).
 
