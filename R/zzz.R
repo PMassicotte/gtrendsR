@@ -47,8 +47,8 @@ check_time <- function(time_ranges) {
     }
     
     if(!grepl("T",time[1])){
-      start_date <- as.POSIXct(anytime::anydate(time[1]))
-      end_date <- as.POSIXct(anytime::anydate(time[2]))
+      start_date <- as.POSIXct(format(anytime::anydate(time[1],tz="UTC"),tz="UTC"),tz="UTC")
+      end_date <- as.POSIXct(format(anytime::anydate(time[2],tz="UTC"),tz="UTC"),tz="UTC")
     }else{
       start_date <- anytime::anytime(time[1])
       end_date <- anytime::anytime(time[2])
@@ -64,7 +64,7 @@ check_time <- function(time_ranges) {
     }
     
     ## Start date can't be before 2004-01-01
-    if (start_date < as.POSIXct("2004-01-01")) {
+    if (start_date < as.POSIXct("2004-01-01",tz="UTC")) {
       return(FALSE)
     }
     
