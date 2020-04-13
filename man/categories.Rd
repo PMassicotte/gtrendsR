@@ -4,7 +4,9 @@
 \name{categories}
 \alias{categories}
 \title{Google Trends categories.}
-\format{A data frame with 1426 rows and 2 variables}
+\format{
+A data frame with 1426 rows and 2 variables
+}
 \usage{
 data("categories")
 }

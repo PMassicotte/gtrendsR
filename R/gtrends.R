@@ -54,7 +54,7 @@
 #'   more than one keyword is provided due to Google restriction.
 #'
 #' @importFrom stats na.omit reshape setNames
-#' @importFrom utils URLencode read.csv
+#' @importFrom utils URLencode read.csv head
 #'
 #' @return An object of class \sQuote{gtrends} (basically a list of data
 #'   frames).

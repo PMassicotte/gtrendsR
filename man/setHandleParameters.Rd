@@ -6,8 +6,14 @@
 especially with NTLM authentication mode,
 you need to set the proxy parameters and credentials using "setHandleParameters" function}
 \usage{
-setHandleParameters(user = NULL, password = NULL, domain = NULL,
-  proxyhost = NULL, proxyport = 8080, proxyauth = 15)
+setHandleParameters(
+  user = NULL,
+  password = NULL,
+  domain = NULL,
+  proxyhost = NULL,
+  proxyport = 8080,
+  proxyauth = 15
+)
 }
 \arguments{
 \item{user}{A string specifying your username}

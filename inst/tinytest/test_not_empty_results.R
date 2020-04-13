@@ -1,7 +1,7 @@
 
 # Single keyword ----------------------------------------------------------
 
-kw <- "NHL"
+kw <- "news"
 res <- gtrends(kw)
 
 # Check that there is data in the returned list.

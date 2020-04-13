@@ -4,11 +4,18 @@
 \alias{gtrends}
 \title{Google Trends Query}
 \usage{
-gtrends(keyword = NA, geo = "", time = "today+5-y",
+gtrends(
+  keyword = NA,
+  geo = "",
+  time = "today+5-y",
   gprop = c("web", "news", "images", "froogle", "youtube"),
-  category = 0, hl = "en-US", low_search_volume = FALSE,
-  cookie_url = "http://trends.google.com/Cookies/NID", tz = 0,
-  onlyInterest = FALSE)
+  category = 0,
+  hl = "en-US",
+  low_search_volume = FALSE,
+  cookie_url = "http://trends.google.com/Cookies/NID",
+  tz = 0,
+  onlyInterest = FALSE
+)
 }
 \arguments{
 \item{keyword}{A character vector with the actual Google Trends query

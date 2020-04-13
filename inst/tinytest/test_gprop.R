@@ -1,4 +1,4 @@
-kw <- "NHL"
+kw <- "news"
 
 res <- gtrends(kw, gprop = "web")
 expect_true(nrow(res$interest_over_time) > 0)
