@@ -121,7 +121,7 @@ interest_over_time <- function(widget, comparison_item,tz) {
   # a search for a category is called for
   if(is.null(unlist(widget$request$comparisonItem))){
     onlyCategory <- TRUE
-  }else if(any(!grepl("keyword",names(unlist(widget$request$comparisonItem))))){
+  }else if(!any(grepl("keyword",names(unlist(widget$request$comparisonItem))))){
     onlyCategory <- TRUE
   }else{
     onlyCategory <- FALSE
