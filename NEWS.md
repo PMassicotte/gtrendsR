@@ -1,5 +1,7 @@
 # gtrendsR (development version)
 
+- Queries returning hourly data giving without keyword no longer crashes (#323, #336). @JBleher
+
 - Added the possibility to use search operators like "+" and "-". @JBleher
 
 - Added unit test using the tinytest package (#316).
