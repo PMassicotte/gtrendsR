@@ -321,33 +321,24 @@ interest_over_time <- function(widget, comparison_item,tz) {
     }
   }else{
     n <- nrow(df) # used to reshape the data
-    dates <- df[,1]
+    names(df) <- c("date","hits")
     
-    if(all(sapply(lapply(dates,function(x) grepl("^[0-9]{4}-[0-9]{2}-[0-9]{2}$",x)),function(y) all(y)))){
-      dates <- data.frame(lapply(dates,
-                                 function(x) as.POSIXct(x,
-                                                        format="%Y-%m-%d",
-                                                        tz=paste0("GMT",ifelse(tz>=0,"+","-"),(abs(tz)/60)))))
-    }else if(all(sapply(lapply(dates,function(x) grepl("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}$",x)),function(y) all(y)))){
-      dates <- data.frame(lapply(dates,
-                                 function(x) as.POSIXct(x,
-                                                        format="%Y-%m-%dT%H",
-                                                        tz=paste0("GMT",ifelse(tz>=0,"+","-"),(abs(tz)/60)))))
-    }else{
-      dates <- data.frame(lapply(dates,
-                                 function(x)
-                                   gsub("^([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}).*$","\\1",x)))
-      dates <- data.frame(lapply(dates,
-                                 function(x) as.POSIXct(x,
-                                                        format="%Y-%m-%dT%H:%M:%S",
-                                                        tz=paste0("GMT",ifelse(tz>=0,"+","-"),(abs(tz)/60)))))
+    if(all(grepl("^[0-9]{4}-[0-9]{2}-[0-9]{2}$",df$date))){
+      df$date <- as.POSIXct(df$date,format="%Y-%m-%d",tz=paste0("GMT",ifelse(tz>=0,"+","-"),(abs(tz)/60)),asUTC=T)
+    }else if(all(grepl("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}$",df$date))){
+      df$date <- as.POSIXct(df$date,format="%Y-%m-%dT%H",tz=paste0("GMT",ifelse(tz>=0,"+","-"),(abs(tz)/60)),asUTC=T)
+    }else if(all(grepl("^[0-9]{4}-[0-9]{2}$",df$date))){
+      df$date <- df$date <- as.POSIXct(paste0(df$date,"-01"), 
+                                       format = "%Y-%m-%d", tz = paste0("GMT", ifelse(tz >= 0, "+", "-"), 
+                                                                        (abs(tz)/60)), asUTC = T)
     }
     
-    # dates <- data.frame(lapply(dates,function(x) anytime::anytime(x,tz=paste0("GMT",ifelse(tz>=0,"+","-"),(abs(tz)/60)),asUTC=T)))
-    hits <- df[,2]
-    #df$geo <- ifelse(grepl("Geo",names(df)),"","world")
+    
     comparison_item[,"geo"] <- ifelse(comparison_item[,"geo"] == "", "world", comparison_item[,"geo"])
-    df <- cbind(t(dates),hits,comparison_item[rep(1,n), 2:3])
+    comparison_item[,"gprop"] <- ifelse(widget$request$requestOptions$property[1] == 
+             "", "web", widget$request$requestOptions$property[1])
+    comparison_item[,"category"] <- widget$request$requestOptions$category
+    df <- cbind(df,comparison_item[rep(1,n), 2:5])
     
   }
 
