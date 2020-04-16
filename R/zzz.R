@@ -337,7 +337,7 @@ interest_over_time <- function(widget, comparison_item,tz) {
     comparison_item[,"geo"] <- ifelse(comparison_item[,"geo"] == "", "world", comparison_item[,"geo"])
     comparison_item[,"gprop"] <- ifelse(widget$request$requestOptions$property[1] == 
              "", "web", widget$request$requestOptions$property[1])
-    comparison_item[,"category"] <- widget$request$requestOptions$category
+    comparison_item[,"category"] <- widget$request$requestOptions$category[1]
     df <- cbind(df,comparison_item[rep(1,n), 2:5])
     
   }
