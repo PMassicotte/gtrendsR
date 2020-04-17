@@ -51,7 +51,11 @@ setHandleParameters(user="xxxx",password="*******",domain="mydomain",proxyhost =
 res <- gtrends(c("nhl", "nba"), geo = c("CA", "US"))
 
 # include additional curl options
-setHandleParameters(user="xxxx",password="*******",domain="mydomain",proxyhost = "10.111.124.113", extra_curl_opts=list(timeout=60))
+setHandleParameters(user="xxxx",
+                    password="*******",
+                    domain="mydomain",
+                    proxyhost = "10.111.124.113",
+                    extra_curl_opts=list(timeout=60))
 }
 
 }
