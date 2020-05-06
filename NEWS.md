@@ -6,6 +6,8 @@
 
 - Added unit test using the tinytest package (#316).
 
+- Fixes issues with Google Trends API changes. 
+
 # gtrendsR 1.4.4
 
 - Dates are parsed correctly when `time = "all"` (#309). @JBleher

@@ -22,12 +22,16 @@ create_related_topics_payload <- function(i, widget, hl,tz) {
   payload2$requestOptions$backend <- widget$request$requestOptions$backend[[i]]
   payload2$requestOptions$category <- widget$request$requestOptions$category[[i]]
   payload2$language <- widget$request$language[[i]]
-
-  url <- paste0(URLencode("https://www.google.com/trends/api/widgetdata/relatedsearches/csv?req="),
-                URLencode(paste0(jsonlite::toJSON(payload2, auto_unbox = TRUE)),reserved=TRUE),
-                URLencode(paste0("&token=", widget$token[i])),
-                URLencode(paste0("&tz=",tz,"&hl=",hl))
-  )
+  payload2$userCountryCode <- widget$request$userCountryCode[[i]]
+  
+  url <- paste0(
+  URLencode("https://www.google.com/trends/api/widgetdata/relatedsearches/csv?req="),
+  URLencode(paste0(jsonlite::toJSON(payload2, auto_unbox = TRUE)), reserved = TRUE),
+  URLencode(paste0("&token=", widget$token[i])),
+  URLencode(paste0("&tz=", tz, "&hl=", hl))
+)
+  
+  # print(URLdecode(url))
 
  # url <- encode_keyword(url)
   # VY. use the handler with proxy options.
