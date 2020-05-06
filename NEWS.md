@@ -1,4 +1,4 @@
-# gtrendsR (development version)
+# gtrendsR 1.4.5
 
 - Queries returning hourly data giving without keyword no longer crashes (#323, #336). @JBleher
 
