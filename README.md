@@ -5,10 +5,6 @@
 
 Trends (number of hits) over time as well as geographic representation of the results can be displayed.
 
-## Changes in Google Trends API
-
-Due to recent changes to Google Trends API, the CRAN version of the package is no longer working. If you want to continue to query Google Trends, you have to install the development version of the package. This will be soon deployed on CRAN.
-
 ### Example
 
 In this simple example, trends for keywords `nhl`, `nba` are retrieved for Canada and USA and then plotted from R.
