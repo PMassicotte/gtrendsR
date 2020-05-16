@@ -1,3 +1,5 @@
+This new release fixes test issues on CRAN pointed out by Kurt Hornik.
+
 ## Test environments
 
 * Tested on Linux (R 3.6.3) using Travis CI
