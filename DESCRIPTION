@@ -1,7 +1,7 @@
 Package: gtrendsR
 Type: Package
 Title: Perform and Display Google Trends Queries
-Version: 1.4.6
+Version: 1.4.6.9000
 Authors@R: c(person("Philippe", "Massicotte", email =
         "pmassicotte@hotmail.com", role = c("aut", "cre")), person("Dirk",
         "Eddelbuettel", email = "edd@debian.org", role = "aut"))
