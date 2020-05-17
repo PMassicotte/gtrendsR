@@ -1,5 +1,7 @@
 # gtrendsR (development version)
 
+- Switch Travis CI to R 4.0.0, use bionic as base
+
 # gtrendsR 1.4.6
 
 - Fix an issue when there was no "rising" data returned for the related topics. Some tests were failing due to this issue and causing errors on CRAN (#347).
