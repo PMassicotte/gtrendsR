@@ -102,7 +102,20 @@ get_widget <- function(comparison_item, category, gprop, hl, cookie_url, tz) {
   Encoding(temp) <- "UTF-8"
 
   myjs <- jsonlite::fromJSON(substring(temp, first = 6))
-
+  
+  # The above will silently convert strings containing "NA" to 
+  # a logical NA (see: https://github.com/jeroen/jsonlite/issues/314)
+  # There currently is no way to fix this other than setting simplifyVector = F
+  # which likely breaks other things. Thus what follows is a hacky fix to
+  # catch the likely case that somebody is looking for searches with
+  # geo="NA"
+  if (is.logical(myjs$widgets$request$comparisonItem[[1]]$geo$country)) {
+    myjs$widgets$request$comparisonItem[[1]]$geo$country <- comparison_item$geo
+    myjs$widgets$request$geo$country <- comparison_item$geo
+    myjs$widgets$request$restriction$geo$country <- comparison_item$geo
+    myjs$widgets$geo <- comparison_item$geo
+  }
+  
   widget <- myjs$widgets
 }
 
