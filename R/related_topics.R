@@ -93,7 +93,7 @@ create_related_topics_payload <- function(i, widget, hl, tz) {
 extract_related_topics <- function(i, raw_data) {
   
   n <- length(raw_data)
-  end <- min(which(raw_data[i:n] == ""))
+  end <- i + min(which(raw_data[i:n] == "")) - 1
   
   df <- read.csv(textConnection(raw_data[i:end]), row.names = NULL)
   df$subject <- rownames(df)

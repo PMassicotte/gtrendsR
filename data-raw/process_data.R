@@ -33,7 +33,7 @@ get_countries <- function() {
   stopifnot(ret == 0)
 
   # , col.names = c("country_code", "sub_code", "country")
-  countries <- read.csv(destfile)
+  countries <- read.csv(destfile, na.strings = "")
 
   # Fix the encoding
   countries <- data.frame(sapply(countries, iconv, to = "ASCII//TRANSLIT"))
