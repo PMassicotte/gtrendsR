@@ -4,6 +4,8 @@
 
 - Fixes subsetting in extract_related_topics and data processing for Namibia (#353) @joachim-gassen
 
+- Add more country codes. (#166)
+
 # gtrendsR 1.4.6
 
 - Fix an issue when there was no "rising" data returned for the related topics. Some tests were failing due to this issue and causing errors on CRAN (#347).
