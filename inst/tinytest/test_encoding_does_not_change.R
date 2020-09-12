@@ -4,6 +4,8 @@ if ( Sys.info()[['sysname']] == "Windows"){
   exit_file("Cannot test this on Windows")
 }
 
+if (getRversion() >= as.package_version("4.1.0")) exit_file("skip remainder")
+
 # Japanese
 kw <- "赤"
 res <- gtrends(kw)
