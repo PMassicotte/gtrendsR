@@ -1,3 +1,5 @@
+# gtrendsR (development version)
+
 # gtrendsR 1.4.7
 
 - Switch Travis CI to R 4.0.0, use bionic as base.
