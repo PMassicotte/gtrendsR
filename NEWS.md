@@ -1,10 +1,12 @@
-# gtrendsR (development version)
+# gtrendsR 1.4.7
 
-- Switch Travis CI to R 4.0.0, use bionic as base
+- Switch Travis CI to R 4.0.0, use bionic as base.
 
-- Fixes subsetting in extract_related_topics and data processing for Namibia (#353) @joachim-gassen
+- Fixes subsetting in `extract_related_topics` and data processing for Namibia. (#353) @joachim-gassen
 
 - Add more country codes. (#166)
+
+- Fixes CRAN error on r-devel. (#365)
 
 # gtrendsR 1.4.6
 
