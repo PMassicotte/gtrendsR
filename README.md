@@ -1,13 +1,9 @@
 
-## gtrendsR [![Travis-CI Build Status](https://api.travis-ci.org/PMassicotte/gtrendsR.svg?branch=master)](https://travis-ci.org/PMassicotte/gtrendsR) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/PMassicotte/gtrendsR?branch=master&svg=true)](https://ci.appveyor.com/project/PMassicotte/gtrendsR) [![License](https://eddelbuettel.github.io/badges/GPL2+.svg)](http://www.gnu.org/licenses/gpl-2.0.html) [![CRAN](http://www.r-pkg.org/badges/version/gtrendsR)](https://cran.r-project.org/package=gtrendsR) [![Downloads](http://cranlogs.r-pkg.org/badges/gtrendsR?color=brightgreen)](http://www.r-pkg.org/pkg/gtrendsR)
+## gtrendsR [![Travis-CI Build Status](https://api.travis-ci.org/PMassicotte/gtrendsR.svg?branch=master)](https://travis-ci.org/PMassicotte/gtrendsR) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/PMassicotte/gtrendsR?branch=master&svg=true)](https://ci.appveyor.com/project/PMassicotte/gtrendsR) [![License](https://eddelbuettel.github.io/badges/GPL2+.svg)](http://www.gnu.org/licenses/gpl-2.0.html) [![CRAN](http://www.r-pkg.org/badges/version/gtrendsR)](https://cran.r-project.org/package=gtrendsR) [![Downloads](http://cranlogs.r-pkg.org/badges/gtrendsR?color=brightgreen)](https://www.r-pkg.org:443/pkg/gtrendsR)
 
 `gtrendsR` provides an interface for retrieving and displaying Google Trends information. 
 
 Trends (number of hits) over time as well as geographic representation of the results can be displayed.
-
-## Changes in Google Trends API
-
-Due to recent changes to Google Trends API, the CRAN version of the package is no longer working. If you want to continue to query Google Trends, you have to install the development version of the package. This will be soon deployed on CRAN.
 
 ### Example
 

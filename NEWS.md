@@ -1,10 +1,28 @@
 # gtrendsR (development version)
 
+# gtrendsR 1.4.7
+
+- Switch Travis CI to R 4.0.0, use bionic as base.
+
+- Fixes subsetting in `extract_related_topics` and data processing for Namibia. (#353) @joachim-gassen
+
+- Add more country codes. (#166)
+
+- Fixes CRAN error on r-devel. (#365)
+
+# gtrendsR 1.4.6
+
+- Fix an issue when there was no "rising" data returned for the related topics. Some tests were failing due to this issue and causing errors on CRAN (#347).
+
+# gtrendsR 1.4.5
+
 - Queries returning hourly data giving without keyword no longer crashes (#323, #336). @JBleher
 
 - Added the possibility to use search operators like "+" and "-". @JBleher
 
 - Added unit test using the tinytest package (#316).
+
+- Fixes issues with Google Trends API changes. 
 
 # gtrendsR 1.4.4
 

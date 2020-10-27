@@ -8,3 +8,4 @@ inst/localTests
 ^appveyor\.yml$
 ^cran-comments\.md$
 ^data-raw$
+^CRAN-RELEASE$

@@ -22,6 +22,7 @@ create_related_queries_payload <- function(i, widget,tz,hl) {
   payload2$requestOptions$backend <- widget$request$requestOptions$backend[[i]]
   payload2$requestOptions$category <- widget$request$requestOptions$category[[i]]
   payload2$language <- widget$request$language[[i]]
+  payload2$userCountryCode <- widget$request$userCountryCode[[i]]
   
   url <- paste0(URLencode("https://www.google.com/trends/api/widgetdata/relatedsearches/csv?req="),
                 URLencode(paste0(jsonlite::toJSON(payload2, auto_unbox = TRUE)),reserved=TRUE),
