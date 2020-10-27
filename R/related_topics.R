@@ -52,6 +52,11 @@ create_related_topics_payload <- function(i, widget, hl, tz) {
       res$status_code
     )
   }
+  
+  res <- readLines(textConnection(rawToChar(res$content)))
+  
+  start_top <- which(grepl("TOP", res))
+  start_rising <- which(grepl("RISING", res))
 
   if (length(start_top) == 0 & length(start_rising) == 0) {
     return(NULL) ## No data returned
@@ -60,7 +65,7 @@ create_related_topics_payload <- function(i, widget, hl, tz) {
   new_res <- NULL
   
   if (length(start_top) > 0) {
-    end_top <- ifelse(length(start_rising) == 0, length(res), start_rising) - 2
+    end_top <- ifelse(length(start_rising) == 0, length(res), start_rising - 2)
     top <- read.csv(textConnection(res[start_top:end_top]), row.names = NULL)
     top$subject <- rownames(top)
     rownames(top) <- NULL
