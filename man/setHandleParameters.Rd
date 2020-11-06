@@ -12,7 +12,8 @@ setHandleParameters(
   domain = NULL,
   proxyhost = NULL,
   proxyport = 8080,
-  proxyauth = 15
+  proxyauth = 15,
+  extra_curl_opts = list()
 )
 }
 \arguments{
@@ -33,6 +34,8 @@ setHandleParameters(
  4 for NEGOTIATE
  8 for NTLM
 15 for ANY (default)}
+
+\item{extra_curl_opts}{A list of additional named options to pass into curl::handle_setopt(), e.g. list(timeout=60)}
 }
 \description{
 If \code{gtrends} should be used behind a proxy,
@@ -46,5 +49,13 @@ library(gtrendsR)
 
 setHandleParameters(user="xxxx",password="*******",domain="mydomain",proxyhost = "10.111.124.113")
 res <- gtrends(c("nhl", "nba"), geo = c("CA", "US"))
+
+# include additional curl options
+setHandleParameters(user="xxxx",
+                    password="*******",
+                    domain="mydomain",
+                    proxyhost = "10.111.124.113",
+                    extra_curl_opts=list(timeout=60))
 }
+
 }

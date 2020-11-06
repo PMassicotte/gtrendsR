@@ -52,20 +52,58 @@ create_related_topics_payload <- function(i, widget, hl, tz) {
       res$status_code
     )
   }
+  
+  res <- readLines(textConnection(rawToChar(res$content)))
+  
+  start_top <- which(grepl("TOP", res))
+  start_rising <- which(grepl("RISING", res))
 
-  raw_data <- readLines(textConnection(rawToChar(res$content)))
+  if (length(start_top) == 0 & length(start_rising) == 0) {
+    return(NULL) ## No data returned
+  }
+
+  new_res <- NULL
   
-  # Extract TOP and RISING data
-  keywords <- c("TOP", "RISING")
+  if (length(start_top) > 0) {
+    end_top <- ifelse(length(start_rising) == 0, length(res), start_rising - 2)
+    top <- read.csv(textConnection(res[start_top:end_top]), row.names = NULL)
+    top$subject <- rownames(top)
+    rownames(top) <- NULL
+    top <- top[, c(2, 1)]
+    names(top) <- c("subject", "top")
   
-  # Return NULL if the expected keywords are not found
-  if (length(keywords) == 0) {
-    return(NULL)
+    top <- reshape(
+      top,
+      varying = "top",
+      v.names = "value",
+      direction = "long",
+      timevar = "related_topics",
+      times = "top"
+    )
+    
+    new_res <- rbind(new_res, top)
+  }
+
+  if (length(start_rising) > 0) {
+    rising <- read.csv(textConnection(res[start_rising:length(res)]), row.names = NULL)
+    rising$subject <- rownames(rising)
+    rownames(rising) <- NULL
+    rising <- rising[, c(2, 1)]
+    names(rising) <- c("subject", "rising")
+  
+    rising <- reshape(
+      rising,
+      varying = "rising",
+      v.names = "value",
+      direction = "long",
+      timevar = "related_topics",
+      times = "rising"
+    )
+    
+    new_res <- rbind(new_res, rising)
   }
   
-  index <- which(raw_data %in% keywords)
-  res <- lapply(index, extract_related_topics, raw_data = raw_data)
-  res <- do.call(rbind, res)
+  res <- new_res
   res$id <- NULL
   res$geo <- unlist(payload2$restriction$geo, use.names = FALSE)
   

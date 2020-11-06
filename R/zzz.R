@@ -6,8 +6,19 @@
 get_api_cookies <- function(cookie_url) {
   # create new handler
   cookie_handler <- curl::new_handle()
-  # VY. set options for the proxy
-  curl::handle_setopt(handle=cookie_handler,.list=list(ssl_verifypeer=0L,proxyuserpwd=paste(.pkgenv[["handle_domain"]],"\\",.pkgenv[["handle_user"]],":",.pkgenv[["handle_password"]],sep=""),proxyauth=.pkgenv[["handle_proxyauth"]],proxy=.pkgenv[["handle_proxyhost"]],proxyport=.pkgenv[["handle_proxyport"]]))
+  
+  # set options for the proxy
+  proxy_domain <- ifelse(is.null(.pkgenv[["handle_domain"]]), "", paste0(.pkgenv[["handle_domain"]],"\\"))
+  proxy_user_pwd <- paste0(proxy_domain, .pkgenv[["handle_user"]], ":", .pkgenv[["handle_password"]])
+  curl_opts <- list(ssl_verifypeer=0L,
+                    proxyuserpwd=proxy_user_pwd,
+                    proxyauth=.pkgenv[["handle_proxyauth"]],
+                    proxy=.pkgenv[["handle_proxyhost"]],
+                    proxyport=.pkgenv[["handle_proxyport"]])
+  ## add extra curl options
+  curl_opts <- append(curl_opts, .pkgenv[["handle_extra_curl_opts"]])  
+  curl::handle_setopt(handle=cookie_handler, .list=curl_opts)
+  
   # fetch API cookies
   cookie_req <- curl::curl_fetch_memory(cookie_url, handle = cookie_handler)
   curl::handle_cookies(cookie_handler)

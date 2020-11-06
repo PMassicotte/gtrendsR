@@ -1,5 +1,9 @@
 # gtrendsR (development version)
 
+- Added support for NULL proxy domain, and additional curl options (#339).
+
+- Handling related topics with only "Top" or "Rising" sections, as well as those with both.
+
 # gtrendsR 1.4.7
 
 - Switch Travis CI to R 4.0.0, use bionic as base.
