@@ -1,9 +1,9 @@
+# Exit if no internet
+if (!curl::has_internet()) {
+  exit_file("Skipping tests for lack of internet.")
+}
 
 # Single keyword ----------------------------------------------------------
-
-if (!curl::has_internet()) {
-  exit_file("Skipping tests for lack of internet")
-}
 
 kw <- "news"
 res <- gtrends(kw)
@@ -28,19 +28,11 @@ expect_true(all(Vectorize(identical, "x")(
   ), kw
 )))
 
-if (!curl::has_internet()) {
-  exit_file("Skipping tests for lack of internet")
-}
-
 # For US
 res <- gtrends("NHL", geo = "US")
 expect_true(nrow(res$interest_by_region) > 0)
 
 # Multiple keywords -------------------------------------------------------
-
-if (!curl::has_internet()) {
-  exit_file("Skipping tests for lack of internet")
-}
 
 kw <- c("NHL", "NFL")
 res <- gtrends(kw)

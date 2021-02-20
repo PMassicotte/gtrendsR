@@ -6,8 +6,9 @@ if (Sys.info()[["sysname"]] == "Windows") {
 
 if (getRversion() >= as.package_version("4.1.0")) exit_file("skip remainder")
 
+# Exit if no internet
 if (!curl::has_internet()) {
-  exit_file("Skipping tests for lack of internet")
+  exit_file("Skipping tests for lack of internet.")
 }
 
 # Japanese
