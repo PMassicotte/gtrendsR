@@ -1,3 +1,8 @@
+# Exit if no internet
+if (!curl::has_internet()) {
+  exit_file("Skipping tests for lack of internet.")
+}
+
 kw <- "news"
 
 res <- gtrends(kw, gprop = "web")
