@@ -1,5 +1,9 @@
 # gtrendsR (development version)
 
+# gtrendsR 1.4.8
+
+- Explicitly verify if internet is available before launching the unit tests (#379).
+
 - Added support for NULL proxy domain, and additional curl options (#339) @alfirrell.
 
 - Handling related topics with only "Top" or "Rising" sections, as well as those with both @alfirrell.
