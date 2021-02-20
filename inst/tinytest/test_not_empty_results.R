@@ -1,6 +1,10 @@
 
 # Single keyword ----------------------------------------------------------
 
+if (!curl::has_internet()) {
+  exit_file("Skipping tests for lack of internet")
+}
+
 kw <- "news"
 res <- gtrends(kw)
 
@@ -13,7 +17,7 @@ expect_true(nrow(res$related_topics) > 0)
 expect_true(nrow(res$related_queries) > 0)
 
 # Check that the keyword is the same in all returned df.
-expect_true(all(Vectorize(identical, 'x')(
+expect_true(all(Vectorize(identical, "x")(
   list(
     unique(res$interest_over_time$keyword),
     unique(res$interest_by_country$keyword),
@@ -24,13 +28,19 @@ expect_true(all(Vectorize(identical, 'x')(
   ), kw
 )))
 
+if (!curl::has_internet()) {
+  exit_file("Skipping tests for lack of internet")
+}
+
 # For US
 res <- gtrends("NHL", geo = "US")
 expect_true(nrow(res$interest_by_region) > 0)
 
-
-
 # Multiple keywords -------------------------------------------------------
+
+if (!curl::has_internet()) {
+  exit_file("Skipping tests for lack of internet")
+}
 
 kw <- c("NHL", "NFL")
 res <- gtrends(kw)
@@ -43,7 +53,7 @@ expect_true(nrow(res$interest_by_city) > 0)
 expect_true(nrow(res$related_queries) > 0)
 
 # Check that the keyword is the same in all returned df.
-expect_true(all(Vectorize(identical, 'x')(
+expect_true(all(Vectorize(identical, "x")(
   list(
     unique(res$interest_over_time$keyword),
     unique(res$interest_by_country$keyword),
