@@ -12,7 +12,7 @@ Description: An interface for retrieving and displaying the information
 License: GPL (>= 2)
 BugReports: https://github.com/PMassicotte/gtrendsR/issues
 URL: https://github.com/PMassicotte/gtrendsR
-Depends: R (>= 3.2.0)
+Depends: R (>= 3.5.0)
 LazyData: yes
 Imports: ggplot2, jsonlite, anytime, curl
 RoxygenNote: 7.1.1
