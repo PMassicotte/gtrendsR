@@ -1,5 +1,3 @@
-# gtrendsR (development version)
-
 # gtrendsR 1.4.8
 
 - Explicitly verify if internet is available before launching the unit tests (#379).
