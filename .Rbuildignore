@@ -9,3 +9,4 @@ inst/localTests
 ^cran-comments\.md$
 ^data-raw$
 ^CRAN-RELEASE$
+^\.github
