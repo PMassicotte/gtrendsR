@@ -3,6 +3,11 @@ if (!curl::has_internet()) {
   exit_file("Skipping tests for lack of internet.")
 }
 
+# Exit unless opted in
+if (Sys.getenv("RunAllGtrendsRTests", unset="") == "") {
+    exit_file("Skipping tests not opted into.")
+}
+
 kw <- "news"
 
 res <- gtrends(kw, time = "now 1-H")
