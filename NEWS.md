@@ -1,5 +1,7 @@
 # gtrendsR 1.4.8
 
+- Skip internet-based tests on CRAN that were found to randomly fail on Debian machine and locally under Ubuntu-latest (#384). 
+
 - Explicitly verify if internet is available before launching the unit tests (#379).
 
 - Added support for NULL proxy domain, and additional curl options (#339) @alfirrell.
