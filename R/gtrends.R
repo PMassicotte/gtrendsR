@@ -134,17 +134,31 @@ gtrends <- function(
     is.character(cookie_url)
   )
 
-
-  ## Check if valide geo
-  if (geo != "" &&
-    !all(geo %in% c(as.character(countries[, "country_code"]), as.character(countries[, "sub_code"])))) {
-    stop(
-      "Country code not valid. Please use 'data(countries)' to retreive valid codes.",
-      call. = FALSE
-    )
+  ## Check if valid geo. There are no official source(s) that we can use to
+  ## validate the entered geo code. However, we can use a regular expression to
+  ## verify if the structure is valid.
+  
+  m <- regexpr("^[a-zA-Z]{2}((?:-\\w{1,3}))?(?:-\\d{1,3})?", geo)
+  ret <- regmatches(geo, m)
+  
+  if (all(geo != "")) {
+    if (!all.equal(ret, geo)) {
+      stop("Country code not formatted correctly.", call. = FALSE)
+    }
   }
-
-  ## Check if valide category
+  
+  # if (geo != "" &&
+  #   !all(geo %in%
+  #     c(
+  #       as.character(countries[, "country_code"]),
+  #       as.character(countries[, "sub_code"])
+  #     ))) {
+  #   stop("Country code not valid. Please use 'data(countries)' to retrieve valid codes.",
+  #     call. = FALSE
+  #   )
+  # }
+  
+  ## Check if valid category
   if (!all(category %in% categories[, "id"])) {
     stop(
       "Category code not valid. Please use 'data(categories)' to retreive valid codes.",
