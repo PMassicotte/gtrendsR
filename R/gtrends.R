@@ -142,7 +142,7 @@ gtrends <- function(
   ret <- regmatches(geo, m)
   
   if (all(geo != "")) {
-    if (!all.equal(ret, geo)) {
+    if (!identical(ret, geo)) {
       stop("Country code not formatted correctly.", call. = FALSE)
     }
   }
