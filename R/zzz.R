@@ -236,7 +236,7 @@ interest_over_time <- function(widget, comparison_item,tz) {
   # Format the results in a nice way
   # ****************************************************************************
   con <- textConnection(rawToChar(res$content))
-  df <- read.csv(con, skip = 1, stringsAsFactors = FALSE)
+  df <- read.csv(con, skip = 1, stringsAsFactors = FALSE, encoding = "UTF-8")
   close(con)
 
   if (nrow(df) < 1) {
@@ -464,7 +464,7 @@ create_geo_payload <- function(i, widget, resolution, low_search_volume,tz) {
   }
 
   con <- textConnection(rawToChar(res$content))
-  df <- read.csv(con, skip = 1, stringsAsFactors = FALSE)
+  df <- read.csv(con, skip = 1, stringsAsFactors = FALSE, encoding = "UTF-8")
   close(con)
 
   if (nrow(df) == 0) {

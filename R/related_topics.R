@@ -66,7 +66,8 @@ create_related_topics_payload <- function(i, widget, hl, tz) {
   
   if (length(start_top) > 0) {
     end_top <- ifelse(length(start_rising) == 0, length(res), start_rising - 2)
-    top <- read.csv(textConnection(res[start_top:end_top]), row.names = NULL)
+    top <- read.csv(textConnection(res[start_top:end_top]),
+                    row.names = NULL, encoding = "UTF-8")
     top$subject <- rownames(top)
     rownames(top) <- NULL
     top <- top[, c(2, 1)]
@@ -85,7 +86,8 @@ create_related_topics_payload <- function(i, widget, hl, tz) {
   }
 
   if (length(start_rising) > 0) {
-    rising <- read.csv(textConnection(res[start_rising:length(res)]), row.names = NULL)
+      rising <- read.csv(textConnection(res[start_rising:length(res)]),
+                         row.names = NULL, encoding = "UTF-8")
     rising$subject <- rownames(rising)
     rownames(rising) <- NULL
     rising <- rising[, c(2, 1)]
@@ -133,7 +135,7 @@ extract_related_topics <- function(i, raw_data) {
   n <- length(raw_data)
   end <- i + min(which(raw_data[i:n] == "")) - 1
   
-  df <- read.csv(textConnection(raw_data[i:end]), row.names = NULL)
+  df <- read.csv(textConnection(raw_data[i:end]), row.names = NULL, encoding = "UTF-8")
   df$subject <- rownames(df)
   rownames(df) <- NULL
   df <- df[, c(2, 1)]
