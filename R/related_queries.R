@@ -54,7 +54,8 @@ create_related_queries_payload <- function(i, widget,tz,hl) {
     return(NULL) ## No data returned
   }
 
-  top <- read.csv(textConnection(res[start_top:(start_rising - 2)]), row.names = NULL)
+  top <- read.csv(textConnection(res[start_top:(start_rising - 2)]),
+                  row.names = NULL, encoding = "UTF-8")
   top$subject <- rownames(top)
   rownames(top) <- NULL
   top <- top[, c(2, 1)]
@@ -69,7 +70,8 @@ create_related_queries_payload <- function(i, widget,tz,hl) {
     times = "top"
   )
 
-  rising <- read.csv(textConnection(res[start_rising:length(res)]), row.names = NULL)
+  rising <- read.csv(textConnection(res[start_rising:length(res)]),
+                     row.names = NULL, encoding = "UTF-8")
   rising$subject <- rownames(rising)
   rownames(rising) <- NULL
   rising <- rising[, c(2, 1)]
