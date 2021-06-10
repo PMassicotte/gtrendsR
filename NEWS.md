@@ -1,3 +1,9 @@
+# gtrendsR (development version)
+
+- `read.csv()` now uses `encoding = "UTF-8"` to better deal with non-ascii characters.
+
+- It was difficult to maintain an up-to-date database of all country codes supported by Google because they do not provide such a list. `gtrends()` now only checks the syntax structure of the entered code.
+
 # gtrendsR 1.4.8
 
 - Skip internet-based tests on CRAN that were found to randomly fail on Debian machine and locally under Ubuntu-latest (#384). 
