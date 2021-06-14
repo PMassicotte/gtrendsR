@@ -371,7 +371,7 @@ interest_over_time <- function(widget, comparison_item,tz) {
 
 
 interest_by_region <- function(widget, comparison_item, low_search_volume,tz) {
-  i <- which(grepl("Interest by", widget$title) == TRUE)
+  i <- which(grepl("GEO_MAP", widget$id) == TRUE)
 
   if (length(i) == 0) {
     return(list(NULL))

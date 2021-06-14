@@ -1,5 +1,5 @@
 related_queries <- function(widget, comparison_item,tz,hl) {
-  i <- which(grepl("queries", widget$title) == TRUE)
+  i <- which(grepl("RELATED_QUERIES", widget$id) == TRUE)
 
   res <- lapply(i, create_related_queries_payload, widget = widget,tz=tz, hl = hl)
   res <- do.call(rbind, res)
