@@ -371,13 +371,13 @@ interest_over_time <- function(widget, comparison_item,tz) {
 
 
 interest_by_region <- function(widget, comparison_item, low_search_volume,tz) {
-  i <- which(grepl("GEO_MAP", widget$id) == TRUE)
+  i <- which(grepl("geom_map", widget$id, ignore.case = TRUE) == TRUE)
 
   if (length(i) == 0) {
     return(list(NULL))
   }
   
-  ## Interest by region need to be retreived individually
+  ## Interest by region need to be retrieved individually
 
   # resolution <- sub(".* (\\w+)$", "\\1", widget$title[i])
   # resolution[resolution == "subregion"] <- "region"
