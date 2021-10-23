@@ -11,6 +11,7 @@ gtrends(
   gprop = c("web", "news", "images", "froogle", "youtube"),
   category = 0,
   hl = "en-US",
+  compared_breakdown = FALSE,
   low_search_volume = FALSE,
   cookie_url = "http://trends.google.com/Cookies/NID",
   tz = 0,
@@ -48,15 +49,20 @@ using \code{gtrends("NHL", c("CA", "US"))}.}
 \dQuote{fr}). Default is \dQuote{en-US}. Note that this is only influencing
 the data returned by related topics.}
 
+\item{compared_breakdown}{Logical. Should compare breakdown the results by
+city and subregion? Can only be used if one `geo` is used conjointly with
+more than one keyword. If `TRUE`, then the relative hits across the
+keywords will be returned. `FALSE` by default.}
+
 \item{low_search_volume}{Logical. Should include low search volume regions?}
 
 \item{cookie_url}{A string specifying the URL from which to obtain cookies.
 Default should work in general; should only be changed by advanced users.}
 
-\item{tz}{A number specifying the minutes the returned dates should be offset to UTC. 
-Note the parameter 'time' above is specified in UTC. 
-E.g. choosing "time=2018-01-01T01 2018-01-01T03" and "tz=-120" will yield data between 2018-01-01T03 and 2018-01-01T05, 
-i.e. data specified to be in UTC+2.}
+\item{tz}{A number specifying the minutes the returned dates should be offset
+to UTC. Note the parameter 'time' above is specified in UTC. E.g. choosing
+"time=2018-01-01T01 2018-01-01T03" and "tz=-120" will yield data between
+2018-01-01T03 and 2018-01-01T05, i.e. data specified to be in UTC+2.}
 
 \item{onlyInterest}{If you only want the interest over time set it to TRUE.}
 }
@@ -113,7 +119,6 @@ gtrends(c("NHL", "NFL"), time = "today 12-m") # last 12 months
 gtrends(c("NHL", "NFL"), time = "today+5-y") # last five years (default)
 gtrends(c("NHL", "NFL"), time = "all") # since 2004
 
-
 ## Custom date format
 
 gtrends(c("NHL", "NFL"), time = "2010-01-01 2010-04-03")
@@ -127,5 +132,10 @@ head(gtrends(c("NHL", "NFL"), gprop = "youtube")$interest_over_time)
 
 head(gtrends("NHL", hl = "en")$related_topics)
 head(gtrends("NHL", hl = "fr")$related_topics)
+
+## Compared breakdown
+head(gtrends(keyword = c("nhl", "nba"), geo = "CA", compared_breakdown = FALSE)$interest_by_region)
+head(gtrends(keyword = c("nhl", "nba"), geo = "CA", compared_breakdown = TRUE)$interest_by_region)
+
 }
 }
