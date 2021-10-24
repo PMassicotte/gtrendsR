@@ -1,4 +1,4 @@
-# gtrendsR (development version)
+# gtrendsR 1.5.0
 
 ## Bug fixes
 
