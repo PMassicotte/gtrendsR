@@ -1,14 +1,14 @@
-related_queries <- function(widget, comparison_item,tz,hl) {
+related_queries <- function(widget, comparison_item, tz, hl) {
   i <- which(grepl("related_queries", widget$id, ignore.case = TRUE) == TRUE)
 
-  res <- lapply(i, create_related_queries_payload, widget = widget,tz=tz, hl = hl)
+  res <- lapply(i, create_related_queries_payload, widget = widget, tz = tz, hl = hl)
   res <- do.call(rbind, res)
 
   return(res)
 }
 
 
-create_related_queries_payload <- function(i, widget,tz,hl) {
+create_related_queries_payload <- function(i, widget, tz, hl) {
   payload2 <- list()
   payload2$restriction$geo <- as.list(widget$request$restriction$geo[i, , drop = FALSE])
   payload2$restriction$time <- widget$request$restriction$time[[i]]
@@ -23,14 +23,15 @@ create_related_queries_payload <- function(i, widget,tz,hl) {
   payload2$requestOptions$category <- widget$request$requestOptions$category[[i]]
   payload2$language <- widget$request$language[[i]]
   payload2$userCountryCode <- widget$request$userCountryCode[[i]]
-  
-  url <- paste0(URLencode("https://www.google.com/trends/api/widgetdata/relatedsearches/csv?req="),
-                URLencode(paste0(jsonlite::toJSON(payload2, auto_unbox = TRUE)),reserved=TRUE),
-                URLencode(paste0("&token=", widget$token[i])),
-                URLencode(paste0("&tz=",tz,"&hl=",hl))
+
+  url <- paste0(
+    URLencode("https://www.google.com/trends/api/widgetdata/relatedsearches/csv?req="),
+    URLencode(paste0(jsonlite::toJSON(payload2, auto_unbox = TRUE)), reserved = TRUE),
+    URLencode(paste0("&token=", widget$token[i])),
+    URLencode(paste0("&tz=", tz, "&hl=", hl))
   )
 
-  #url <- encode_keyword(url)
+  # url <- encode_keyword(url)
   # VY. use the handler with proxy options.
   res <- curl::curl_fetch_memory(URLencode(url), handle = .pkgenv[["cookie_handler"]])
 
@@ -38,7 +39,7 @@ create_related_queries_payload <- function(i, widget,tz,hl) {
   if (res$status_code != 200) {
     stop("Status code was not 200. Returned status code:", res$status_code)
   }
-  
+
   res <- readLines(textConnection(rawToChar(res$content)))
 
   ## Not enough data
@@ -55,7 +56,8 @@ create_related_queries_payload <- function(i, widget,tz,hl) {
   }
 
   top <- read.csv(textConnection(res[start_top:(start_rising - 2)]),
-                  row.names = NULL, encoding = "UTF-8")
+    row.names = NULL, encoding = "UTF-8"
+  )
   top$subject <- rownames(top)
   rownames(top) <- NULL
   top <- top[, c(2, 1)]
@@ -71,7 +73,8 @@ create_related_queries_payload <- function(i, widget,tz,hl) {
   )
 
   rising <- read.csv(textConnection(res[start_rising:length(res)]),
-                     row.names = NULL, encoding = "UTF-8")
+    row.names = NULL, encoding = "UTF-8"
+  )
   rising$subject <- rownames(rising)
   rownames(rising) <- NULL
   rising <- rising[, c(2, 1)]
@@ -89,17 +92,17 @@ create_related_queries_payload <- function(i, widget,tz,hl) {
   res <- rbind(top, rising)
   res$id <- NULL
   res$geo <- unlist(payload2$restriction$geo, use.names = FALSE)
-  if(length(widget$request$restriction$complexKeywordsRestriction$operator)!=0){
-    if(is.na(widget$request$restriction$complexKeywordsRestriction$operator[[i]])){
+  if (length(widget$request$restriction$complexKeywordsRestriction$operator) != 0) {
+    if (is.na(widget$request$restriction$complexKeywordsRestriction$operator[[i]])) {
       res$keyword <- widget$request$restriction$complexKeywordsRestriction$keyword[[i]]$value
-    }else{
-      res$keyword <- paste(widget$request$restriction$complexKeywordsRestriction$keyword[[i]]$value,collapse="+")
+    } else {
+      res$keyword <- paste(widget$request$restriction$complexKeywordsRestriction$keyword[[i]]$value, collapse = "+")
     }
-  }else{
+  } else {
     res$keyword <- widget$request$restriction$complexKeywordsRestriction$keyword[[i]]$value
   }
-  
-  
+
+
   res$category <- payload2$requestOptions$category
 
   return(res)

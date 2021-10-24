@@ -65,7 +65,6 @@
 #'   frames).
 #'
 #' @examples
-#'
 #' \dontrun{
 #'
 #' head(gtrends("NHL")$interest_over_time)
@@ -78,7 +77,7 @@
 #'
 #' ## Interest by city
 #'
-#' gtrends(keyword="obama",geo="US-AL-630")
+#' gtrends(keyword = "obama", geo = "US-AL-630")
 #'
 #' ## Sport category (20)
 #' data(categories)
@@ -114,11 +113,9 @@
 #' ## Compared breakdown
 #' head(gtrends(keyword = c("nhl", "nba"), geo = "CA", compared_breakdown = FALSE)$interest_by_region)
 #' head(gtrends(keyword = c("nhl", "nba"), geo = "CA", compared_breakdown = TRUE)$interest_by_region)
-#'
 #' }
 #' @export
-gtrends <- function(
-                    keyword = NA,
+gtrends <- function(keyword = NA,
                     geo = "",
                     time = "today+5-y",
                     gprop = c("web", "news", "images", "froogle", "youtube"),
@@ -127,9 +124,8 @@ gtrends <- function(
                     compared_breakdown = FALSE,
                     low_search_volume = FALSE,
                     cookie_url = "http://trends.google.com/Cookies/NID",
-                    tz=0, # This equals UTC
-                    onlyInterest=FALSE
-                    ) {
+                    tz = 0, # This equals UTC
+                    onlyInterest = FALSE) {
   stopifnot(
     # One  vector should be a multiple of the other
     (length(keyword) %% length(geo) == 0) || (length(geo) %% length(keyword) == 0) || (length(time) %% length(keyword) == 0),
@@ -147,16 +143,16 @@ gtrends <- function(
   ## Check if valid geo. There are no official source(s) that we can use to
   ## validate the entered geo code. However, we can use a regular expression to
   ## verify if the structure is valid.
-  
+
   m <- regexpr("^[a-zA-Z]{2}((?:-\\w{1,3}))?(?:-\\d{1,3})?", geo)
   ret <- regmatches(geo, m)
-  
+
   if (all(geo != "")) {
     if (!identical(ret, geo)) {
       stop("Country code not formatted correctly.", call. = FALSE)
     }
   }
-  
+
   ## Check if valid category
   if (!all(category %in% categories[, "id"])) {
     stop(
@@ -169,28 +165,18 @@ gtrends <- function(
   if (!check_time(time)) {
     stop("Cannot parse the supplied time format.", call. = FALSE)
   }
-  
+
   if (compared_breakdown & (length(geo) != 1 | length(keyword) == 1)) {
     stop("`compared breakdown` can be only used with one geo and multiple keywords.", call. = FALSE)
   }
-  
-  if(!(is.numeric(tz))){
-    if (tz %in% OlsonNames()){
+
+  if (!(is.numeric(tz))) {
+    if (tz %in% OlsonNames()) {
       tz <- map_tz2min(tz)
-    }else{
+    } else {
       stop("Given timezone not known. Check function OlsonNames().", call. = FALSE)
     }
   }
-
-  # time <- "today+5-y"
-  # time <- "2017-02-09 2017-02-18"
-  # time <- "now 7-d"
-  # time <- "all_2006"
-  # time <- "all"
-  # time <- "now 4-H"
-  # geo <- c("CA", "FR", "US")
-  # geo <- c("CA", "DK", "FR", "US", "CA")
-  # geo <- "US"
 
   gprop <- match.arg(gprop, several.ok = FALSE)
   gprop <- ifelse(gprop == "web", "", gprop)
@@ -198,26 +184,35 @@ gtrends <- function(
   # ****************************************************************************
   # Request a token from Google
   # ****************************************************************************
-  keyword <- sapply(keyword,function(x){
-    y <- gsub("[+]","%2B",x)
-    z <- gsub(" ","+",y)
+  keyword <- sapply(keyword, function(x) {
+    y <- gsub("[+]", "%2B", x)
+    z <- gsub(" ", "+", y)
     return(z)
-    })
+  })
   names(keyword) <- NULL
-  comparison_item <- data.frame(keyword,geo,time, stringsAsFactors = FALSE)
+  comparison_item <- data.frame(keyword, geo, time, stringsAsFactors = FALSE)
 
-  widget <- get_widget(comparison_item, category, gprop, hl, cookie_url,tz)
+  widget <- get_widget(comparison_item, category, gprop, hl, cookie_url, tz)
 
   # ****************************************************************************
   # Now that we have tokens, we can process the queries
   # ****************************************************************************
 
-  interest_over_time <- interest_over_time(widget, comparison_item,tz)
-  
-  if(!onlyInterest){
-    interest_by_region <- interest_by_region(widget, comparison_item, low_search_volume,compared_breakdown, tz)
-    related_topics <- related_topics(widget, comparison_item, hl,tz)
-    related_queries <- related_queries(widget, comparison_item,tz,hl)
+  interest_over_time <- interest_over_time(widget, comparison_item, tz)
+
+  if (!onlyInterest) {
+    interest_by_region <-
+      interest_by_region(
+        widget,
+        comparison_item,
+        low_search_volume,
+        compared_breakdown,
+        tz
+      )
+
+    related_topics <- related_topics(widget, comparison_item, hl, tz)
+    related_queries <- related_queries(widget, comparison_item, tz, hl)
+
     res <- list(
       interest_over_time = interest_over_time,
       interest_by_country = do.call(rbind, interest_by_region[names(interest_by_region) == "country"]),
@@ -227,10 +222,9 @@ gtrends <- function(
       related_topics = related_topics,
       related_queries = related_queries
     )
-  }else{
+  } else {
     res <- list(interest_over_time = interest_over_time)
   }
-
   ## Remove row.names
   res <- lapply(res, function(x) {
     row.names(x) <- NULL
@@ -260,11 +254,11 @@ gtrends <- function(
 #' }
 plot.gtrends <- function(x, ...) {
   df <- x$interest_over_time
-  df$hits <- if(typeof(df$hits) == 'character'){
-    as.numeric(gsub('<','',df$hits))
-    } else {
+  df$hits <- if (typeof(df$hits) == "character") {
+    as.numeric(gsub("<", "", df$hits))
+  } else {
     df$hits
-    }
+  }
 
   df$legend <- paste(df$keyword, " (", df$geo, ")", sep = "")
 

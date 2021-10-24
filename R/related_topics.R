@@ -1,7 +1,7 @@
-related_topics <- function(widget, comparison_item, hl,tz) {
+related_topics <- function(widget, comparison_item, hl, tz) {
   i <- which(grepl("related_topics", widget$id, ignore.case = TRUE) == TRUE)
 
-  res <- lapply(i, create_related_topics_payload, widget = widget, hl = hl,tz=tz)
+  res <- lapply(i, create_related_topics_payload, widget = widget, hl = hl, tz = tz)
   res <- do.call(rbind, res)
 
   return(res)
@@ -52,9 +52,9 @@ create_related_topics_payload <- function(i, widget, hl, tz) {
       res$status_code
     )
   }
-  
+
   res <- readLines(textConnection(rawToChar(res$content)))
-  
+
   start_top <- which(grepl("TOP", res))
   start_rising <- which(grepl("RISING", res))
 
@@ -63,16 +63,17 @@ create_related_topics_payload <- function(i, widget, hl, tz) {
   }
 
   new_res <- NULL
-  
+
   if (length(start_top) > 0) {
     end_top <- ifelse(length(start_rising) == 0, length(res), start_rising - 2)
     top <- read.csv(textConnection(res[start_top:end_top]),
-                    row.names = NULL, encoding = "UTF-8")
+      row.names = NULL, encoding = "UTF-8"
+    )
     top$subject <- rownames(top)
     rownames(top) <- NULL
     top <- top[, c(2, 1)]
     names(top) <- c("subject", "top")
-  
+
     top <- reshape(
       top,
       varying = "top",
@@ -81,18 +82,19 @@ create_related_topics_payload <- function(i, widget, hl, tz) {
       timevar = "related_topics",
       times = "top"
     )
-    
+
     new_res <- rbind(new_res, top)
   }
 
   if (length(start_rising) > 0) {
-      rising <- read.csv(textConnection(res[start_rising:length(res)]),
-                         row.names = NULL, encoding = "UTF-8")
+    rising <- read.csv(textConnection(res[start_rising:length(res)]),
+      row.names = NULL, encoding = "UTF-8"
+    )
     rising$subject <- rownames(rising)
     rownames(rising) <- NULL
     rising <- rising[, c(2, 1)]
     names(rising) <- c("subject", "rising")
-  
+
     rising <- reshape(
       rising,
       varying = "rising",
@@ -101,14 +103,14 @@ create_related_topics_payload <- function(i, widget, hl, tz) {
       timevar = "related_topics",
       times = "rising"
     )
-    
+
     new_res <- rbind(new_res, rising)
   }
-  
+
   res <- new_res
   res$id <- NULL
   res$geo <- unlist(payload2$restriction$geo, use.names = FALSE)
-  
+
   if (length(widget$request$restriction$complexKeywordsRestriction$operator) !=
     0) {
     if (is.na(widget$request$restriction$complexKeywordsRestriction$operator[[i]])) {
@@ -131,16 +133,15 @@ create_related_topics_payload <- function(i, widget, hl, tz) {
 }
 
 extract_related_topics <- function(i, raw_data) {
-  
   n <- length(raw_data)
   end <- i + min(which(raw_data[i:n] == "")) - 1
-  
+
   df <- read.csv(textConnection(raw_data[i:end]), row.names = NULL, encoding = "UTF-8")
   df$subject <- rownames(df)
   rownames(df) <- NULL
   df <- df[, c(2, 1)]
   names(df) <- c("subject", tolower(colnames(df)[1]))
-  
+
   df <- reshape(
     df,
     varying = tolower(colnames(df)[2]),
@@ -149,5 +150,4 @@ extract_related_topics <- function(i, raw_data) {
     timevar = "related_topics",
     times = tolower(colnames(df)[2])
   )
-  
 }

@@ -87,7 +87,6 @@ geolocation and category can also be supplied.
 }
 
 \examples{
-
 \dontrun{
 
 head(gtrends("NHL")$interest_over_time)
@@ -100,7 +99,7 @@ head(gtrends(c("NHL", "NFL"), geo = c("CA", "US"))$interest_over_time)
 
 ## Interest by city
 
-gtrends(keyword="obama",geo="US-AL-630")
+gtrends(keyword = "obama", geo = "US-AL-630")
 
 ## Sport category (20)
 data(categories)
@@ -136,6 +135,5 @@ head(gtrends("NHL", hl = "fr")$related_topics)
 ## Compared breakdown
 head(gtrends(keyword = c("nhl", "nba"), geo = "CA", compared_breakdown = FALSE)$interest_by_region)
 head(gtrends(keyword = c("nhl", "nba"), geo = "CA", compared_breakdown = TRUE)$interest_by_region)
-
 }
 }
