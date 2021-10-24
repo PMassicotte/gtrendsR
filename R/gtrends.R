@@ -33,11 +33,16 @@
 #' @param hl A string specifying the ISO language code (ex.: \dQuote{en-US} or
 #'   \dQuote{fr}). Default is \dQuote{en-US}. Note that this is only influencing
 #'   the data returned by related topics.
-#'   
-#' @param tz A number specifying the minutes the returned dates should be offset to UTC. 
-#' Note the parameter 'time' above is specified in UTC. 
-#' E.g. choosing "time=2018-01-01T01 2018-01-01T03" and "tz=-120" will yield data between 2018-01-01T03 and 2018-01-01T05, 
-#' i.e. data specified to be in UTC+2.
+#'
+#' @param tz A number specifying the minutes the returned dates should be offset
+#'   to UTC. Note the parameter 'time' above is specified in UTC. E.g. choosing
+#'   "time=2018-01-01T01 2018-01-01T03" and "tz=-120" will yield data between
+#'   2018-01-01T03 and 2018-01-01T05, i.e. data specified to be in UTC+2.
+#'
+#' @param compared_breakdown Logical. Should compare breakdown the results by
+#'   city and subregion? Can only be used if one `geo` is used conjointly with
+#'   more than one keyword. If `TRUE`, then the relative hits across the
+#'   keywords will be returned. `FALSE` by default.
 #'
 #' @param low_search_volume Logical. Should include low search volume regions?
 #'
@@ -45,7 +50,7 @@
 #'   Default should work in general; should only be changed by advanced users.
 #'
 #' @param onlyInterest If you only want the interest over time set it to TRUE.
-#' 
+#'
 #' @section Categories: The package includes a complete list of categories that
 #'   can be used to narrow requests. These can be accessed using
 #'   \code{data("categories")}.
@@ -92,7 +97,6 @@
 #' gtrends(c("NHL", "NFL"), time = "today+5-y") # last five years (default)
 #' gtrends(c("NHL", "NFL"), time = "all") # since 2004
 #'
-#'
 #' ## Custom date format
 #'
 #' gtrends(c("NHL", "NFL"), time = "2010-01-01 2010-04-03")
@@ -106,6 +110,11 @@
 #'
 #' head(gtrends("NHL", hl = "en")$related_topics)
 #' head(gtrends("NHL", hl = "fr")$related_topics)
+#'
+#' ## Compared breakdown
+#' head(gtrends(keyword = c("nhl", "nba"), geo = "CA", compared_breakdown = FALSE)$interest_by_region)
+#' head(gtrends(keyword = c("nhl", "nba"), geo = "CA", compared_breakdown = TRUE)$interest_by_region)
+#'
 #' }
 #' @export
 gtrends <- function(
@@ -115,6 +124,7 @@ gtrends <- function(
                     gprop = c("web", "news", "images", "froogle", "youtube"),
                     category = 0,
                     hl = "en-US",
+                    compared_breakdown = FALSE,
                     low_search_volume = FALSE,
                     cookie_url = "http://trends.google.com/Cookies/NID",
                     tz=0, # This equals UTC
@@ -147,17 +157,6 @@ gtrends <- function(
     }
   }
   
-  # if (geo != "" &&
-  #   !all(geo %in%
-  #     c(
-  #       as.character(countries[, "country_code"]),
-  #       as.character(countries[, "sub_code"])
-  #     ))) {
-  #   stop("Country code not valid. Please use 'data(countries)' to retrieve valid codes.",
-  #     call. = FALSE
-  #   )
-  # }
-  
   ## Check if valid category
   if (!all(category %in% categories[, "id"])) {
     stop(
@@ -169,6 +168,10 @@ gtrends <- function(
   ## Check if time format is ok
   if (!check_time(time)) {
     stop("Cannot parse the supplied time format.", call. = FALSE)
+  }
+  
+  if (compared_breakdown & (length(geo) != 1 | length(keyword) == 1)) {
+    stop("`compared breakdown` can be only used with one geo and multiple keywords.", call. = FALSE)
   }
   
   if(!(is.numeric(tz))){
@@ -212,7 +215,7 @@ gtrends <- function(
   interest_over_time <- interest_over_time(widget, comparison_item,tz)
   
   if(!onlyInterest){
-    interest_by_region <- interest_by_region(widget, comparison_item, low_search_volume,tz)
+    interest_by_region <- interest_by_region(widget, comparison_item, low_search_volume,compared_breakdown, tz)
     related_topics <- related_topics(widget, comparison_item, hl,tz)
     related_queries <- related_queries(widget, comparison_item,tz,hl)
     res <- list(

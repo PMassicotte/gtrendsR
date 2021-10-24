@@ -370,27 +370,18 @@ interest_over_time <- function(widget, comparison_item,tz) {
 }
 
 
-interest_by_region <- function(widget, comparison_item, low_search_volume,tz) {
-  i <- which(grepl("geom_map", widget$id, ignore.case = TRUE) == TRUE)
+interest_by_region <- function(widget, comparison_item, low_search_volume, compared_breakdown, tz) {
+  i <- which(grepl("geo_map", widget$id, ignore.case = TRUE) == TRUE)
 
   if (length(i) == 0) {
     return(list(NULL))
   }
   
-  ## Interest by region need to be retrieved individually
-
-  # resolution <- sub(".* (\\w+)$", "\\1", widget$title[i])
-  # resolution[resolution == "subregion"] <- "region"
-  # resolution[resolution == "metro"] <- "dma"
-
-  # resolution <- c(resolution, rep(c("city", "dma"), each = length(resolution)))
-
-  ##
   resolution <-
     expand.grid(i, c(ifelse(
       grepl("world", na.omit(widget$geo)), "country", "region"
     ), "city", "dma"), stringsAsFactors = FALSE)
-
+  
   resolution <- unique(resolution)
 
   i <- resolution$Var1
@@ -406,14 +397,14 @@ interest_by_region <- function(widget, comparison_item, low_search_volume,tz) {
   # resolution[grepl("world", na.omit(widget$geo))] <- "country"
   resolution <- toupper(resolution)
 
-  res <-
-    mapply(
-      create_geo_payload,
-      i,
-      resolution,
-      MoreArgs = list(widget = widget, low_search_volume = low_search_volume, tz = tz),
-      SIMPLIFY = FALSE
-    )
+res <-
+  mapply(
+    create_geo_payload,
+    i,
+    resolution,
+    MoreArgs = list(widget = widget, low_search_volume = low_search_volume, compared_breakdown = compared_breakdown, tz = tz),
+    SIMPLIFY = FALSE
+  )
 
   ## Remove duplicated
   ii <- !duplicated(res)
@@ -432,7 +423,7 @@ interest_by_region <- function(widget, comparison_item, low_search_volume,tz) {
 }
 
 
-create_geo_payload <- function(i, widget, resolution, low_search_volume,tz) {
+create_geo_payload <- function(i, widget, resolution, compared_breakdown, low_search_volume, tz) {
   payload2 <- list()
   payload2$locale <- unique(na.omit(widget$request$locale))
   payload2$comparisonItem <- widget$request$comparisonItem[[i]]
@@ -442,21 +433,21 @@ create_geo_payload <- function(i, widget, resolution, low_search_volume,tz) {
   payload2$requestOptions$category <- widget$request$requestOptions$category[i]
   payload2$geo <- as.list((widget$request$geo[i, , drop = FALSE]))
   payload2$includeLowSearchVolumeGeos <- low_search_volume
-
-
-  url <- paste0(URLencode("https://www.google.com/trends/api/widgetdata/comparedgeo/csv?req="),
-                URLencode(jsonlite::toJSON(payload2, auto_unbox = T,null="list"),reserved = TRUE),
-                URLencode(paste0("&token=",widget$token[i],"&tz=",tz,"&hl=en-US")))
   
-  # url <- URLencode(paste0(
-  #   "https://www.google.com/trends/api/widgetdata/comparedgeo/csv?req=",
-  #   jsonlite::toJSON(payload2, auto_unbox = T,null="list"),
-  #   "&token=", widget$token[i],
-  #   "&tz=",tz,"&hl=en-US"
-  # ))
+  # If we want compared breakdown, it will return the relative hits per
+  # region/city when multiple keywords are provided.
+  
+  if (compared_breakdown) {
+    payload2$dataMode = "PERCENTAGES"
+  }
 
-  # url <- encode_keyword(url)
-  # VY. use the handler with proxy options.
+
+  url <- paste0(
+    URLencode("https://www.google.com/trends/api/widgetdata/comparedgeo/csv?req="),
+    URLencode(jsonlite::toJSON(payload2, auto_unbox = T, null = "list"), reserved = TRUE),
+    URLencode(paste0("&token=", widget$token[i], "&tz=", tz, "&hl=en-US"))
+  )
+
   res <- curl::curl_fetch_memory(url, handle = .pkgenv[["cookie_handler"]])
 
   if (res$status_code != 200) {

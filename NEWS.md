@@ -2,7 +2,11 @@
 
 - `read.csv()` now uses `encoding = "UTF-8"` to better deal with non-ascii characters.
 
+- Setting locale in queries via the `hl`argument now returns data (@marcf-91). For example, `gtrends(keyword = "Macron", geo = "FR", hl = "fr")`.
+
 - It was difficult to maintain an up-to-date database of all country codes supported by Google because they do not provide such a list. `gtrends()` now only checks the syntax structure of the entered code.
+
+- New Feature: `gtrends()` as a new parameter `compared_breakdown`. When set to `TRUE`, then the relative hits across the keywords will be returned. Can only be used if one `geo` is used conjointly with more than one keyword. For example: `head(gtrends(keyword = c("nhl", "nba"), geo = "CA", compared_breakdown = TRUE)$interest_by_region)`.
 
 # gtrendsR 1.4.8
 
