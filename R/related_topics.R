@@ -55,8 +55,8 @@ create_related_topics_payload <- function(i, widget, hl, tz) {
 
   res <- readLines(textConnection(rawToChar(res$content)))
 
-  start_top <- which(grepl("TOP", res))
-  start_rising <- which(grepl("RISING", res))
+  start_top <- which(grepl("TOP", res))[1]
+  start_rising <- which(grepl("RISING", res))[1]
 
   if (length(start_top) == 0 & length(start_rising) == 0) {
     return(NULL) ## No data returned
