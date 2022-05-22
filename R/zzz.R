@@ -138,6 +138,8 @@ get_widget <- function(comparison_item, category, gprop, hl, cookie_url, tz) {
 
 interest_over_time <- function(widget, comparison_item, tz) {
   payload2 <- list()
+  payload2$userConfig$userType <- widget$request$userConfig$userType[[1]]
+  
   # if there is a mix of search and topic terms requests are all shifted by one
   # for some reason. Maybe there is a better fix for this. I don't understand
   # precisely the structure of the widget.
@@ -463,6 +465,7 @@ create_geo_payload <- function(i, widget, resolution, compared_breakdown, low_se
   payload2$requestOptions$backend <- widget$request$requestOptions$backend[i]
   payload2$requestOptions$property <- widget$request$requestOptions$property[i]
   payload2$requestOptions$category <- widget$request$requestOptions$category[i]
+  payload2$userConfig$userType <- widget$request$userConfig$userType[[i]]
   payload2$geo <- as.list((widget$request$geo[i, , drop = FALSE]))
   payload2$includeLowSearchVolumeGeos <- low_search_volume
 
