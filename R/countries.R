@@ -11,5 +11,5 @@
 #' @name countries
 #' @usage data("countries")
 #' @format A data frame with 117293 rows and 3 variables
-#' @references \url{http://www.unece.org/cefact/codesfortrade/codes_index.html}
+#' @references \url{https://www.unece.org/cefact/codesfortrade/codes_index.html}
 NULL

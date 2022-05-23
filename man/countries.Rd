@@ -18,6 +18,6 @@ data("countries")
 }
 }
 \references{
-\url{http://www.unece.org/cefact/codesfortrade/codes_index.html}
+\url{https://www.unece.org/cefact/codesfortrade/codes_index.html}
 }
 \keyword{datasets}
