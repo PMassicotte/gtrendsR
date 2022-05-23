@@ -31,6 +31,7 @@ create_related_topics_payload <- function(i, widget, hl, tz) {
     widget$request$requestOptions$category[[i]]
   payload2$language <- widget$request$language[[i]]
   payload2$userCountryCode <- widget$request$userCountryCode[[i]]
+  payload2$userConfig$userType <- widget$request$userConfig$userType[[i]]
 
   url <- paste0(
     URLencode(

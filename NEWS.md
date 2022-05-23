@@ -1,5 +1,7 @@
 # gtrendsR (development version)
 
+- Fix missing `userType` in the payload which was giving a 401 error (#413).
+
 # gtrendsR 1.5.0
 
 ## Bug fixes
