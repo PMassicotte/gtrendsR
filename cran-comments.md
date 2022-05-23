@@ -1,7 +1,6 @@
 ## Test environments
 
-* Tested macOS-latest and ubuntu-latest using Github Action (R 4.1.1).
-* Tested on Windows (R 4.0.4) using AppVeyor
+* Tested macOS-latest and ubuntu-latest using Github Action (R 4.2.0).
 * Tested on win-builder (both R-release and R-devel)
 
 ## R CMD check results
