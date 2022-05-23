@@ -67,6 +67,12 @@ create_related_topics_payload <- function(i, widget, hl, tz) {
 
   if (length(start_top) > 0) {
     end_top <- ifelse(length(start_rising) == 0, length(res), start_rising - 2)
+    
+    # Make sure there are "RISING" data. If not, use the length of the vector
+    # and the end index.
+    
+    if (is.na(end_top)) {end_top = length(res)}
+    
     top <- read.csv(textConnection(res[start_top:end_top]),
       row.names = NULL, encoding = "UTF-8"
     )
@@ -87,7 +93,9 @@ create_related_topics_payload <- function(i, widget, hl, tz) {
     new_res <- rbind(new_res, top)
   }
 
-  if (length(start_rising) > 0) {
+  # Make sure there are "RISING" data.
+  
+  if (length(start_rising) > 0 & !is.na(start_rising)) {
     rising <- read.csv(textConnection(res[start_rising:length(res)]),
       row.names = NULL, encoding = "UTF-8"
     )
