@@ -48,49 +48,10 @@ create_related_queries_payload <- function(i, widget, tz, hl) {
   if (length(res) <= 4) {
     return(NULL)
   }
-
-  start_top <- which(grepl("TOP", res))
-  start_rising <- which(grepl("RISING", res))
-
-  if (length(start_top) == 0 | length(start_rising) == 0) {
-    return(NULL) ## No data returned
-  }
-
-  top <- read.csv(textConnection(res[start_top:(start_rising - 2)]),
-    row.names = NULL, encoding = "UTF-8"
-  )
-  top$subject <- rownames(top)
-  rownames(top) <- NULL
-  top <- top[, c(2, 1)]
-  names(top) <- c("subject", "top")
-
-  top <- reshape(
-    top,
-    varying = "top",
-    v.names = "value",
-    direction = "long",
-    timevar = "related_queries",
-    times = "top"
-  )
-
-  rising <- read.csv(textConnection(res[start_rising:length(res)]),
-    row.names = NULL, encoding = "UTF-8"
-  )
-  rising$subject <- rownames(rising)
-  rownames(rising) <- NULL
-  rising <- rising[, c(2, 1)]
-  names(rising) <- c("subject", "rising")
-
-  rising <- reshape(
-    rising,
-    varying = "rising",
-    v.names = "value",
-    direction = "long",
-    timevar = "related_queries",
-    times = "rising"
-  )
-
-  res <- rbind(top, rising)
+  
+  # Extract top and rising data if it exists.
+  res <- extract_top_rising(res)
+  
   res$id <- NULL
   res$geo <- unlist(payload2$restriction$geo, use.names = FALSE)
   if (length(widget$request$restriction$complexKeywordsRestriction$operator) != 0) {

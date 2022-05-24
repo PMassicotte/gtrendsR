@@ -199,6 +199,13 @@ gtrends <- function(keyword = NA,
   # ****************************************************************************
 
   interest_over_time <- interest_over_time(widget, comparison_item, tz)
+  
+  if (is.null(interest_over_time)) {
+    stop(
+      "No data returned by the query. Consider changing search parameters.", 
+      call. = FALSE
+    )
+  }
 
   if (!onlyInterest) {
     interest_by_region <-
