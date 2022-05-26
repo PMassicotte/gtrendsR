@@ -4,8 +4,10 @@ if (!curl::has_internet()) {
 }
 
 # Exit unless opted in
-if (Sys.getenv("RunAllGtrendsRTests", unset="") == "") {
-    exit_file("Skipping tests not opted into.")
+# Sys.setenv("RunAllGtrendsRTests" = TRUE)
+
+if (Sys.getenv("RunAllGtrendsRTests", unset = "") == "") {
+  exit_file("Skipping tests not opted into.")
 }
 
 kw <- "news"

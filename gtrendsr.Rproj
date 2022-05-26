@@ -13,6 +13,5 @@ RnwWeave: Sweave
 LaTeX: pdfLaTeX
 
 BuildType: Package
-PackageCleanBeforeInstall: Yes
 PackageInstallArgs: --no-multiarch --with-keep.source
 PackageRoxygenize: rd

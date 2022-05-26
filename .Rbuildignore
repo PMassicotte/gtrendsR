@@ -10,3 +10,4 @@ inst/localTests
 ^data-raw$
 ^CRAN-RELEASE$
 ^\.github
+^CRAN-SUBMISSION$
