@@ -59,6 +59,10 @@ setHandleParameters(user = "xxxx", password = "*******", domain = "mydomain", pr
 res <- gtrends(c("nhl", "nba"), geo = c("CA", "US"))
 ```
 
+## Additional information
+
+- [Limits and quotas on API requests](https://developers.google.com/analytics/devguides/reporting/mcf/v3/limits-quotas)
+
 ### Authors
 
 Philippe Massicotte and Dirk Eddelbuettel
