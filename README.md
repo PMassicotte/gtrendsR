@@ -1,9 +1,9 @@
 
 ## gtrendsR 
 [![GitHub Actions Build Status](https://github.com/PMassicotte/gtrendsR/actions/workflows/ci.yaml/badge.svg)](https://github.com/PMassicotte/gtrendsR/actions/workflows/ci.yaml)
-[![License](https://eddelbuettel.github.io/badges/GPL2+.svg)](http://www.gnu.org/licenses/gpl-2.0.html) 
-[![CRAN](http://www.r-pkg.org/badges/version/gtrendsR)](https://cran.r-project.org/package=gtrendsR) 
-[![Downloads](http://cranlogs.r-pkg.org/badges/gtrendsR?color=brightgreen)](https://www.r-pkg.org:443/pkg/gtrendsR)
+[![License](https://eddelbuettel.github.io/badges/GPL2+.svg)](https://www.gnu.org/licenses/gpl-2.0.html) 
+[![CRAN](https://www.r-pkg.org/badges/version/gtrendsR)](https://cran.r-project.org/package=gtrendsR) 
+[![Downloads](https://cranlogs.r-pkg.org/badges/gtrendsR?color=brightgreen)](https://www.r-pkg.org:443/pkg/gtrendsR)
 
 `gtrendsR` provides an interface for retrieving and displaying Google Trends information. 
 
