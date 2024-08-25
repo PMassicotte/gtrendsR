@@ -45,7 +45,6 @@ check_time <- function(time_ranges) {
   )
 
   for (tr in time_ranges) {
-
     ## Return TRUE if one of the basic date formats is used
     if (tr %in% fixed_format) {
       return(TRUE)
@@ -139,7 +138,7 @@ get_widget <- function(comparison_item, category, gprop, hl, cookie_url, tz) {
 interest_over_time <- function(widget, comparison_item, tz) {
   payload2 <- list()
   payload2$userConfig$userType <- widget$request$userConfig$userType[[1]]
-  
+
   # if there is a mix of search and topic terms requests are all shifted by one
   # for some reason. Maybe there is a better fix for this. I don't understand
   # precisely the structure of the widget.

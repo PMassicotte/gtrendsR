@@ -58,7 +58,7 @@ create_related_topics_payload <- function(i, widget, hl, tz) {
 
   # Extract top and rising data if it exists.
   res <- extract_top_rising(res)
-  
+
   res$id <- NULL
   res$geo <- unlist(payload2$restriction$geo, use.names = FALSE)
 
