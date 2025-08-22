@@ -38,430 +38,220 @@ get_api_cookies <- function(cookie_url) {
   return(NULL)
 }
 
-# Legacy function for backward compatibility - use check_time_enhanced for new code
 check_time <- function(time_ranges) {
-  tryCatch(
-    {
-      return(check_time_enhanced(time_ranges))
-    },
-    error = function(e) {
-      return(FALSE)
-    }
-  )
-}
+  if (!is.character(time_ranges)) {
+    stop("Time parameter must be character vector.", call. = FALSE)
+  }
 
+  fixed_formats <- c(
+    "now 1-H", # last hour
+    "now 4-H", # last four hours
+    "now 1-d", # last day
+    "now 7-d", # last seven days
+    "today 1-m", # past 30 days
+    "today 3-m", # past 90 days
+    "today 12-m", # past 12 months
+    "today+5-y", # last 5 years (default)
+    "all" # since beginning of Google Trends (2004)
+  )
+
+  for (tr in time_ranges) {
+    # Check if it's a preset format
+    if (tr %in% fixed_formats) {
+      next
+    }
+
+    # Parse custom time range
+    time_parts <- unlist(strsplit(tr, " ", fixed = TRUE))
+
+    if (length(time_parts) != 2L) {
+      stop(
+        "Custom time range must have format 'start_date end_date'.\n",
+        "Invalid format: '",
+        tr,
+        "'",
+        call. = FALSE
+      )
+    }
+
+    # Parse start and end dates
+    tryCatch(
+      {
+        if (!grepl("T", time_parts[1L], fixed = TRUE)) {
+          start_date <- as.POSIXct(
+            format(anytime::anydate(time_parts[1L], tz = "UTC"), tz = "UTC"),
+            tz = "UTC"
+          )
+          end_date <- as.POSIXct(
+            format(anytime::anydate(time_parts[2L], tz = "UTC"), tz = "UTC"),
+            tz = "UTC"
+          )
+        } else {
+          start_date <- anytime::anytime(time_parts[1L])
+          end_date <- anytime::anytime(time_parts[2L])
+        }
+      },
+      error = function(e) {
+        stop(
+          "Could not parse dates in time range: '",
+          tr,
+          "'.\n",
+          "Use format like '2020-01-01 2020-12-31' or '2020-01-01T01 2020-01-01T23'",
+          call. = FALSE
+        )
+      }
+    )
+
+    # Validate parsed dates
+    if (is.na(start_date) || is.na(end_date)) {
+      stop(
+        "Invalid date(s) in time range: '",
+        tr,
+        "'.\n",
+        "Check date format and ensure dates are valid.",
+        call. = FALSE
+      )
+    }
+
+    if (start_date >= end_date) {
+      stop(
+        "Start date must be before end date in time range: '",
+        tr,
+        "'.\n",
+        "Start: ",
+        time_parts[1L],
+        ", End: ",
+        time_parts[2L],
+        call. = FALSE
+      )
+    }
+
+    if (start_date < as.POSIXct("2004-01-01", tz = "UTC")) {
+      stop(
+        "Start date cannot be before 2004-01-01 (Google Trends launch).\n",
+        "Invalid start date: ",
+        time_parts[1L],
+        call. = FALSE
+      )
+    }
+
+    if (end_date > as.POSIXct(Sys.time())) {
+      stop(
+        "End date cannot be in the future.\n",
+        "Invalid end date: ",
+        time_parts[2L],
+        call. = FALSE
+      )
+    }
+  }
+
+  TRUE
+}
 
 # Legacy get_widget function - maintained for backward compatibility
 # New code should use get_widget_enhanced
 get_widget <- function(comparison_item, category, gprop, hl, cookie_url, tz) {
-  return(get_widget_enhanced(
-    comparison_item,
-    category,
-    gprop,
-    hl,
-    cookie_url,
-    tz
-  ))
+  # Wrapper for legacy compatibility - delegates to enhanced version
+  get_widget_enhanced(comparison_item, category, gprop, hl, cookie_url, tz)
 }
 
 interest_over_time <- function(widget, comparison_item, tz) {
+  # Build appropriate URL based on widget type
+  url <- build_interest_over_time_url(widget, tz)
+
+  # Fetch data from Google Trends API
+  response <- fetch_trends_data(url)
+
+  process_interest_over_time_response(response, comparison_item, widget, tz)
+}
+
+# Helper function to build URL based on widget configuration
+build_interest_over_time_url <- function(widget, tz) {
   payload2 <- list()
-  payload2$userConfig$userType <- widget$request$userConfig$userType[[1]]
+  payload2$userConfig$userType <- widget$request$userConfig$userType[[1L]]
 
-  # if there is a mix of search and topic terms requests are all shifted by one
-  # for some reason. Maybe there is a better fix for this. I don't understand
-  # precisely the structure of the widget.
-  # try this example:
-  # topicKeys <- c("/m/05s_khw", "Assassins Creed Brotherhood", "/m/0gmg6lv")
-  # vs.
-  # topicKeys <- c("Assassins Creed", "Assassins Creed Brotherhood", "Assassins Creed Rogue")
-  # gtrends(topicKeys, time = "all")
-
-  # the following conditional statments are necessary when no keyword is supplied but
-  # a search for a category is called for
-  if (is.null(unlist(widget$request$comparisonItem))) {
-    onlyCategory <- TRUE
-  } else if (
-    !any(grepl("keyword", names(unlist(widget$request$comparisonItem))))
-  ) {
-    onlyCategory <- TRUE
-  } else {
-    onlyCategory <- FALSE
-  }
+  # Determine request type and create appropriate payload
+  onlyCategory <- is_category_only_search(widget)
 
   if (onlyCategory) {
-    payload2$locale <- widget$request$locale[1]
-    payload2$comparisonItem <- widget$request$comparisonItem[[1]]
-    payload2$resolution <- widget$request$resolution[1]
-    payload2$requestOptions$category <- widget$request$requestOptions$category[
-      1
-    ]
-    payload2$requestOptions$backend <- widget$request$requestOptions$backend[1]
-    payload2$time <- widget$request$time[1]
-    payload2$requestOptions$property <- widget$request$requestOptions$property[
-      1
-    ]
-    token_payload2 <- widget$token[1]
-    url <- paste0(
-      URLencode(
-        "https://www.google.com/trends/api/widgetdata/multiline/csv?req="
-      ),
-      URLencode(
-        jsonlite::toJSON(payload2, auto_unbox = T, null = "list"),
-        reserved = TRUE
-      ),
-      URLencode(paste0("&token=", token_payload2, "&tz=", tz))
-    )
+    # Handle category-only searches
+    payload_data <- create_category_payload(widget)
+    return(build_trends_url(
+      "https://www.google.com/trends/api/widgetdata/multiline/csv?req=",
+      c(payload2, payload_data$payload),
+      payload_data$token,
+      tz
+    ))
+  } else if (has_multiple_timeframes(widget)) {
+    # Handle multi-timeframe searches
+    payload_data <- create_multirange_payload(widget)
+    return(build_trends_url(
+      "https://trends.google.com/trends/api/widgetdata/multirange/csv?req=",
+      c(payload2, payload_data$payload),
+      payload_data$token,
+      tz,
+      use_encode_payload = TRUE
+    ))
   } else {
-    Test.For.Multiple.Timeframes <- (length(
-      widget$request$comparisonItem[[2]]$time
-    ) !=
-      1) &
-      (length(unique(widget$request$comparisonItem[[2]]$time)) != 1) &
-      (!is.null(widget$request$comparisonItem[[2]]))
-
-    if (Test.For.Multiple.Timeframes) {
-      payload2$time <- widget$request$time[head(
-        which(!is.na(widget$request$time)),
-        1
-      )]
-      payload2$time <- gsub(" ", "+", payload2$time)
-      payload2$resolution <- widget$request$resolution[head(
-        which(!is.na(widget$request$resolution)),
-        1
-      )]
-      payload2$locale <- widget$request$locale[head(
-        which(!is.na(widget$request$locale)),
-        1
-      )]
-      payload2$comparisonItem <- widget$request$comparisonItem[[2]]
-      payload2$comparisonItem$geo <- widget$request$comparisonItem[[2]]$geo
-      payload2$requestOptions$property <- widget$request$requestOptions$property[
-        2
-      ]
-      payload2$requestOptions$backend <- widget$request$requestOptions$backend[
-        2
-      ]
-      payload2$requestOptions$category <- widget$request$requestOptions$category[
-        2
-      ]
-      token_payload2 <- widget$token[which(widget$id == "TIMESERIES")]
-
-      url <- paste0(
-        URLencode(
-          "https://trends.google.com/trends/api/widgetdata/multirange/csv?req="
-        ),
-        encode_payload(
-          jsonlite::toJSON(payload2, auto_unbox = T, null = "list"),
-          reserved = TRUE
-        ),
-        URLencode(paste0("&token=", token_payload2, "&tz=", tz))
-      )
-      # url <- URLencode(paste0(
-      #   "https://www.google.com/trends/api/widgetdata/multirange/csv?req=",
-      #   jsonlite::toJSON(payload2, auto_unbox = T,null="list"),
-      #   "&token=", token_payload2,
-      #   "&tz=",tz
-      # ))
-    } else {
-      if (
-        !is.na(widget$request$locale[1]) |
-          (length(unique(unlist(widget$request$comparisonItem[[1]]$geo))) > 1)
-      ) {
-        payload2$locale <- widget$request$locale[1]
-        payload2$comparisonItem <- widget$request$comparisonItem[[1]]
-        payload2$resolution <- widget$request$resolution[1]
-        payload2$requestOptions$category <- widget$request$requestOptions$category[
-          1
-        ]
-        payload2$requestOptions$backend <- widget$request$requestOptions$backend[
-          1
-        ]
-        payload2$time <- widget$request$time[1]
-        payload2$requestOptions$property <- widget$request$requestOptions$property[
-          1
-        ]
-        token_payload2 <- widget$token[1]
-      } else {
-        payload2$locale <- widget$request$locale[2]
-        payload2$comparisonItem <- widget$request$comparisonItem[[1]]
-        payload2$resolution <- widget$request$resolution[2]
-        payload2$requestOptions$category <- widget$request$requestOptions$category[
-          2
-        ]
-        payload2$requestOptions$backend <- widget$request$requestOptions$backend[
-          2
-        ]
-        payload2$time <- widget$request$time[2]
-        payload2$requestOptions$property <- widget$request$requestOptions$property[
-          2
-        ]
-        token_payload2 <- widget$token[2]
-      }
-      url <- paste0(
-        URLencode(
-          "https://www.google.com/trends/api/widgetdata/multiline/csv?req="
-        ),
-        URLencode(
-          jsonlite::toJSON(payload2, auto_unbox = T, null = "list"),
-          reserved = TRUE
-        ),
-        URLencode(paste0("&token=", token_payload2, "&tz=", tz))
-      )
-    }
+    # Handle standard multiline searches
+    payload_data <- create_multiline_payload(widget)
+    return(build_trends_url(
+      "https://www.google.com/trends/api/widgetdata/multiline/csv?req=",
+      c(payload2, payload_data$payload),
+      payload_data$token,
+      tz
+    ))
   }
+}
 
-  # ****************************************************************************
-  # Downoad the results
-  # ****************************************************************************
-  # url <- encode_keyword(url)
-
-  # VY. use the handler with proxy options.
+# Helper function to fetch data with error handling
+fetch_trends_data <- function(url) {
   res <- curl::curl_fetch_memory(url, handle = .pkgenv[["cookie_handler"]])
 
-  # Something went wrong
-  if (res$status_code != 200) {
-    stop("Status code was not 200. Returned status code:", res$status_code)
+  if (res$status_code != 200L) {
+    stop(
+      "Google Trends API request failed with status code: ",
+      res$status_code,
+      "\nThis could indicate:\n",
+      "  - Invalid search parameters\n",
+      "  - Rate limiting by Google\n",
+      "  - Temporary service unavailability",
+      call. = FALSE
+    )
   }
 
-  # ****************************************************************************
-  # Format the results in a nice way
-  # ****************************************************************************
-  con <- textConnection(rawToChar(res$content))
-  df <- read.csv(con, skip = 1, stringsAsFactors = FALSE, encoding = "UTF-8")
+  return(res)
+}
+
+# Helper function to process API response
+process_interest_over_time_response <- function(
+  response,
+  comparison_item,
+  widget,
+  tz
+) {
+  # Parse CSV response
+  con <- textConnection(rawToChar(response$content))
+  df <- read.csv(con, skip = 1L, stringsAsFactors = FALSE, encoding = "UTF-8")
   close(con)
 
-  if (nrow(df) < 1) {
-    return(NULL) ## No data
+  if (nrow(df) < 1L) {
+    return(NULL) # No data available
   }
 
-  # Redo the substitution of + for a nice data frame
-  comparison_item$keyword <- sapply(comparison_item$keyword, function(x) {
-    gsub("\\+", " ", x)
-  })
-  comparison_item$keyword <- sapply(comparison_item$keyword, function(x) {
-    gsub("%2B", "+", x)
-  })
+  # Clean keywords
+  comparison_item <- clean_keywords(comparison_item)
 
-  if (!onlyCategory) {
-    # This conditional statment is necessary when no keyword is supplied but
-    # a search for a category is called for
+  # Process data based on request type
+  onlyCategory <- is_category_only_search(widget)
 
-    if (
-      (length(widget$request$comparisonItem[[2]]$time) == 1) |
-        (length(unique(widget$request$comparisonItem[[2]]$time)) == 1) |
-        (is.null(widget$request$comparisonItem[[2]]))
-    ) {
-      n <- nrow(df) # used to reshape the data
-
-      df <- reshape(
-        df,
-        varying = names(df)[2:ncol(df)],
-        v.names = "hits",
-        direction = "long",
-        timevar = "temp",
-        times = names(df)[2:ncol(df)]
-      )
-
-      df$temp <- NULL
-
-      df <- cbind(
-        df,
-        comparison_item[rep(seq_len(nrow(comparison_item)), each = n), 1:3],
-        row.names = NULL
-      )
-
-      df$geo <- ifelse(df$geo == "", "world", df$geo)
-      df$gprop <- ifelse(
-        widget$request$requestOptions$property[1] == "",
-        "web",
-        widget$request$requestOptions$property[1]
-      )
-      df$category <- widget$request$requestOptions$category[1]
-      names(df)[1] <- "date"
-      df$id <- NULL
-
-      # Format the returned date
-      if (all(grepl("^[0-9]{4}-[0-9]{2}-[0-9]{2}$", df$date))) {
-        df$date <- as.POSIXct(
-          df$date,
-          format = "%Y-%m-%d",
-          tz = paste0("GMT", ifelse(tz >= 0, "+", "-"), (abs(tz) / 60)),
-          asUTC = T
-        )
-      } else if (all(grepl("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}$", df$date))) {
-        df$date <- as.POSIXct(
-          df$date,
-          format = "%Y-%m-%dT%H",
-          tz = paste0("GMT", ifelse(tz >= 0, "+", "-"), (abs(tz) / 60)),
-          asUTC = T
-        )
-      } else if (all(grepl("^[0-9]{4}-[0-9]{2}$", df$date))) {
-        df$date <- df$date <- as.POSIXct(
-          paste0(df$date, "-01"),
-          format = "%Y-%m-%d",
-          tz = paste0(
-            "GMT",
-            ifelse(tz >= 0, "+", "-"),
-            (abs(tz) / 60)
-          ),
-          asUTC = T
-        )
-      } else {
-        df$date <- gsub(
-          "^([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}).*$",
-          "\\1",
-          df$date
-        )
-        df$date <- as.POSIXct(
-          df$date,
-          format = "%Y-%m-%dT%H:%M:%S",
-          tz = paste0("GMT", ifelse(tz >= 0, "+", "-"), (abs(tz) / 60)),
-          asUTC = T
-        )
-      }
-    } else {
-      n <- nrow(df) # used to reshape the data
-      kw <- payload2$comparisonItem$complexKeywordsRestriction[[1]][[1]]$value
-      kw <- gsub("[[:blank:]-]", ".", kw)
-      dates <- df[, which(!grepl(kw, names(df)))]
-
-      if (
-        all(sapply(
-          lapply(dates, function(x) grepl("^[0-9]{4}-[0-9]{2}-[0-9]{2}$", x)),
-          function(y) all(y)
-        ))
-      ) {
-        dates <- data.frame(lapply(
-          dates,
-          function(x) {
-            as.POSIXct(
-              x,
-              format = "%Y-%m-%d",
-              tz = paste0("GMT", ifelse(tz >= 0, "+", "-"), (abs(tz) / 60))
-            )
-          }
-        ))
-      } else if (
-        all(sapply(
-          lapply(dates, function(x) {
-            grepl("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}$", x)
-          }),
-          function(y) all(y)
-        ))
-      ) {
-        dates <- data.frame(lapply(
-          dates,
-          function(x) {
-            as.POSIXct(
-              x,
-              format = "%Y-%m-%dT%H",
-              tz = paste0("GMT", ifelse(tz >= 0, "+", "-"), (abs(tz) / 60))
-            )
-          }
-        ))
-      } else {
-        dates <- data.frame(lapply(
-          dates,
-          function(x) {
-            gsub(
-              "^([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}).*$",
-              "\\1",
-              x
-            )
-          }
-        ))
-        dates <- data.frame(lapply(
-          dates,
-          function(x) {
-            as.POSIXct(
-              x,
-              format = "%Y-%m-%dT%H:%M:%S",
-              tz = paste0("GMT", ifelse(tz >= 0, "+", "-"), (abs(tz) / 60))
-            )
-          }
-        ))
-      }
-
-      # dates <- data.frame(lapply(dates,function(x) anytime::anytime(x,tz=paste0("GMT",ifelse(tz>=0,"+","-"),(abs(tz)/60)),asUTC=T)))
-
-      hits <- df[, which(grepl(kw, names(df)))]
-
-      for (jj in 1:NCOL(dates)) {
-        df_tmp <- data.frame(dates[jj], hits[jj])
-        df_tmp2 <- comparison_item[rep(jj, n), 1:3]
-
-        df_tmp2[, 1] <- ifelse(df_tmp2[, 1] == "", "world", df_tmp2[, 1])
-        df_tmp2[, 3] <- ifelse(
-          widget$request$requestOptions$property[1] == "",
-          "web",
-          widget$request$requestOptions$property[1]
-        )
-        df_tmp2[, 4] <- widget$request$requestOptions$category[1]
-        if (jj == 1) {
-          df_res <- cbind(df_tmp, df_tmp2)
-          names(df_res) <- c("date", "hits", "geo", "time", "gprop", "category")
-        } else {
-          df_tmp3 <- cbind(df_tmp, df_tmp2)
-          names(df_tmp3) <- c(
-            "date",
-            "hits",
-            "geo",
-            "time",
-            "gprop",
-            "category"
-          )
-          df_res <- rbind(df_res, df_tmp3)
-        }
-      }
-      df <- df_res
-    }
+  if (onlyCategory) {
+    return(process_category_data(df, comparison_item, widget, tz))
+  } else if (has_multiple_timeframes(widget)) {
+    return(process_multirange_data(df, comparison_item, widget, tz))
   } else {
-    n <- nrow(df) # used to reshape the data
-    names(df) <- c("date", "hits")
-
-    if (all(grepl("^[0-9]{4}-[0-9]{2}-[0-9]{2}$", df$date))) {
-      df$date <- as.POSIXct(
-        df$date,
-        format = "%Y-%m-%d",
-        tz = paste0("GMT", ifelse(tz >= 0, "+", "-"), (abs(tz) / 60)),
-        asUTC = T
-      )
-    } else if (all(grepl("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}$", df$date))) {
-      df$date <- as.POSIXct(
-        df$date,
-        format = "%Y-%m-%dT%H",
-        tz = paste0("GMT", ifelse(tz >= 0, "+", "-"), (abs(tz) / 60)),
-        asUTC = T
-      )
-    } else if (all(grepl("^[0-9]{4}-[0-9]{2}$", df$date))) {
-      df$date <- df$date <- as.POSIXct(
-        paste0(df$date, "-01"),
-        format = "%Y-%m-%d",
-        tz = paste0(
-          "GMT",
-          ifelse(tz >= 0, "+", "-"),
-          (abs(tz) / 60)
-        ),
-        asUTC = T
-      )
-    }
-
-    comparison_item[, "geo"] <- ifelse(
-      comparison_item[, "geo"] == "",
-      "world",
-      comparison_item[, "geo"]
-    )
-    comparison_item[, "gprop"] <- ifelse(
-      widget$request$requestOptions$property[1] == "",
-      "web",
-      widget$request$requestOptions$property[1]
-    )
-    comparison_item[, "category"] <- widget$request$requestOptions$category[1]
-    df <- cbind(df, comparison_item[rep(1, n), 2:5])
+    return(reshape_interest_over_time(df, comparison_item, widget, tz))
   }
-
-  return(df)
 }
 
 
@@ -474,7 +264,7 @@ interest_by_region <- function(
 ) {
   i <- which(grepl("geo_map", widget$id, ignore.case = TRUE) == TRUE)
 
-  if (length(i) == 0) {
+  if (length(i) == 0L) {
     return(list(NULL))
   }
 
@@ -483,7 +273,7 @@ interest_by_region <- function(
       i,
       c(
         ifelse(
-          grepl("world", na.omit(widget$geo)),
+          grepl("world", na.omit(widget$geo), fixed = TRUE),
           "country",
           "region"
         ),
@@ -569,7 +359,7 @@ create_geo_payload <- function(
       "https://www.google.com/trends/api/widgetdata/comparedgeo/csv?req="
     ),
     URLencode(
-      jsonlite::toJSON(payload2, auto_unbox = T, null = "list"),
+      jsonlite::toJSON(payload2, auto_unbox = TRUE, null = "list"),
       reserved = TRUE
     ),
     URLencode(paste0("&token=", widget$token[i], "&tz=", tz, "&hl=en-US"))
@@ -577,15 +367,15 @@ create_geo_payload <- function(
 
   res <- curl::curl_fetch_memory(url, handle = .pkgenv[["cookie_handler"]])
 
-  if (res$status_code != 200) {
+  if (res$status_code != 200L) {
     return(NULL)
   }
 
   con <- textConnection(rawToChar(res$content))
-  df <- read.csv(con, skip = 1, stringsAsFactors = FALSE, encoding = "UTF-8")
+  df <- read.csv(con, skip = 1L, stringsAsFactors = FALSE, encoding = "UTF-8")
   close(con)
 
-  if (nrow(df) == 0) {
+  if (nrow(df) == 0L) {
     return(NULL)
   }
 
@@ -593,17 +383,17 @@ create_geo_payload <- function(
 
   df <- reshape(
     df,
-    varying = names(df)[2:ncol(df)],
+    varying = names(df)[2L:ncol(df)],
     v.names = "hits",
     direction = "long",
     timevar = "temp",
-    times = names(df)[2:ncol(df)]
+    times = names(df)[2L:ncol(df)]
   )
   if (
     length(
       widget$request$comparisonItem[[i]]$complexKeywordsRestriction$operator
     ) ==
-      0
+      0L
   ) {
     kw <- do.call(
       rbind,
@@ -612,13 +402,13 @@ create_geo_payload <- function(
   } else {
     value <- paste(
       widget$request$comparisonItem[[i]]$complexKeywordsRestriction$keyword[[
-        1
+        1L
       ]]$value,
       collapse = " + "
     )
     type <- unique(
       widget$request$comparisonItem[[i]]$complexKeywordsRestriction$keyword[[
-        1
+        1L
       ]]$type
     )
     kw <- data.frame(type = type, value = value)
@@ -628,7 +418,7 @@ create_geo_payload <- function(
 
   df <- cbind(
     df,
-    kw[rep(seq_len(nrow(kw)), each = n), 2],
+    kw[rep(seq_len(nrow(kw)), each = n), 2L],
     row.names = NULL,
     stringsAsFactors = FALSE
   )
@@ -639,7 +429,7 @@ create_geo_payload <- function(
 
   df$geo <- ifelse(is.null(df$geo), "world", df$geo)
   df$gprop <- ifelse(
-    widget$request$requestOptions$property[i] == "",
+    !nzchar(widget$request$requestOptions$property[i]),
     "web",
     widget$request$requestOptions$property[i]
   )
@@ -695,7 +485,7 @@ map_tz2min <- function(timezone) {
         "%Y-%m-%d %H:%M:%S",
         tz = timezone
       )))) /
-      60
+      60L
   )
 }
 
@@ -714,7 +504,7 @@ encode_payload <- function(URL, reserved = FALSE, repeated = FALSE) {
     "abcdefghijklmnopqrstuvwxyz0123456789._~,:%+-",
     "]"
   )
-  x <- strsplit(URL, "")[[1L]]
+  x <- strsplit(URL, "", fixed = TRUE)[[1L]]
   z <- grep(OK, x)
   if (length(z)) {
     y <- vapply(

@@ -120,12 +120,12 @@ gtrends <- function(
   geo = "",
   time = "today+5-y",
   gprop = c("web", "news", "images", "froogle", "youtube"),
-  category = 0,
+  category = 0L,
   hl = "en-US",
   compared_breakdown = FALSE,
   low_search_volume = FALSE,
   cookie_url = "http://trends.google.com/Cookies/NID",
-  tz = 0, # This equals UTC
+  tz = 0L, # This equals UTC
   onlyInterest = FALSE
 ) {
   validate_keywords(keyword)
@@ -137,7 +137,7 @@ gtrends <- function(
   validate_parameter_combinations(keyword, geo, time)
 
   # Validate remaining parameters
-  if (length(cookie_url) != 1 || !is.character(cookie_url)) {
+  if (length(cookie_url) != 1L || !is.character(cookie_url)) {
     stop(
       "The 'cookie_url' parameter must be a single character string.",
       call. = FALSE
@@ -188,7 +188,9 @@ gtrends <- function(
     error = function(e) {
       stop(
         "Failed to initialize Google Trends session during widget configuration:\n",
-        "Error: ", e$message, "\n",
+        "Error: ",
+        e$message,
+        "\n",
         "\nPossible causes:\n",
         "  - Network connectivity issues\n",
         "  - Invalid search parameters (keyword, geography, or time range)\n",
@@ -319,13 +321,14 @@ gtrends <- function(
 #' }
 plot.gtrends <- function(x, ...) {
   df <- x$interest_over_time
+
   df$hits <- if (typeof(df$hits) == "character") {
-    as.numeric(gsub("<", "", df$hits))
+    as.numeric(gsub("<", "", df$hits, fixed = TRUE))
   } else {
     df$hits
   }
 
-  df$legend <- paste(df$keyword, " (", df$geo, ")", sep = "")
+  df$legend <- paste0(df$keyword, " (", df$geo, ")")
 
   p <- ggplot(df, aes_string(x = "date", y = "hits", color = "legend")) +
     geom_line() +

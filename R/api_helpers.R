@@ -260,6 +260,155 @@ build_widget_url <- function(
   return(paste0(URLencode(paste(url_parts, collapse = "&"))))
 }
 
+#' Check if widget represents category-only search
+#' @param widget Widget object from Google Trends API
+#' @return Logical indicating if this is a category-only search
+#' @noRd
+is_category_only_search <- function(widget) {
+  if (is.null(unlist(widget$request$comparisonItem))) {}
+
+  if (
+    !any(grepl(
+      "keyword",
+      names(unlist(widget$request$comparisonItem)),
+      fixed = TRUE
+    ))
+  ) {
+    return(TRUE)
+  }
+
+  return(FALSE)
+}
+
+#' Check if widget has multiple timeframes
+#' @param widget Widget object from Google Trends API
+#' @return Logical indicating if widget has multiple timeframes
+#' @noRd
+has_multiple_timeframes <- function(widget) {
+  if (is.null(widget$request$comparisonItem[[2L]])) {
+    return(FALSE)
+  }
+
+  time_lengths <- length(widget$request$comparisonItem[[2L]]$time)
+  unique_times <- length(unique(widget$request$comparisonItem[[2L]]$time))
+
+  return(time_lengths != 1L && unique_times != 1L)
+}
+
+#' Create payload for category-only requests
+#' @param widget Widget object from Google Trends API
+#' @return List containing the payload for category requests
+#' @noRd
+create_category_payload <- function(widget) {
+  payload <- list()
+  payload$locale <- widget$request$locale[1L]
+  payload$comparisonItem <- widget$request$comparisonItem[[1L]]
+  payload$resolution <- widget$request$resolution[1L]
+  payload$requestOptions$category <- widget$request$requestOptions$category[1L]
+  payload$requestOptions$backend <- widget$request$requestOptions$backend[1L]
+  payload$time <- widget$request$time[1L]
+  payload$requestOptions$property <- widget$request$requestOptions$property[1L]
+
+  return(list(payload = payload, token = widget$token[1L]))
+}
+
+#' Create payload for multi-timeframe requests
+#' @param widget Widget object from Google Trends API
+#' @return List containing the payload for multi-timeframe requests
+#' @noRd
+create_multirange_payload <- function(widget) {
+  payload <- list()
+
+  # Get first non-NA values for core parameters
+  payload$time <- widget$request$time[head(
+    which(!is.na(widget$request$time)),
+    1L
+  )]
+  payload$time <- gsub(" ", "+", payload$time, fixed = TRUE)
+  payload$resolution <- widget$request$resolution[head(
+    which(!is.na(widget$request$resolution)),
+    1L
+  )]
+  payload$locale <- widget$request$locale[head(
+    which(!is.na(widget$request$locale)),
+    1L
+  )]
+
+  # Set comparison item and options
+  payload$comparisonItem <- widget$request$comparisonItem[[2L]]
+  payload$comparisonItem$geo <- widget$request$comparisonItem[[2L]]$geo
+  payload$requestOptions$property <- widget$request$requestOptions$property[2L]
+  payload$requestOptions$backend <- widget$request$requestOptions$backend[2L]
+  payload$requestOptions$category <- widget$request$requestOptions$category[2L]
+
+  token <- widget$token[which(widget$id == "TIMESERIES")]
+
+  return(list(payload = payload, token = token))
+}
+
+#' Create payload for standard multiline requests
+#' @param widget Widget object from Google Trends API
+#' @return List containing the payload for standard requests
+#' @noRd
+create_multiline_payload <- function(widget) {
+  payload <- list()
+
+  # Determine which index to use (1 or 2) based on locale and geo conditions
+  use_index_1 <- !is.na(widget$request$locale[1L]) ||
+    (length(unique(unlist(widget$request$comparisonItem[[1L]]$geo))) > 1L)
+
+  index <- if (use_index_1) 1L else 2L
+
+  payload$locale <- widget$request$locale[index]
+  payload$comparisonItem <- widget$request$comparisonItem[[1L]] # Always use [[1]] for comparison item
+  payload$resolution <- widget$request$resolution[index]
+  payload$requestOptions$category <- widget$request$requestOptions$category[
+    index
+  ]
+  payload$requestOptions$backend <- widget$request$requestOptions$backend[index]
+  payload$time <- widget$request$time[index]
+  payload$requestOptions$property <- widget$request$requestOptions$property[
+    index
+  ]
+
+  return(list(payload = payload, token = widget$token[index]))
+}
+
+#' Build Google Trends API URL
+#' @param base_url Base URL for the API endpoint
+#' @param payload List containing the request payload
+#' @param token Authentication token
+#' @param tz Timezone offset in minutes
+#' @param use_encode_payload Whether to use custom payload encoding (for multirange)
+#' @return Complete URL string for the API request
+#' @noRd
+build_trends_url <- function(
+  base_url,
+  payload,
+  token,
+  tz,
+  use_encode_payload = FALSE
+) {
+  # Convert payload to JSON
+  json_payload <- jsonlite::toJSON(payload, auto_unbox = TRUE, null = "list")
+
+  # Encode the payload
+  if (use_encode_payload) {
+    encoded_payload <- encode_payload(json_payload, reserved = TRUE)
+  } else {
+    encoded_payload <- URLencode(json_payload, reserved = TRUE)
+  }
+
+  # Build complete URL
+  url <- paste0(
+    URLencode(base_url),
+    encoded_payload,
+    URLencode(paste0("&token=", token, "&tz=", tz))
+  )
+
+  return(url)
+}
+
 #' Download and parse CSV response from widget API
 #'
 #' @param url Character string with widget API URL
