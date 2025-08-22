@@ -30,15 +30,23 @@ get_countries <- function() {
     destfile = destfile
   )
 
-  usa <- readxl::read_excel(destfile, skip = 1, .name_repair = "minimal")[, c(11:14)]
+  usa <- readxl::read_excel(destfile, skip = 1, .name_repair = "minimal")[, c(
+    11:14
+  )]
 
   usa <- data.frame(
     country_code = "US",
     name = usa$Metro,
-    sub_code = paste("US",
-      lapply(regmatches(
-        usa$Metro, regexec(", (\\S{2})", usa$Metro)
-      ), "[", 2),
+    sub_code = paste(
+      "US",
+      lapply(
+        regmatches(
+          usa$Metro,
+          regexec(", (\\S{2})", usa$Metro)
+        ),
+        "[",
+        2
+      ),
       sep = "-"
     )
   )
@@ -75,9 +83,7 @@ get_countries <- function() {
     if (length(names(l)) == 2) {
       return(l)
     } else {
-      (
-        return(do.call(rbind, l$children))
-      )
+      (return(do.call(rbind, l$children)))
     }
   }
 
@@ -88,7 +94,11 @@ get_countries <- function() {
   names(countries2) <- c("country_name", "name", "code")
 
   countries2 <- merge(countrie_names, countries2, by = "country_name")
-  countries2$sub_code <- paste(countries2$country_code, countries2$code, sep = "-")
+  countries2$sub_code <- paste(
+    countries2$country_code,
+    countries2$code,
+    sep = "-"
+  )
 
   countries2 <- countries2[, c("country_code", "sub_code", "name")]
   countries2$name <- toupper(countries2$name)

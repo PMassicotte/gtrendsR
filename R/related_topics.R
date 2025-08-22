@@ -1,7 +1,13 @@
 related_topics <- function(widget, comparison_item, hl, tz) {
   i <- which(grepl("related_topics", widget$id, ignore.case = TRUE) == TRUE)
 
-  res <- lapply(i, create_related_topics_payload, widget = widget, hl = hl, tz = tz)
+  res <- lapply(
+    i,
+    create_related_topics_payload,
+    widget = widget,
+    hl = hl,
+    tz = tz
+  )
   res <- do.call(rbind, res)
 
   return(res)
@@ -37,9 +43,12 @@ create_related_topics_payload <- function(i, widget, hl, tz) {
     URLencode(
       "https://www.google.com/trends/api/widgetdata/relatedsearches/csv?req="
     ),
-    URLencode(paste0(
-      jsonlite::toJSON(payload2, auto_unbox = TRUE)
-    ), reserved = TRUE),
+    URLencode(
+      paste0(
+        jsonlite::toJSON(payload2, auto_unbox = TRUE)
+      ),
+      reserved = TRUE
+    ),
     URLencode(paste0("&token=", widget$token[i])),
     URLencode(paste0("&tz=", tz, "&hl=", hl))
   )
@@ -62,15 +71,20 @@ create_related_topics_payload <- function(i, widget, hl, tz) {
   res$id <- NULL
   res$geo <- unlist(payload2$restriction$geo, use.names = FALSE)
 
-  if (length(widget$request$restriction$complexKeywordsRestriction$operator) !=
-    0) {
-    if (is.na(widget$request$restriction$complexKeywordsRestriction$operator[[i]])) {
+  if (
+    length(widget$request$restriction$complexKeywordsRestriction$operator) != 0
+  ) {
+    if (
+      is.na(widget$request$restriction$complexKeywordsRestriction$operator[[i]])
+    ) {
       res$keyword <-
         widget$request$restriction$complexKeywordsRestriction$keyword[[i]]$value
     } else {
       res$keyword <-
         paste(
-          widget$request$restriction$complexKeywordsRestriction$keyword[[i]]$value,
+          widget$request$restriction$complexKeywordsRestriction$keyword[[
+            i
+          ]]$value,
           collapse = "+"
         )
     }
@@ -87,7 +101,11 @@ extract_related_topics <- function(i, raw_data) {
   n <- length(raw_data)
   end <- i + min(which(raw_data[i:n] == "")) - 1
 
-  df <- read.csv(textConnection(raw_data[i:end]), row.names = NULL, encoding = "UTF-8")
+  df <- read.csv(
+    textConnection(raw_data[i:end]),
+    row.names = NULL,
+    encoding = "UTF-8"
+  )
   df$subject <- rownames(df)
   rownames(df) <- NULL
   df <- df[, c(2, 1)]

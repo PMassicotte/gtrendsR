@@ -38,7 +38,15 @@
 #'
 #' @export
 
-setHandleParameters <- function(user = NULL, password = NULL, domain = NULL, proxyhost = NULL, proxyport = 8080, proxyauth = 15, extra_curl_opts = list()) {
+setHandleParameters <- function(
+  user = NULL,
+  password = NULL,
+  domain = NULL,
+  proxyhost = NULL,
+  proxyport = 8080,
+  proxyauth = 15,
+  extra_curl_opts = list()
+) {
   .pkgenv[["handle_user"]] <- user
   .pkgenv[["handle_password"]] <- password
   .pkgenv[["handle_domain"]] <- domain
@@ -46,7 +54,9 @@ setHandleParameters <- function(user = NULL, password = NULL, domain = NULL, pro
   .pkgenv[["handle_proxyport"]] <- proxyport
   .pkgenv[["handle_proxyauth"]] <- as.integer(proxyauth)
   if (!is.list(extra_curl_opts)) {
-    stop("extra_curl_opts must be a list of name-value pairs for passing to curl::handle_setopt()")
+    stop(
+      "extra_curl_opts must be a list of name-value pairs for passing to curl::handle_setopt()"
+    )
   }
   .pkgenv[["handle_extra_curl_opts"]] <- extra_curl_opts
 }

@@ -4,8 +4,8 @@ if (!curl::has_internet()) {
 }
 
 # Exit unless opted in
-if (Sys.getenv("RunAllGtrendsRTests", unset="") == "") {
-    exit_file("Skipping tests not opted into.")
+if (Sys.getenv("RunAllGtrendsRTests", unset = "") == "") {
+  exit_file("Skipping tests not opted into.")
 }
 
 # Single keyword ----------------------------------------------------------
@@ -30,7 +30,8 @@ expect_true(all(Vectorize(identical, "x")(
     unique(res$interest_by_city$keyword),
     unique(res$related_topics$keyword),
     unique(res$related_queries$keyword)
-  ), kw
+  ),
+  kw
 )))
 
 # For US
@@ -57,5 +58,6 @@ expect_true(all(Vectorize(identical, "x")(
     unique(res$interest_by_dma$keyword),
     unique(res$interest_by_city$keyword),
     unique(res$related_queries$keyword)
-  ), kw
+  ),
+  kw
 )))

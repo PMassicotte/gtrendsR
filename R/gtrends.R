@@ -115,20 +115,24 @@
 #' head(gtrends(keyword = c("nhl", "nba"), geo = "CA", compared_breakdown = TRUE)$interest_by_region)
 #' }
 #' @export
-gtrends <- function(keyword = NA,
-                    geo = "",
-                    time = "today+5-y",
-                    gprop = c("web", "news", "images", "froogle", "youtube"),
-                    category = 0,
-                    hl = "en-US",
-                    compared_breakdown = FALSE,
-                    low_search_volume = FALSE,
-                    cookie_url = "http://trends.google.com/Cookies/NID",
-                    tz = 0, # This equals UTC
-                    onlyInterest = FALSE) {
+gtrends <- function(
+  keyword = NA,
+  geo = "",
+  time = "today+5-y",
+  gprop = c("web", "news", "images", "froogle", "youtube"),
+  category = 0,
+  hl = "en-US",
+  compared_breakdown = FALSE,
+  low_search_volume = FALSE,
+  cookie_url = "http://trends.google.com/Cookies/NID",
+  tz = 0, # This equals UTC
+  onlyInterest = FALSE
+) {
   stopifnot(
     # One  vector should be a multiple of the other
-    (length(keyword) %% length(geo) == 0) || (length(geo) %% length(keyword) == 0) || (length(time) %% length(keyword) == 0),
+    (length(keyword) %% length(geo) == 0) ||
+      (length(geo) %% length(keyword) == 0) ||
+      (length(time) %% length(keyword) == 0),
     is.vector(keyword),
     length(keyword) <= 5,
     length(geo) <= 5,
@@ -167,14 +171,20 @@ gtrends <- function(keyword = NA,
   }
 
   if (compared_breakdown & (length(geo) != 1 | length(keyword) == 1)) {
-    stop("`compared breakdown` can be only used with one geo and multiple keywords.", call. = FALSE)
+    stop(
+      "`compared breakdown` can be only used with one geo and multiple keywords.",
+      call. = FALSE
+    )
   }
 
   if (!(is.numeric(tz))) {
     if (tz %in% OlsonNames()) {
       tz <- map_tz2min(tz)
     } else {
-      stop("Given timezone not known. Check function OlsonNames().", call. = FALSE)
+      stop(
+        "Given timezone not known. Check function OlsonNames().",
+        call. = FALSE
+      )
     }
   }
 
@@ -222,10 +232,22 @@ gtrends <- function(keyword = NA,
 
     res <- list(
       interest_over_time = interest_over_time,
-      interest_by_country = do.call(rbind, interest_by_region[names(interest_by_region) == "country"]),
-      interest_by_region = do.call(rbind, interest_by_region[names(interest_by_region) == "region"]),
-      interest_by_dma = do.call(rbind, interest_by_region[names(interest_by_region) == "dma"]),
-      interest_by_city = do.call(rbind, interest_by_region[names(interest_by_region) == "city"]),
+      interest_by_country = do.call(
+        rbind,
+        interest_by_region[names(interest_by_region) == "country"]
+      ),
+      interest_by_region = do.call(
+        rbind,
+        interest_by_region[names(interest_by_region) == "region"]
+      ),
+      interest_by_dma = do.call(
+        rbind,
+        interest_by_region[names(interest_by_region) == "dma"]
+      ),
+      interest_by_city = do.call(
+        rbind,
+        interest_by_region[names(interest_by_region) == "city"]
+      ),
       related_topics = related_topics,
       related_queries = related_queries
     )

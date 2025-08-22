@@ -27,8 +27,10 @@ extract_top_rising <- function(data) {
       end_top <- length(data)
     }
 
-    top <- read.csv(textConnection(data[start_top:end_top]),
-      row.names = NULL, encoding = "UTF-8"
+    top <- read.csv(
+      textConnection(data[start_top:end_top]),
+      row.names = NULL,
+      encoding = "UTF-8"
     )
     top$subject <- rownames(top)
     rownames(top) <- NULL
@@ -50,8 +52,10 @@ extract_top_rising <- function(data) {
   # Make sure there are "RISING" data.
 
   if (length(start_rising) > 0 & !is.na(start_rising)) {
-    rising <- read.csv(textConnection(data[start_rising:length(data)]),
-      row.names = NULL, encoding = "UTF-8"
+    rising <- read.csv(
+      textConnection(data[start_rising:length(data)]),
+      row.names = NULL,
+      encoding = "UTF-8"
     )
     rising$subject <- rownames(rising)
     rownames(rising) <- NULL
