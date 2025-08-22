@@ -1,0 +1,298 @@
+#' API interaction helper functions for gtrends package
+#'
+#' @description
+#' These functions handle URL construction, payload creation, and API communication
+#' with consistent error handling and informative messages.
+
+#' Prepare keywords for API requests
+#'
+#' @param keyword Character vector of keywords
+#' @return Character vector of URL-encoded keywords
+#' @noRd
+prepare_keywords <- function(keyword) {
+  prepared <- sapply(
+    keyword,
+    function(x) {
+      y <- gsub("[+]", "%2B", x)
+      z <- gsub(" ", "+", y)
+      return(z)
+    },
+    USE.NAMES = FALSE
+  )
+  return(prepared)
+}
+
+#' Create comparison item data frame for API requests
+#'
+#' @param keyword Character vector of prepared keywords
+#' @param geo Character vector of geographic regions
+#' @param time Character vector of time specifications
+#' @return Data frame with comparison item structure
+#' @noRd
+create_comparison_item <- function(keyword, geo, time) {
+  data.frame(
+    keyword = keyword,
+    geo = geo,
+    time = time,
+    stringsAsFactors = FALSE
+  )
+}
+
+#' Build explore API URL with proper encoding
+#'
+#' @param comparison_item Data frame with query parameters
+#' @param category Numeric category ID
+#' @param gprop Character string for Google property
+#' @param hl Character language code
+#' @param tz Numeric timezone offset in minutes
+#' @return Character string with complete API URL
+#' @noRd
+build_explore_url <- function(comparison_item, category, gprop, hl, tz) {
+  token_payload <- list(
+    comparisonItem = comparison_item,
+    category = category,
+    property = gprop
+  )
+
+  base_url <- paste0(
+    "https://trends.google.com/trends/api/explore?hl=",
+    hl,
+    "&tz=",
+    tz,
+    "&req="
+  )
+
+  encoded_payload <- encode_payload(
+    jsonlite::toJSON(token_payload, auto_unbox = TRUE),
+    reserved = TRUE,
+    repeated = TRUE
+  )
+
+  final_url <- paste0(
+    URLencode(base_url),
+    encoded_payload,
+    URLencode(paste0("&tz=", tz))
+  )
+
+  return(final_url)
+}
+
+#' Make API request with error handling
+#'
+#' @param url Character string with API URL
+#' @param operation Character string describing the operation (for error messages)
+#' @return List with response content and metadata
+#' @noRd
+make_api_request <- function(url, operation = "API request") {
+  # Ensure cookie handler exists
+  if (!exists("cookie_handler", envir = .pkgenv)) {
+    stop(
+      "Cookie handler not initialized. This is an internal error.\n",
+      "Please report this issue to the package maintainers.",
+      call. = FALSE
+    )
+  }
+
+  tryCatch(
+    {
+      response <- curl::curl_fetch_memory(
+        url,
+        handle = .pkgenv[["cookie_handler"]]
+      )
+
+      # Check HTTP status
+      if (response$status_code != 200) {
+        handle_http_error(response$status_code, operation)
+      }
+
+      return(response)
+    },
+    error = function(e) {
+      if (grepl("status_code", e$message)) {
+        stop(e$message, call. = FALSE)
+      }
+
+      # Network or other curl errors
+      stop(
+        "Network error during ",
+        operation,
+        ":\n",
+        e$message,
+        "\n",
+        "Check your internet connection and try again.",
+        call. = FALSE
+      )
+    }
+  )
+}
+
+#' Handle HTTP error responses with informative messages
+#'
+#' @param status_code Numeric HTTP status code
+#' @param operation Character string describing the operation
+#' @noRd
+handle_http_error <- function(status_code, operation) {
+  error_messages <- list(
+    "400" = "Bad request - invalid parameters sent to Google Trends API.",
+    "403" = "Access forbidden - you may have exceeded rate limits or been temporarily blocked.",
+    "429" = "Too many requests - you have been rate limited. Wait before retrying.",
+    "500" = "Google Trends server error - try again later.",
+    "502" = "Bad gateway - Google Trends service may be temporarily unavailable.",
+    "503" = "Service unavailable - Google Trends is temporarily down.",
+    "504" = "Gateway timeout - Google Trends request timed out."
+  )
+
+  specific_msg <- error_messages[[as.character(status_code)]]
+
+  if (is.null(specific_msg)) {
+    specific_msg <- paste("Unexpected HTTP error", status_code)
+  }
+
+  stop(
+    "HTTP error during ",
+    operation,
+    " (Status: ",
+    status_code,
+    "):\n",
+    specific_msg,
+    "\n",
+    "If this persists, the issue may be temporary. Try again later.",
+    call. = FALSE
+  )
+}
+
+#' Parse API response content with encoding handling
+#'
+#' @param response List with API response
+#' @return List with parsed JSON content
+#' @noRd
+parse_api_response <- function(response) {
+  tryCatch(
+    {
+      # Handle encoding issues
+      temp <- rawToChar(response$content)
+      Encoding(temp) <- "UTF-8"
+
+      # Parse JSON (skip first 5 characters for Google Trends format)
+      parsed <- jsonlite::fromJSON(substring(temp, first = 6))
+
+      return(parsed)
+    },
+    error = function(e) {
+      stop(
+        "Failed to parse API response:\n",
+        e$message,
+        "\n",
+        "The response format may have changed or been corrupted.",
+        call. = FALSE
+      )
+    }
+  )
+}
+
+#' Fix geographic encoding issue in parsed response
+#'
+#' @param parsed_response List with parsed JSON
+#' @param comparison_item Data frame with original query parameters
+#' @return List with corrected geographic information
+#' @noRd
+fix_geo_encoding <- function(parsed_response, comparison_item) {
+  # Handle the case where jsonlite converts "NA" strings to logical NA
+  # See: https://github.com/jeroen/jsonlite/issues/314
+  if (
+    is.logical(parsed_response$widgets$request$comparisonItem[[1]]$geo$country)
+  ) {
+    parsed_response$widgets$request$comparisonItem[[
+      1
+    ]]$geo$country <- comparison_item$geo
+    parsed_response$widgets$request$geo$country <- comparison_item$geo
+    parsed_response$widgets$request$restriction$geo$country <- comparison_item$geo
+    parsed_response$widgets$geo <- comparison_item$geo
+  }
+
+  return(parsed_response)
+}
+
+#' Build widget data URL for different endpoint types
+#'
+#' @param endpoint Character string: "multiline", "multirange", or "comparedgeo"
+#' @param payload List with request payload
+#' @param token Character string with API token
+#' @param tz Numeric timezone offset
+#' @param extra_params Named list of additional URL parameters
+#' @return Character string with complete widget data URL
+#' @noRd
+build_widget_url <- function(
+  endpoint,
+  payload,
+  token,
+  tz,
+  extra_params = list()
+) {
+  base_urls <- list(
+    "multiline" = "https://www.google.com/trends/api/widgetdata/multiline/csv",
+    "multirange" = "https://trends.google.com/trends/api/widgetdata/multirange/csv",
+    "comparedgeo" = "https://www.google.com/trends/api/widgetdata/comparedgeo/csv"
+  )
+
+  if (!endpoint %in% names(base_urls)) {
+    stop("Invalid endpoint: ", endpoint, call. = FALSE)
+  }
+
+  base_url <- base_urls[[endpoint]]
+  encoded_payload <- URLencode(
+    jsonlite::toJSON(payload, auto_unbox = TRUE, null = "list"),
+    reserved = TRUE
+  )
+
+  url_parts <- c(
+    paste0(base_url, "?req=", encoded_payload),
+    paste0("token=", token),
+    paste0("tz=", tz)
+  )
+
+  # Add extra parameters
+  for (name in names(extra_params)) {
+    url_parts <- c(url_parts, paste0(name, "=", extra_params[[name]]))
+  }
+
+  return(paste0(URLencode(paste(url_parts, collapse = "&"))))
+}
+
+#' Download and parse CSV response from widget API
+#'
+#' @param url Character string with widget API URL
+#' @param operation Character string describing operation (for errors)
+#' @return Data frame with parsed CSV content, or NULL if empty
+#' @noRd
+download_widget_data <- function(url, operation = "widget data download") {
+  response <- make_api_request(url, operation)
+
+  tryCatch(
+    {
+      con <- textConnection(rawToChar(response$content))
+      df <- read.csv(
+        con,
+        skip = 1,
+        stringsAsFactors = FALSE,
+        encoding = "UTF-8"
+      )
+      close(con)
+
+      if (nrow(df) == 0) {
+        return(NULL)
+      }
+
+      return(df)
+    },
+    error = function(e) {
+      stop(
+        "Failed to parse CSV response during ",
+        operation,
+        ":\n",
+        e$message,
+        call. = FALSE
+      )
+    }
+  )
+}

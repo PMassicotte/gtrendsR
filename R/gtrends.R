@@ -128,136 +128,168 @@ gtrends <- function(
   tz = 0, # This equals UTC
   onlyInterest = FALSE
 ) {
-  stopifnot(
-    # One  vector should be a multiple of the other
-    (length(keyword) %% length(geo) == 0) ||
-      (length(geo) %% length(keyword) == 0) ||
-      (length(time) %% length(keyword) == 0),
-    is.vector(keyword),
-    length(keyword) <= 5,
-    length(geo) <= 5,
-    length(time) <= 5,
-    length(hl) == 1,
-    is.character(hl),
-    hl %in% language_codes$code,
-    length(cookie_url) == 1,
-    is.character(cookie_url)
-  )
+  validate_keywords(keyword)
+  validate_geo(geo)
+  validate_time(time)
+  validate_category(category)
+  validate_language(hl)
+  validate_compared_breakdown(compared_breakdown, geo, keyword)
+  validate_parameter_combinations(keyword, geo, time)
 
-  ## Check if valid geo. There are no official source(s) that we can use to
-  ## validate the entered geo code. However, we can use a regular expression to
-  ## verify if the structure is valid.
-
-  m <- regexpr("^[a-zA-Z]{2}((?:-\\w{1,3}))?(?:-\\d{1,3})?", geo)
-  ret <- regmatches(geo, m)
-
-  if (all(geo != "")) {
-    if (!identical(ret, geo)) {
-      stop("Country code not formatted correctly.", call. = FALSE)
-    }
-  }
-
-  ## Check if valid category
-  if (!all(category %in% categories[, "id"])) {
+  # Validate remaining parameters
+  if (length(cookie_url) != 1 || !is.character(cookie_url)) {
     stop(
-      "Category code not valid. Please use 'data(categories)' to retreive valid codes.",
+      "The 'cookie_url' parameter must be a single character string.",
       call. = FALSE
     )
   }
 
-  ## Check if time format is ok
-  if (!check_time(time)) {
-    stop("Cannot parse the supplied time format.", call. = FALSE)
-  }
-
-  if (compared_breakdown & (length(geo) != 1 | length(keyword) == 1)) {
+  if (!is.logical(low_search_volume)) {
     stop(
-      "`compared breakdown` can be only used with one geo and multiple keywords.",
+      "The 'low_search_volume' parameter must be TRUE or FALSE.",
       call. = FALSE
     )
   }
 
-  if (!(is.numeric(tz))) {
-    if (tz %in% OlsonNames()) {
-      tz <- map_tz2min(tz)
-    } else {
-      stop(
-        "Given timezone not known. Check function OlsonNames().",
-        call. = FALSE
-      )
-    }
+  if (!is.logical(onlyInterest)) {
+    stop(
+      "The 'onlyInterest' parameter must be TRUE or FALSE.",
+      call. = FALSE
+    )
   }
 
+  # Process timezone parameter
+  tz <- validate_timezone(tz)
+
+  # Process gprop parameter
   gprop <- match.arg(gprop, several.ok = FALSE)
   gprop <- ifelse(gprop == "web", "", gprop)
 
   # ****************************************************************************
   # Request a token from Google
   # ****************************************************************************
-  keyword <- sapply(keyword, function(x) {
-    y <- gsub("[+]", "%2B", x)
-    z <- gsub(" ", "+", y)
-    return(z)
-  })
-  names(keyword) <- NULL
-  comparison_item <- data.frame(keyword, geo, time, stringsAsFactors = FALSE)
 
-  widget <- get_widget(comparison_item, category, gprop, hl, cookie_url, tz)
+  # Prepare keywords and create comparison item
+  prepared_keywords <- prepare_keywords(keyword)
+  comparison_item <- create_comparison_item(prepared_keywords, geo, time)
+
+  # Get widget configuration with error handling
+  tryCatch(
+    {
+      widget <- get_widget_enhanced(
+        comparison_item,
+        category,
+        gprop,
+        hl,
+        cookie_url,
+        tz
+      )
+    },
+    error = function(e) {
+      stop(
+        "Failed to initialize Google Trends session:\n",
+        e$message,
+        "\n",
+        "This may be due to network issues or temporary Google service unavailability.",
+        call. = FALSE
+      )
+    }
+  )
 
   # ****************************************************************************
   # Now that we have tokens, we can process the queries
   # ****************************************************************************
 
-  interest_over_time <- interest_over_time(widget, comparison_item, tz)
+  # Get interest over time data with enhanced error handling
+  tryCatch(
+    {
+      interest_over_time_data <- get_interest_over_time_enhanced(
+        widget,
+        comparison_item,
+        tz
+      )
+    },
+    error = function(e) {
+      stop(
+        "Failed to retrieve interest over time data:\n",
+        e$message,
+        call. = FALSE
+      )
+    }
+  )
 
-  if (is.null(interest_over_time)) {
+  if (is.null(interest_over_time_data)) {
     stop(
-      "No data returned by the query. Consider changing search parameters.",
+      "No data returned by the query.\n",
+      "This may indicate:\n",
+      "  - Very low search volume for your keywords\n",
+      "  - Invalid keyword, location, or time parameters\n",
+      "  - Temporary Google Trends service issues\n",
+      "Try different search parameters or check if your keywords have sufficient search volume.",
       call. = FALSE
     )
   }
 
   if (!onlyInterest) {
-    interest_by_region <-
-      interest_by_region(
-        widget,
-        comparison_item,
-        low_search_volume,
-        compared_breakdown,
-        tz
-      )
-
-    related_topics <- related_topics(widget, comparison_item, hl, tz)
-    related_queries <- related_queries(widget, comparison_item, tz, hl)
+    # Get additional data types with error handling
+    tryCatch(
+      {
+        region_data <- get_interest_by_region_enhanced(
+          widget,
+          comparison_item,
+          low_search_volume,
+          compared_breakdown,
+          tz
+        )
+        topics_data <- get_related_topics_enhanced(
+          widget,
+          comparison_item,
+          hl,
+          tz
+        )
+        queries_data <- get_related_queries_enhanced(
+          widget,
+          comparison_item,
+          tz,
+          hl
+        )
+      },
+      error = function(e) {
+        warning(
+          "Some additional data could not be retrieved: ",
+          e$message,
+          "\nReturning interest over time data only.",
+          call. = FALSE
+        )
+        region_data <- list(
+          country = NULL,
+          region = NULL,
+          dma = NULL,
+          city = NULL
+        )
+        topics_data <- NULL
+        queries_data <- NULL
+      }
+    )
 
     res <- list(
-      interest_over_time = interest_over_time,
-      interest_by_country = do.call(
-        rbind,
-        interest_by_region[names(interest_by_region) == "country"]
-      ),
-      interest_by_region = do.call(
-        rbind,
-        interest_by_region[names(interest_by_region) == "region"]
-      ),
-      interest_by_dma = do.call(
-        rbind,
-        interest_by_region[names(interest_by_region) == "dma"]
-      ),
-      interest_by_city = do.call(
-        rbind,
-        interest_by_region[names(interest_by_region) == "city"]
-      ),
-      related_topics = related_topics,
-      related_queries = related_queries
+      interest_over_time = interest_over_time_data,
+      interest_by_country = region_data$country,
+      interest_by_region = region_data$region,
+      interest_by_dma = region_data$dma,
+      interest_by_city = region_data$city,
+      related_topics = topics_data,
+      related_queries = queries_data
     )
   } else {
-    res <- list(interest_over_time = interest_over_time)
+    res <- list(interest_over_time = interest_over_time_data)
   }
-  ## Remove row.names
+  # Clean up row names and ensure consistent structure
   res <- lapply(res, function(x) {
-    row.names(x) <- NULL
-    x
+    if (!is.null(x) && is.data.frame(x)) {
+      row.names(x) <- NULL
+    }
+    return(x)
   })
 
   class(res) <- c("gtrends", "list")

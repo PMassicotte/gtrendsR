@@ -38,126 +38,30 @@ get_api_cookies <- function(cookie_url) {
   return(NULL)
 }
 
+# Legacy function for backward compatibility - use check_time_enhanced for new code
 check_time <- function(time_ranges) {
-  stopifnot(is.character(time_ranges))
-
-  fixed_format <- c(
-    "now 1-H", # last hour
-    "now 4-H", # last four hours
-    "now 1-d", # last day
-    "now 7-d", # last seven days
-    "today 1-m", # past 30 days
-    "today 3-m", # past 90 days
-    "today 12-m", # past 12 months
-    "today+5-y", # last 5 years (default)
-    "all" # Since begening of Google Trends (2004)
+  tryCatch(
+    {
+      return(check_time_enhanced(time_ranges))
+    },
+    error = function(e) {
+      return(FALSE)
+    }
   )
-
-  for (tr in time_ranges) {
-    ## Return TRUE if one of the basic date formats is used
-    if (tr %in% fixed_format) {
-      return(TRUE)
-    }
-
-    ## The other possible format is by using time range
-    time <- unlist(strsplit(tr, " "))
-
-    ## Need to be a vector of two
-    if (length(time) != 2) {
-      return(FALSE)
-    }
-
-    if (!grepl("T", time[1])) {
-      start_date <- as.POSIXct(
-        format(anytime::anydate(time[1], tz = "UTC"), tz = "UTC"),
-        tz = "UTC"
-      )
-      end_date <- as.POSIXct(
-        format(anytime::anydate(time[2], tz = "UTC"), tz = "UTC"),
-        tz = "UTC"
-      )
-    } else {
-      start_date <- anytime::anytime(time[1])
-      end_date <- anytime::anytime(time[2])
-    }
-
-    if (is.na(start_date) | is.na(end_date)) {
-      return(FALSE)
-    }
-
-    ## Start date can't be after end date
-    if (start_date >= end_date) {
-      return(FALSE)
-    }
-
-    ## Start date can't be before 2004-01-01
-    if (start_date < as.POSIXct("2004-01-01", tz = "UTC")) {
-      return(FALSE)
-    }
-
-    ## End date can't be after today
-    if (end_date > as.POSIXct(Sys.time())) {
-      return(FALSE)
-    }
-  }
-
-  return(TRUE)
 }
 
 
+# Legacy get_widget function - maintained for backward compatibility
+# New code should use get_widget_enhanced
 get_widget <- function(comparison_item, category, gprop, hl, cookie_url, tz) {
-  token_payload <- list()
-  token_payload$comparisonItem <- comparison_item
-  token_payload$category <- category
-  token_payload$property <- gprop
-
-  url <- paste0(
-    URLencode(paste0(
-      "https://trends.google.com/trends/api/explore?hl=",
-      hl,
-      "&tz=",
-      tz,
-      "&req="
-    )),
-    encode_payload(
-      paste0(jsonlite::toJSON(token_payload, auto_unbox = TRUE)),
-      reserved = TRUE,
-      repeated = TRUE
-    ),
-    URLencode(paste0("&tz=", tz))
-  )
-
-  # url <- encode_keyword(url)
-
-  # if cookie_handler hasn't been set up, get the requisite cookies from Google's API
-  if (!exists("cookie_handler", envir = .pkgenv)) {
-    get_api_cookies(cookie_url)
-  }
-  # get the tokens etc., using the URL and the cookie_handler
-  widget <- curl::curl_fetch_memory(url, handle = .pkgenv[["cookie_handler"]])
-
-  stopifnot(widget$status_code == 200)
-
-  ## Fix encoding issue for keywords like österreich"
-  temp <- rawToChar(widget$content)
-  Encoding(temp) <- "UTF-8"
-
-  myjs <- jsonlite::fromJSON(substring(temp, first = 6))
-
-  # The above will silently convert strings containing "NA" to
-  # a logical NA (see: https://github.com/jeroen/jsonlite/issues/314)
-  # There currently is no way to fix this other than setting simplifyVector = F
-  # which likely breaks other things. Thus what follows is a hacky fix to
-  # catch the likely case that somebody is looking for searches with
-  # geo="NA"
-  if (is.logical(myjs$widgets$request$comparisonItem[[1]]$geo$country)) {
-    myjs$widgets$request$comparisonItem[[1]]$geo$country <- comparison_item$geo
-    myjs$widgets$request$geo$country <- comparison_item$geo
-    myjs$widgets$request$restriction$geo$country <- comparison_item$geo
-    myjs$widgets$geo <- comparison_item$geo
-  }
-
-  widget <- myjs$widgets
+  return(get_widget_enhanced(
+    comparison_item,
+    category,
+    gprop,
+    hl,
+    cookie_url,
+    tz
+  ))
 }
 
 interest_over_time <- function(widget, comparison_item, tz) {
@@ -823,4 +727,142 @@ encode_payload <- function(URL, reserved = FALSE, repeated = FALSE) {
     x[z] <- y
   }
   paste(x, collapse = "")
+}
+
+#' Enhanced wrapper functions with improved error handling
+#' These functions provide better error messages and more robust error handling
+
+#' Enhanced get_widget with better error handling
+#' @noRd
+get_widget_enhanced <- function(
+  comparison_item,
+  category,
+  gprop,
+  hl,
+  cookie_url,
+  tz
+) {
+  # Initialize cookies if needed
+  if (!exists("cookie_handler", envir = .pkgenv)) {
+    tryCatch(
+      {
+        get_api_cookies(cookie_url)
+      },
+      error = function(e) {
+        stop(
+          "Failed to initialize Google Trends session:\n",
+          "Could not obtain required cookies from Google.\n",
+          "This may be due to network connectivity issues or proxy settings.\n",
+          "Original error: ",
+          e$message,
+          call. = FALSE
+        )
+      }
+    )
+  }
+
+  # Build API URL
+  url <- build_explore_url(comparison_item, category, gprop, hl, tz)
+
+  # Make API request
+  response <- make_api_request(url, "widget initialization")
+
+  # Parse response
+  parsed_response <- parse_api_response(response)
+
+  # Fix geographic encoding issues
+  parsed_response <- fix_geo_encoding(parsed_response, comparison_item)
+
+  return(parsed_response$widgets)
+}
+
+#' Enhanced interest over time with better error handling
+#' @noRd
+get_interest_over_time_enhanced <- function(widget, comparison_item, tz) {
+  tryCatch(
+    {
+      result <- interest_over_time(widget, comparison_item, tz)
+      return(result)
+    },
+    error = function(e) {
+      stop(
+        "Failed to retrieve interest over time data.\n",
+        "This could be due to:\n",
+        "  - Invalid search parameters\n",
+        "  - Network connectivity issues\n",
+        "  - Google Trends service unavailability\n",
+        "Original error: ",
+        e$message,
+        call. = FALSE
+      )
+    }
+  )
+}
+
+#' Enhanced interest by region with better error handling
+#' @noRd
+get_interest_by_region_enhanced <- function(
+  widget,
+  comparison_item,
+  low_search_volume,
+  compared_breakdown,
+  tz
+) {
+  tryCatch(
+    {
+      region_results <- interest_by_region(
+        widget,
+        comparison_item,
+        low_search_volume,
+        compared_breakdown,
+        tz
+      )
+      return(combine_region_results(region_results))
+    },
+    error = function(e) {
+      # Return empty structure rather than failing completely
+      warning(
+        "Could not retrieve regional interest data: ",
+        e$message,
+        call. = FALSE
+      )
+      return(list(country = NULL, region = NULL, dma = NULL, city = NULL))
+    }
+  )
+}
+
+#' Enhanced related topics with better error handling
+#' @noRd
+get_related_topics_enhanced <- function(widget, comparison_item, hl, tz) {
+  tryCatch(
+    {
+      return(related_topics(widget, comparison_item, hl, tz))
+    },
+    error = function(e) {
+      warning(
+        "Could not retrieve related topics: ",
+        e$message,
+        call. = FALSE
+      )
+      return(NULL)
+    }
+  )
+}
+
+#' Enhanced related queries with better error handling
+#' @noRd
+get_related_queries_enhanced <- function(widget, comparison_item, tz, hl) {
+  tryCatch(
+    {
+      return(related_queries(widget, comparison_item, tz, hl))
+    },
+    error = function(e) {
+      warning(
+        "Could not retrieve related queries: ",
+        e$message,
+        call. = FALSE
+      )
+      return(NULL)
+    }
+  )
 }
