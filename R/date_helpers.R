@@ -11,8 +11,8 @@
 #' @return POSIXct vector of parsed dates
 #' @noRd
 parse_gtrends_dates <- function(date_vector, tz) {
-  if (length(date_vector) == 0) {
-    return(as.POSIXct(character(0)))
+  if (length(date_vector) == 0L) {
+    return(as.POSIXct(character(0L)))
   }
 
   tz_string <- format_timezone_string(tz)
@@ -54,12 +54,12 @@ parse_gtrends_dates <- function(date_vector, tz) {
     date_vector
   )
 
-  return(as.POSIXct(
+  as.POSIXct(
     cleaned_dates,
     format = "%Y-%m-%dT%H:%M:%S",
     tz = tz_string,
     asUTC = TRUE
-  ))
+  )
 }
 
 #' Format timezone offset into string
@@ -68,7 +68,7 @@ parse_gtrends_dates <- function(date_vector, tz) {
 #' @return Character string formatted as GMT+/-HH
 #' @noRd
 format_timezone_string <- function(tz) {
-  paste0("GMT", ifelse(tz >= 0, "+", "-"), abs(tz) / 60)
+  paste0("GMT", ifelse(tz >= 0L, "+", "-"), abs(tz) / 60L)
 }
 
 #' Parse date columns in data frames with different structures
@@ -116,9 +116,9 @@ check_time_enhanced <- function(time_ranges) {
     }
 
     # Parse custom time range
-    time_parts <- unlist(strsplit(tr, " "))
+    time_parts <- unlist(strsplit(tr, " ", fixed = TRUE))
 
-    if (length(time_parts) != 2) {
+    if (length(time_parts) != 2L) {
       stop(
         "Custom time range must have format 'start_date end_date'.\n",
         "Invalid format: '",
@@ -131,18 +131,18 @@ check_time_enhanced <- function(time_ranges) {
     # Parse start and end dates
     tryCatch(
       {
-        if (!grepl("T", time_parts[1])) {
+        if (!grepl("T", time_parts[1L], fixed = TRUE)) {
           start_date <- as.POSIXct(
-            format(anytime::anydate(time_parts[1], tz = "UTC"), tz = "UTC"),
+            format(anytime::anydate(time_parts[1L], tz = "UTC"), tz = "UTC"),
             tz = "UTC"
           )
           end_date <- as.POSIXct(
-            format(anytime::anydate(time_parts[2], tz = "UTC"), tz = "UTC"),
+            format(anytime::anydate(time_parts[2L], tz = "UTC"), tz = "UTC"),
             tz = "UTC"
           )
         } else {
-          start_date <- anytime::anytime(time_parts[1])
-          end_date <- anytime::anytime(time_parts[2])
+          start_date <- anytime::anytime(time_parts[1L])
+          end_date <- anytime::anytime(time_parts[2L])
         }
       },
       error = function(e) {
@@ -173,9 +173,9 @@ check_time_enhanced <- function(time_ranges) {
         tr,
         "'.\n",
         "Start: ",
-        time_parts[1],
+        time_parts[1L],
         ", End: ",
-        time_parts[2],
+        time_parts[2L],
         call. = FALSE
       )
     }
@@ -184,7 +184,7 @@ check_time_enhanced <- function(time_ranges) {
       stop(
         "Start date cannot be before 2004-01-01 (Google Trends launch).\n",
         "Invalid start date: ",
-        time_parts[1],
+        time_parts[1L],
         call. = FALSE
       )
     }
@@ -193,11 +193,11 @@ check_time_enhanced <- function(time_ranges) {
       stop(
         "End date cannot be in the future.\n",
         "Invalid end date: ",
-        time_parts[2],
+        time_parts[2L],
         call. = FALSE
       )
     }
   }
 
-  return(TRUE)
+  TRUE
 }

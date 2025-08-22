@@ -1,10 +1,8 @@
 #' API interaction helper functions for gtrends package
 #'
 #' @description
-#' These functions handle URL construction, payload creation, and API communication
-#' with consistent error handling and informative messages.
-
-#' Prepare keywords for API requests
+#' These functions handle URL construction, payload creation, and API
+#' communication with consistent error handling and informative messages.
 #'
 #' @param keyword Character vector of keywords
 #' @return Character vector of URL-encoded keywords
@@ -13,13 +11,14 @@ prepare_keywords <- function(keyword) {
   prepared <- sapply(
     keyword,
     function(x) {
-      y <- gsub("[+]", "%2B", x)
-      z <- gsub(" ", "+", y)
-      return(z)
+      y <- gsub("[+]", "%2B", x, fixed = TRUE)
+      z <- gsub(" ", "+", y, fixed = TRUE)
+      z
     },
     USE.NAMES = FALSE
   )
-  return(prepared)
+
+  prepared
 }
 
 #' Create comparison item data frame for API requests
@@ -74,13 +73,15 @@ build_explore_url <- function(comparison_item, category, gprop, hl, tz) {
     URLencode(paste0("&tz=", tz))
   )
 
-  return(final_url)
+  final_url
 }
 
 #' Make API request with error handling
 #'
 #' @param url Character string with API URL
-#' @param operation Character string describing the operation (for error messages)
+#' @param operation Character string describing the operation (for error
+#' messages)
+#'
 #' @return List with response content and metadata
 #' @noRd
 make_api_request <- function(url, operation = "API request") {
@@ -101,14 +102,14 @@ make_api_request <- function(url, operation = "API request") {
       )
 
       # Check HTTP status
-      if (response$status_code != 200) {
+      if (response$status_code != 200L) {
         handle_http_error(response$status_code, operation)
       }
 
       return(response)
     },
     error = function(e) {
-      if (grepl("status_code", e$message)) {
+      if (grepl("status_code", e$message, fixed = TRUE)) {
         stop(e$message, call. = FALSE)
       }
 
@@ -174,7 +175,7 @@ parse_api_response <- function(response) {
       Encoding(temp) <- "UTF-8"
 
       # Parse JSON (skip first 5 characters for Google Trends format)
-      parsed <- jsonlite::fromJSON(substring(temp, first = 6))
+      parsed <- jsonlite::fromJSON(substring(temp, first = 6L))
 
       return(parsed)
     },
@@ -200,17 +201,17 @@ fix_geo_encoding <- function(parsed_response, comparison_item) {
   # Handle the case where jsonlite converts "NA" strings to logical NA
   # See: https://github.com/jeroen/jsonlite/issues/314
   if (
-    is.logical(parsed_response$widgets$request$comparisonItem[[1]]$geo$country)
+    is.logical(parsed_response$widgets$request$comparisonItem[[1L]]$geo$country)
   ) {
     parsed_response$widgets$request$comparisonItem[[
-      1
+      1L
     ]]$geo$country <- comparison_item$geo
     parsed_response$widgets$request$geo$country <- comparison_item$geo
     parsed_response$widgets$request$restriction$geo$country <- comparison_item$geo
     parsed_response$widgets$geo <- comparison_item$geo
   }
 
-  return(parsed_response)
+  parsed_response
 }
 
 #' Build widget data URL for different endpoint types
@@ -230,9 +231,9 @@ build_widget_url <- function(
   extra_params = list()
 ) {
   base_urls <- list(
-    "multiline" = "https://www.google.com/trends/api/widgetdata/multiline/csv",
-    "multirange" = "https://trends.google.com/trends/api/widgetdata/multirange/csv",
-    "comparedgeo" = "https://www.google.com/trends/api/widgetdata/comparedgeo/csv"
+    multiline = "https://www.google.com/trends/api/widgetdata/multiline/csv",
+    multirange = "https://trends.google.com/trends/api/widgetdata/multirange/csv",
+    comparedgeo = "https://www.google.com/trends/api/widgetdata/comparedgeo/csv"
   )
 
   if (!endpoint %in% names(base_urls)) {
@@ -271,19 +272,19 @@ download_widget_data <- function(url, operation = "widget data download") {
   tryCatch(
     {
       con <- textConnection(rawToChar(response$content))
-      df <- read.csv(
+      csv_data <- read.csv(
         con,
-        skip = 1,
+        skip = 1L,
         stringsAsFactors = FALSE,
         encoding = "UTF-8"
       )
       close(con)
 
-      if (nrow(df) == 0) {
+      if (nrow(csv_data) == 0L) {
         return(NULL)
       }
 
-      return(df)
+      return(csv_data)
     },
     error = function(e) {
       stop(

@@ -1,10 +1,8 @@
 #' Input validation helper functions for gtrends package
 #'
 #' @description
-#' These functions provide consistent input validation with informative error messages
-#' for the gtrends package.
-
-#' Validate keyword parameters
+#' These functions provide consistent input validation with informative error
+#' messages for the gtrends package.
 #'
 #' @param keyword Character vector of keywords
 #' @return NULL (throws error if invalid)
@@ -64,7 +62,7 @@ validate_geo <- function(geo) {
       invalid_geos <- geo[!geo %in% ret]
       stop(
         "Invalid geographic code(s): ",
-        paste(invalid_geos, collapse = ", "),
+        toString(invalid_geos),
         "\n",
         "Geographic codes must follow ISO format: 'US', 'US-CA', 'US-CA-807'.\n",
         "Use data('countries') to see valid country codes.",
@@ -114,7 +112,7 @@ validate_category <- function(category) {
     invalid_cats <- category[!category %in% categories[, "id"]]
     stop(
       "Invalid category code(s): ",
-      paste(invalid_cats, collapse = ", "),
+      toString(invalid_cats),
       "\n",
       "Use data('categories') to see valid category codes.\n",
       "Example: category = 20 (Sports)",
