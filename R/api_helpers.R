@@ -265,7 +265,9 @@ build_widget_url <- function(
 #' @return Logical indicating if this is a category-only search
 #' @noRd
 is_category_only_search <- function(widget) {
-  if (is.null(unlist(widget$request$comparisonItem))) {}
+  if (is.null(unlist(widget$request$comparisonItem))) {
+    return(TRUE)
+  }
 
   if (
     !any(grepl(

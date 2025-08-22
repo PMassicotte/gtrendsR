@@ -176,7 +176,7 @@ gtrends <- function(
   # Get widget configuration with error handling
   tryCatch(
     {
-      widget <- get_widget_enhanced(
+      widget <- get_widget(
         comparison_item,
         category,
         gprop,
@@ -206,10 +206,10 @@ gtrends <- function(
   # Now that we have tokens, we can process the queries
   # ****************************************************************************
 
-  # Get interest over time data with enhanced error handling
+  # Get interest over time data with error handling
   tryCatch(
     {
-      interest_over_time_data <- get_interest_over_time_enhanced(
+      interest_over_time_data <- interest_over_time(
         widget,
         comparison_item,
         tz
@@ -240,20 +240,20 @@ gtrends <- function(
     # Get additional data types with error handling
     tryCatch(
       {
-        region_data <- get_interest_by_region_enhanced(
+        region_data <- get_interest_by_region(
           widget,
           comparison_item,
           low_search_volume,
           compared_breakdown,
           tz
         )
-        topics_data <- get_related_topics_enhanced(
+        topics_data <- get_related_topics(
           widget,
           comparison_item,
           hl,
           tz
         )
-        queries_data <- get_related_queries_enhanced(
+        queries_data <- get_related_queries(
           widget,
           comparison_item,
           tz,

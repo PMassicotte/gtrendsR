@@ -148,11 +148,45 @@ check_time <- function(time_ranges) {
   TRUE
 }
 
-# Legacy get_widget function - maintained for backward compatibility
-# New code should use get_widget_enhanced
 get_widget <- function(comparison_item, category, gprop, hl, cookie_url, tz) {
-  # Wrapper for legacy compatibility - delegates to enhanced version
-  get_widget_enhanced(comparison_item, category, gprop, hl, cookie_url, tz)
+  # Initialize cookies if needed
+  if (!exists("cookie_handler", envir = .pkgenv)) {
+    tryCatch(
+      {
+        get_api_cookies(cookie_url)
+      },
+      error = function(e) {
+        stop(
+          "Failed to initialize Google Trends session during cookie acquisition:\n",
+          "Could not obtain required authentication cookies from Google.\n",
+          "\nPossible causes:\n",
+          "  - Network connectivity issues\n",
+          "  - Proxy server configuration problems\n",
+          "  - Firewall blocking Google Trends access\n",
+          "  - Invalid cookie URL: ",
+          cookie_url,
+          "\n",
+          "\nOriginal error: ",
+          e$message,
+          call. = FALSE
+        )
+      }
+    )
+  }
+
+  # Build API URL
+  url <- build_explore_url(comparison_item, category, gprop, hl, tz)
+
+  # Make API request
+  response <- make_api_request(url, "widget initialization")
+
+  # Parse response
+  parsed_response <- parse_api_response(response)
+
+  # Fix geographic encoding issues
+  parsed_response <- fix_geo_encoding(parsed_response, comparison_item)
+
+  return(parsed_response$widgets)
 }
 
 interest_over_time <- function(widget, comparison_item, tz) {
@@ -176,27 +210,28 @@ build_interest_over_time_url <- function(widget, tz) {
   if (onlyCategory) {
     # Handle category-only searches
     payload_data <- create_category_payload(widget)
-    return(build_trends_url(
-      "https://www.google.com/trends/api/widgetdata/multiline/csv?req=",
+    return(
+      build_widget_url(
+        "multiline",
+        c(payload2, payload_data$payload),
+        payload_data$token,
+        tz
+      )
+    )
+  } else if (has_multiple_timeframes(widget)) {
+    # Handle multi-timeframe searches
+    payload_data <- create_multirange_payload(widget)
+    return(build_widget_url(
+      "multirange",
       c(payload2, payload_data$payload),
       payload_data$token,
       tz
     ))
-  } else if (has_multiple_timeframes(widget)) {
-    # Handle multi-timeframe searches
-    payload_data <- create_multirange_payload(widget)
-    return(build_trends_url(
-      "https://trends.google.com/trends/api/widgetdata/multirange/csv?req=",
-      c(payload2, payload_data$payload),
-      payload_data$token,
-      tz,
-      use_encode_payload = TRUE
-    ))
   } else {
     # Handle standard multiline searches
     payload_data <- create_multiline_payload(widget)
-    return(build_trends_url(
-      "https://www.google.com/trends/api/widgetdata/multiline/csv?req=",
+    return(build_widget_url(
+      "multiline",
       c(payload2, payload_data$payload),
       payload_data$token,
       tz
@@ -206,21 +241,7 @@ build_interest_over_time_url <- function(widget, tz) {
 
 # Helper function to fetch data with error handling
 fetch_trends_data <- function(url) {
-  res <- curl::curl_fetch_memory(url, handle = .pkgenv[["cookie_handler"]])
-
-  if (res$status_code != 200L) {
-    stop(
-      "Google Trends API request failed with status code: ",
-      res$status_code,
-      "\nThis could indicate:\n",
-      "  - Invalid search parameters\n",
-      "  - Rate limiting by Google\n",
-      "  - Temporary service unavailability",
-      call. = FALSE
-    )
-  }
-
-  return(res)
+  make_api_request(url, "trends data download")
 }
 
 # Helper function to process API response
@@ -354,22 +375,22 @@ create_geo_payload <- function(
     payload2$dataMode <- "PERCENTAGES"
   }
 
-  url <- paste0(
-    URLencode(
-      "https://www.google.com/trends/api/widgetdata/comparedgeo/csv?req="
-    ),
-    URLencode(
-      jsonlite::toJSON(payload2, auto_unbox = TRUE, null = "list"),
-      reserved = TRUE
-    ),
-    URLencode(paste0("&token=", widget$token[i], "&tz=", tz, "&hl=en-US"))
+  url <- build_widget_url(
+    "comparedgeo",
+    payload2,
+    widget$token[i],
+    tz,
+    extra_params = list(hl = "en-US")
   )
 
-  res <- curl::curl_fetch_memory(url, handle = .pkgenv[["cookie_handler"]])
-
-  if (res$status_code != 200L) {
-    return(NULL)
-  }
+  res <- tryCatch(
+    {
+      make_api_request(url, "geo data download")
+    },
+    error = function(e) {
+      return(NULL)
+    }
+  )
 
   con <- textConnection(rawToChar(res$content))
   df <- read.csv(con, skip = 1L, stringsAsFactors = FALSE, encoding = "UTF-8")
@@ -519,85 +540,10 @@ encode_payload <- function(URL, reserved = FALSE, repeated = FALSE) {
   paste(x, collapse = "")
 }
 
-#' Enhanced wrapper functions with improved error handling
-#' These functions provide better error messages and more robust error handling
 
-#' Enhanced get_widget with better error handling
+#' Interest by region with error handling
 #' @noRd
-get_widget_enhanced <- function(
-  comparison_item,
-  category,
-  gprop,
-  hl,
-  cookie_url,
-  tz
-) {
-  # Initialize cookies if needed
-  if (!exists("cookie_handler", envir = .pkgenv)) {
-    tryCatch(
-      {
-        get_api_cookies(cookie_url)
-      },
-      error = function(e) {
-        stop(
-          "Failed to initialize Google Trends session during cookie acquisition:\n",
-          "Could not obtain required authentication cookies from Google.\n",
-          "\nPossible causes:\n",
-          "  - Network connectivity issues\n",
-          "  - Proxy server configuration problems\n",
-          "  - Firewall blocking Google Trends access\n",
-          "  - Invalid cookie URL: ",
-          cookie_url,
-          "\n",
-          "\nOriginal error: ",
-          e$message,
-          call. = FALSE
-        )
-      }
-    )
-  }
-
-  # Build API URL
-  url <- build_explore_url(comparison_item, category, gprop, hl, tz)
-
-  # Make API request
-  response <- make_api_request(url, "widget initialization")
-
-  # Parse response
-  parsed_response <- parse_api_response(response)
-
-  # Fix geographic encoding issues
-  parsed_response <- fix_geo_encoding(parsed_response, comparison_item)
-
-  return(parsed_response$widgets)
-}
-
-#' Enhanced interest over time with better error handling
-#' @noRd
-get_interest_over_time_enhanced <- function(widget, comparison_item, tz) {
-  tryCatch(
-    {
-      result <- interest_over_time(widget, comparison_item, tz)
-      return(result)
-    },
-    error = function(e) {
-      stop(
-        "Failed to retrieve interest over time data.\n",
-        "This could be due to:\n",
-        "  - Invalid search parameters\n",
-        "  - Network connectivity issues\n",
-        "  - Google Trends service unavailability\n",
-        "Original error: ",
-        e$message,
-        call. = FALSE
-      )
-    }
-  )
-}
-
-#' Enhanced interest by region with better error handling
-#' @noRd
-get_interest_by_region_enhanced <- function(
+get_interest_by_region <- function(
   widget,
   comparison_item,
   low_search_volume,
@@ -627,9 +573,9 @@ get_interest_by_region_enhanced <- function(
   )
 }
 
-#' Enhanced related topics with better error handling
+#' Related topics with error handling
 #' @noRd
-get_related_topics_enhanced <- function(widget, comparison_item, hl, tz) {
+get_related_topics <- function(widget, comparison_item, hl, tz) {
   tryCatch(
     {
       return(related_topics(widget, comparison_item, hl, tz))
@@ -645,9 +591,9 @@ get_related_topics_enhanced <- function(widget, comparison_item, hl, tz) {
   )
 }
 
-#' Enhanced related queries with better error handling
+#' Related queries with error handling
 #' @noRd
-get_related_queries_enhanced <- function(widget, comparison_item, tz, hl) {
+get_related_queries <- function(widget, comparison_item, tz, hl) {
   tryCatch(
     {
       return(related_queries(widget, comparison_item, tz, hl))
