@@ -748,15 +748,6 @@ create_geo_payload <- function(
   return(df)
 }
 
-## Remove NA from list
-na.omit.list <- function(y) {
-  return(y[
-    !sapply(y, function(x) {
-      all(is.na(x))
-    })
-  ])
-}
-
 ## Replace special characters in keywords like P&500 -> P%26500
 encode_keyword <- function(url) {
   url <- gsub(
