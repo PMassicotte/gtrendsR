@@ -1,3 +1,5 @@
+# gtrendsR (development version)
+
 # gtrendsR 1.5.2
 
 - Various internal changes to better deal with missing data returned by queries (#418, #419).
