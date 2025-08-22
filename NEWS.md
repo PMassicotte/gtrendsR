@@ -22,7 +22,7 @@
 
 # gtrendsR 1.4.8
 
-- Skip internet-based tests on CRAN that were found to randomly fail on Debian machine and locally under Ubuntu-latest (#384). 
+- Skip internet-based tests on CRAN that were found to randomly fail on Debian machine and locally under Ubuntu-latest (#384).
 
 - Explicitly verify if internet is available before launching the unit tests (#379).
 
@@ -52,7 +52,7 @@
 
 - Added unit test using the tinytest package (#316).
 
-- Fixes issues with Google Trends API changes. 
+- Fixes issues with Google Trends API changes.
 
 # gtrendsR 1.4.4
 
@@ -94,9 +94,9 @@
 
 - Can now mix both country and sub country codes (`plot(gtrends("pizza", geo = c("CA", "GB-ENG")))`) (#218).
 
-- New parameter `low_search_volume` allowing low search volume regions (#229). 
+- New parameter `low_search_volume` allowing low search volume regions (#229).
 
-- Fixing breaking changes that were introduced by Google Trends (#252) @kevinmager65. 
+- Fixing breaking changes that were introduced by Google Trends (#252) @kevinmager65.
 
 - Can now search without keywords (`gtrends(geo = c("CA"), category = 20)`).
 
@@ -144,7 +144,7 @@
 
 - Support for hourly and daily data (#67). For example, it is now possible to have hourly data for the last seven days with `gtrends("nhl", geo = "CA", res = "7d")`. Use `?gtrends` for more information about the time resolution supported by the package.
 
-- Support for categories (#46). Ex.: `gtrends("NHL", geo = "US", cat = "0-20")` will search only in the *sport* category.
+- Support for categories (#46). Ex.: `gtrends("NHL", geo = "US", cat = "0-20")` will search only in the _sport_ category.
 
 - Some countries (ex: Hong Kong) were missing from the list (#69).
 
