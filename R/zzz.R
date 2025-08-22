@@ -750,10 +750,16 @@ get_widget_enhanced <- function(
       },
       error = function(e) {
         stop(
-          "Failed to initialize Google Trends session:\n",
-          "Could not obtain required cookies from Google.\n",
-          "This may be due to network connectivity issues or proxy settings.\n",
-          "Original error: ",
+          "Failed to initialize Google Trends session during cookie acquisition:\n",
+          "Could not obtain required authentication cookies from Google.\n",
+          "\nPossible causes:\n",
+          "  - Network connectivity issues\n",
+          "  - Proxy server configuration problems\n",
+          "  - Firewall blocking Google Trends access\n",
+          "  - Invalid cookie URL: ",
+          cookie_url,
+          "\n",
+          "\nOriginal error: ",
           e$message,
           call. = FALSE
         )

@@ -187,10 +187,14 @@ gtrends <- function(
     },
     error = function(e) {
       stop(
-        "Failed to initialize Google Trends session:\n",
-        e$message,
-        "\n",
-        "This may be due to network issues or temporary Google service unavailability.",
+        "Failed to initialize Google Trends session during widget configuration:\n",
+        "Error: ", e$message, "\n",
+        "\nPossible causes:\n",
+        "  - Network connectivity issues\n",
+        "  - Invalid search parameters (keyword, geography, or time range)\n",
+        "  - Temporary Google Trends service unavailability\n",
+        "  - Rate limiting or blocked requests\n",
+        "\nTry again with different parameters or check your network connection.",
         call. = FALSE
       )
     }
