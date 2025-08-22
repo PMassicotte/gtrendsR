@@ -9,12 +9,12 @@ gtrends(
   geo = "",
   time = "today+5-y",
   gprop = c("web", "news", "images", "froogle", "youtube"),
-  category = 0,
+  category = 0L,
   hl = "en-US",
   compared_breakdown = FALSE,
   low_search_volume = FALSE,
   cookie_url = "http://trends.google.com/Cookies/NID",
-  tz = 0,
+  tz = 0L,
   onlyInterest = FALSE
 )
 }
