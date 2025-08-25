@@ -120,3 +120,21 @@ extract_related_topics <- function(i, raw_data) {
     times = tolower(colnames(df)[2])
   )
 }
+
+#' Related topics with error handling
+#' @noRd
+get_related_topics <- function(widget, comparison_item, hl, tz) {
+  tryCatch(
+    {
+      return(related_topics(widget, comparison_item, hl, tz))
+    },
+    error = function(e) {
+      warning(
+        "Could not retrieve related topics: ",
+        e$message,
+        call. = FALSE
+      )
+      return(NULL)
+    }
+  )
+}

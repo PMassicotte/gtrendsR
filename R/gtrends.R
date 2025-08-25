@@ -165,15 +165,13 @@ gtrends <- function(
   gprop <- match.arg(gprop, several.ok = FALSE)
   gprop <- ifelse(gprop == "web", "", gprop)
 
-  # ****************************************************************************
-  # Request a token from Google
-  # ****************************************************************************
-
   # Prepare keywords and create comparison item
   prepared_keywords <- prepare_keywords(keyword)
   comparison_item <- create_comparison_item(prepared_keywords, geo, time)
 
-  # Get widget configuration with error handling
+  # ****************************************************************************
+  # Request a token from Google
+  # ****************************************************************************
   tryCatch(
     {
       widget <- get_widget(
@@ -205,8 +203,6 @@ gtrends <- function(
   # ****************************************************************************
   # Now that we have tokens, we can process the queries
   # ****************************************************************************
-
-  # Get interest over time data with error handling
   tryCatch(
     {
       interest_over_time_data <- interest_over_time(

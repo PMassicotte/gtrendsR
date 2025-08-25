@@ -215,6 +215,70 @@ fix_geo_encoding <- function(parsed_response, comparison_item) {
   parsed_response
 }
 
+## Replace special characters in keywords like P&500 -> P%26500
+encode_keyword <- function(url) {
+  url <- gsub(
+    "(?:\\G(?!^)|\\[\\s*)[^][\\s]*\\K\\&(?!])(?=[^][]*])",
+    "%26",
+    url,
+    perl = TRUE
+  )
+  url <- gsub(
+    "(?:\\G(?!^)|\\[\\s*)[^][\\s]*\\K\\&(?!])(?=[^][]*])",
+    "%26",
+    url,
+    perl = TRUE
+  )
+  url <- gsub(
+    "(?:\\G(?!^)|\\[\\s*)[^][\\s]*\\K\\&(?!])(?=[^][]*])",
+    "%26",
+    url,
+    perl = TRUE
+  )
+  url <- gsub(
+    "(?:\\G(?!^)|\\[\\s*)[^][\\s]*\\K\\&(?!])(?=[^][]*])",
+    "%26",
+    url,
+    perl = TRUE
+  )
+  gsub(
+    "(?:\\G(?!^)|\\[\\s*)[^][\\s]*\\K\\&(?!])(?=[^][]*])",
+    "%26",
+    url,
+    perl = TRUE
+  )
+}
+
+encode_payload <- function(URL, reserved = FALSE, repeated = FALSE) {
+  # This is a adjusted URLencode function.
+  # The , and + are removed from the reserved characters list
+  if (!repeated && grepl("%[[:xdigit:]]{2}", URL, useBytes = TRUE)) {
+    return(URL)
+  }
+  OK <- paste0(
+    "[^",
+    if (!reserved) {
+      "][!'()*;=/?@#"
+    },
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    "abcdefghijklmnopqrstuvwxyz0123456789._~,:%+-",
+    "]"
+  )
+  x <- strsplit(URL, "", fixed = TRUE)[[1L]]
+  z <- grep(OK, x)
+  if (length(z)) {
+    y <- vapply(
+      x[z],
+      function(x) {
+        paste0("%", toupper(as.character(charToRaw(x))), collapse = "")
+      },
+      ""
+    )
+    x[z] <- y
+  }
+  paste(x, collapse = "")
+}
+
 #' Build widget data URL for different endpoint types
 #'
 #' @param endpoint Character string: "multiline", "multirange", or "comparedgeo"

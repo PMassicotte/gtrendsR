@@ -111,3 +111,21 @@ create_related_queries_payload <- function(i, widget, tz, hl) {
 
   return(res)
 }
+
+#' Related queries with error handling
+#' @noRd
+get_related_queries <- function(widget, comparison_item, tz, hl) {
+  tryCatch(
+    {
+      return(related_queries(widget, comparison_item, tz, hl))
+    },
+    error = function(e) {
+      warning(
+        "Could not retrieve related queries: ",
+        e$message,
+        call. = FALSE
+      )
+      return(NULL)
+    }
+  )
+}
