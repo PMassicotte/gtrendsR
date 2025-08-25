@@ -2,12 +2,6 @@
 
 - Enhanced error messages in `gtrends()` and related functions to provide better troubleshooting guidance for users.
 
-- Improved `check_time()` function with better input validation, comprehensive error messages, support for all preset time formats, custom date range parsing and validation, and proper date boundary checks.
-
-- Refactored API helper functions to improve error handling and streamline API request processing.
-
-- Fixed various linting issues across helper functions for better code quality and consistency.
-
 # gtrendsR 1.5.2
 
 - Various internal changes to better deal with missing data returned by queries (#418, #419).
