@@ -3,7 +3,7 @@ related_topics <- function(widget, comparison_item, hl, tz) {
 
   res <- lapply(
     i,
-    create_related_topics_payload,
+    fetch_related_topics_data,
     widget = widget,
     hl = hl,
     tz = tz
@@ -15,29 +15,35 @@ related_topics <- function(widget, comparison_item, hl, tz) {
 
 
 create_related_topics_payload <- function(i, widget, hl, tz) {
-  payload2 <- list()
-  payload2$restriction$geo <-
+  payload <- list()
+  payload$restriction$geo <-
     as.list(widget$request$restriction$geo[i, , drop = FALSE])
-  payload2$restriction$time <- widget$request$restriction$time[[i]]
-  payload2$restriction$originalTimeRangeForExploreUrl <-
+  payload$restriction$time <- widget$request$restriction$time[[i]]
+  payload$restriction$originalTimeRangeForExploreUrl <-
     widget$request$restriction$originalTimeRangeForExploreUrl[[i]]
-  payload2$restriction$complexKeywordsRestriction$keyword <-
+  payload$restriction$complexKeywordsRestriction$keyword <-
     widget$request$restriction$complexKeywordsRestriction$keyword[[i]]
-  payload2$restriction$complexKeywordsRestriction$operator <-
+  payload$restriction$complexKeywordsRestriction$operator <-
     widget$request$restriction$complexKeywordsRestriction$operator[[i]]
-  payload2$keywordType <- widget$request$keywordType[[i]]
-  payload2$metric <- widget$request$metric[[i]]
-  payload2$trendinessSettings$compareTime <-
+  payload$keywordType <- widget$request$keywordType[[i]]
+  payload$metric <- widget$request$metric[[i]]
+  payload$trendinessSettings$compareTime <-
     widget$request$trendinessSettings$compareTime[[i]]
-  payload2$requestOptions$property <-
+  payload$requestOptions$property <-
     widget$request$requestOptions$property[[i]]
-  payload2$requestOptions$backend <-
+  payload$requestOptions$backend <-
     widget$request$requestOptions$backend[[i]]
-  payload2$requestOptions$category <-
+  payload$requestOptions$category <-
     widget$request$requestOptions$category[[i]]
-  payload2$language <- widget$request$language[[i]]
-  payload2$userCountryCode <- widget$request$userCountryCode[[i]]
-  payload2$userConfig$userType <- widget$request$userConfig$userType[[i]]
+  payload$language <- widget$request$language[[i]]
+  payload$userCountryCode <- widget$request$userCountryCode[[i]]
+  payload$userConfig$userType <- widget$request$userConfig$userType[[i]]
+
+  payload
+}
+
+fetch_related_topics_data <- function(i, widget, hl, tz) {
+  payload <- create_related_topics_payload(i, widget, hl, tz)
 
   url <- paste0(
     URLencode(
@@ -45,7 +51,7 @@ create_related_topics_payload <- function(i, widget, hl, tz) {
     ),
     URLencode(
       paste0(
-        jsonlite::toJSON(payload2, auto_unbox = TRUE)
+        jsonlite::toJSON(payload, auto_unbox = TRUE)
       ),
       reserved = TRUE
     ),
@@ -69,7 +75,7 @@ create_related_topics_payload <- function(i, widget, hl, tz) {
   res <- extract_top_rising(res)
 
   res$id <- NULL
-  res$geo <- unlist(payload2$restriction$geo, use.names = FALSE)
+  res$geo <- unlist(payload$restriction$geo, use.names = FALSE)
 
   if (
     length(widget$request$restriction$complexKeywordsRestriction$operator) != 0L
@@ -92,7 +98,7 @@ create_related_topics_payload <- function(i, widget, hl, tz) {
     res$keyword <-
       widget$request$restriction$complexKeywordsRestriction$keyword[[i]]$value
   }
-  res$category <- payload2$requestOptions$category
+  res$category <- payload$requestOptions$category
 
   return(res)
 }

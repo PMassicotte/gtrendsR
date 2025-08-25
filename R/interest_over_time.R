@@ -10,8 +10,8 @@ interest_over_time <- function(widget, comparison_item, tz) {
 
 # Helper function to build URL based on widget configuration
 build_interest_over_time_url <- function(widget, tz) {
-  payload2 <- list()
-  payload2$userConfig$userType <- widget$request$userConfig$userType[[1L]]
+  payload <- list()
+  payload$userConfig$userType <- widget$request$userConfig$userType[[1L]]
 
   # Determine request type and create appropriate payload
   onlyCategory <- is_category_only_search(widget)
@@ -22,7 +22,7 @@ build_interest_over_time_url <- function(widget, tz) {
     return(
       build_widget_url(
         "multiline",
-        c(payload2, payload_data$payload),
+        c(payload, payload_data$payload),
         payload_data$token,
         tz
       )
@@ -32,7 +32,7 @@ build_interest_over_time_url <- function(widget, tz) {
     payload_data <- create_multirange_payload(widget)
     return(build_widget_url(
       "multirange",
-      c(payload2, payload_data$payload),
+      c(payload, payload_data$payload),
       payload_data$token,
       tz
     ))
@@ -41,7 +41,7 @@ build_interest_over_time_url <- function(widget, tz) {
     payload_data <- create_multiline_payload(widget)
     return(build_widget_url(
       "multiline",
-      c(payload2, payload_data$payload),
+      c(payload, payload_data$payload),
       payload_data$token,
       tz
     ))
@@ -83,4 +83,3 @@ process_interest_over_time_response <- function(
     return(reshape_interest_over_time(df, comparison_item, widget, tz))
   }
 }
-

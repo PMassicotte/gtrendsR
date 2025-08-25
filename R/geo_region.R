@@ -36,7 +36,7 @@ interest_by_region <- function(
 
   res <-
     mapply(
-      create_geo_payload,
+      fetch_geo_data,
       i,
       resolution,
       MoreArgs = list(
@@ -64,6 +64,7 @@ interest_by_region <- function(
 }
 
 
+# TODO: Do the same for all payload function
 create_geo_payload <- function(
   i,
   widget,
@@ -72,20 +73,44 @@ create_geo_payload <- function(
   low_search_volume,
   tz
 ) {
-  payload2 <- list()
-  payload2$locale <- unique(na.omit(widget$request$locale))
-  payload2$comparisonItem <- widget$request$comparisonItem[[i]]
-  payload2$resolution <- resolution
-  payload2$requestOptions$backend <- widget$request$requestOptions$backend[i]
-  payload2$requestOptions$property <- widget$request$requestOptions$property[i]
-  payload2$requestOptions$category <- widget$request$requestOptions$category[i]
-  payload2$userConfig$userType <- "USER_TYPE_SCRAPER"
-  payload2$geo <- as.list((widget$request$geo[i, , drop = FALSE]))
-  payload2$includeLowSearchVolumeGeos <- low_search_volume
+  geo_payload <- list()
+  geo_payload$locale <- unique(na.omit(widget$request$locale))
+  geo_payload$comparisonItem <- widget$request$comparisonItem[[i]]
+  geo_payload$resolution <- resolution
+  geo_payload$requestOptions$backend <- widget$request$requestOptions$backend[i]
+  geo_payload$requestOptions$property <- widget$request$requestOptions$property[
+    i
+  ]
+  geo_payload$requestOptions$category <- widget$request$requestOptions$category[
+    i
+  ]
+  geo_payload$userConfig$userType <- "USER_TYPE_SCRAPER"
+  geo_payload$geo <- as.list((widget$request$geo[i, , drop = FALSE]))
+  geo_payload$includeLowSearchVolumeGeos <- low_search_volume
+
+  geo_payload
+}
+
+fetch_geo_data <- function(
+  i,
+  widget,
+  resolution,
+  compared_breakdown,
+  low_search_volume,
+  tz
+) {
+  payload <- create_geo_payload(
+    i,
+    widget,
+    resolution,
+    compared_breakdown,
+    low_search_volume,
+    tz
+  )
 
   widget_url <- build_widget_url(
     "comparedgeo",
-    payload2,
+    payload,
     widget$token[i],
     tz,
     extra_params = list(hl = "en-US")
@@ -106,6 +131,10 @@ create_geo_payload <- function(
     return(NULL)
   }
 
+  process_geo_response(res, widget, i)
+}
+
+process_geo_response <- function(res, widget, i) {
   con <- textConnection(rawToChar(res$content))
   df <- read.csv(con, skip = 1L, stringsAsFactors = FALSE, encoding = "UTF-8")
   close(con)
@@ -114,7 +143,7 @@ create_geo_payload <- function(
     return(NULL)
   }
 
-  n <- nrow(df) # used to reshape the data
+  n <- nrow(df)
 
   df <- reshape(
     df,
@@ -192,4 +221,3 @@ get_interest_by_region <- function(
   )
   combine_region_results(region_results)
 }
-
