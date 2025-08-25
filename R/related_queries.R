@@ -10,7 +10,7 @@ related_queries <- function(widget, comparison_item, tz, hl) {
   )
   res <- do.call(rbind, res)
 
-  return(res)
+  res
 }
 
 
@@ -47,7 +47,7 @@ create_related_queries_payload <- function(i, widget, tz, hl) {
   payload2$userCountryCode <- widget$request$userCountryCode[[i]]
   payload2$userConfig$userType <- widget$request$userConfig$userType[[i]]
 
-  url <- paste0(
+  related_queries_url <- paste0(
     URLencode(
       "https://www.google.com/trends/api/widgetdata/relatedsearches/csv?req="
     ),
@@ -59,15 +59,14 @@ create_related_queries_payload <- function(i, widget, tz, hl) {
     URLencode(paste0("&tz=", tz, "&hl=", hl))
   )
 
-  # url <- encode_keyword(url)
   # VY. use the handler with proxy options.
   res <- curl::curl_fetch_memory(
-    URLencode(url),
+    URLencode(related_queries_url),
     handle = .pkgenv[["cookie_handler"]]
   )
 
   # Something went wrong
-  if (res$status_code != 200) {
+  if (res$status_code != 200L) {
     stop("Status code was not 200. Returned status code:", res$status_code)
   }
 
@@ -75,7 +74,7 @@ create_related_queries_payload <- function(i, widget, tz, hl) {
 
   ## Not enough data
   ## https://trends.google.ca/trends/explore?cat=20&date=today%205-y,today%205-y&geo=CA,US&q=NHL,NFL
-  if (length(res) <= 4) {
+  if (length(res) <= 4L) {
     return(NULL)
   }
 
@@ -85,7 +84,7 @@ create_related_queries_payload <- function(i, widget, tz, hl) {
   res$id <- NULL
   res$geo <- unlist(payload2$restriction$geo, use.names = FALSE)
   if (
-    length(widget$request$restriction$complexKeywordsRestriction$operator) != 0
+    length(widget$request$restriction$complexKeywordsRestriction$operator) != 0L
   ) {
     if (
       is.na(widget$request$restriction$complexKeywordsRestriction$operator[[i]])
@@ -109,7 +108,7 @@ create_related_queries_payload <- function(i, widget, tz, hl) {
 
   res$category <- payload2$requestOptions$category
 
-  return(res)
+  res
 }
 
 #' Related queries with error handling
@@ -125,7 +124,7 @@ get_related_queries <- function(widget, comparison_item, tz, hl) {
         e$message,
         call. = FALSE
       )
-      return(NULL)
+      NULL
     }
   )
 }

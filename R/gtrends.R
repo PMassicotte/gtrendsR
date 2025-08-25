@@ -292,7 +292,7 @@ gtrends <- function(
     if (!is.null(x) && is.data.frame(x)) {
       row.names(x) <- NULL
     }
-    return(x)
+    x
   })
 
   class(res) <- c("gtrends", "list")

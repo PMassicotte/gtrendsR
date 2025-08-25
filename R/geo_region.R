@@ -32,14 +32,6 @@ interest_by_region <- function(
   i <- resolution$Var1
   resolution <- resolution$Var2
 
-  ## If it is not US metro, then also search for "city"
-  # if (!all(grepl("dma", resolution))) {
-  #   resolution <- c(resolution, rep("city", length(resolution)))
-  # }
-  #
-
-  ## If no country is specified, resolution should be "COUNTRY"
-  # resolution[grepl("world", na.omit(widget$geo))] <- "country"
   resolution <- toupper(resolution)
 
   res <-
@@ -68,7 +60,7 @@ interest_by_region <- function(
 
   res <- setNames(res, tolower(resolution))
 
-  return(res)
+  res
 }
 
 
@@ -91,7 +83,7 @@ create_geo_payload <- function(
   payload2$geo <- as.list((widget$request$geo[i, , drop = FALSE]))
   payload2$includeLowSearchVolumeGeos <- low_search_volume
 
-  url <- build_widget_url(
+  widget_url <- build_widget_url(
     "comparedgeo",
     payload2,
     widget$token[i],
@@ -101,12 +93,12 @@ create_geo_payload <- function(
 
   res <- tryCatch(
     {
-      make_api_request(url, "geo data download")
+      make_api_request(widget_url, "geo data download")
     },
     error = function(e) {
       # Some resolutions may not be available for all searches
       # This is normal behavior, so we silently return NULL
-      return(NULL)
+      NULL
     }
   )
 
@@ -157,8 +149,6 @@ create_geo_payload <- function(
     kw <- data.frame(type = type, value = value)
   }
 
-  # kw <- do.call(rbind, widget$request$comparisonItem[[i]]$complexKeywordsRestriction$keyword)
-
   df <- cbind(
     df,
     kw[rep(seq_len(nrow(kw)), each = n), 2L],
@@ -167,7 +157,6 @@ create_geo_payload <- function(
   )
 
   df$temp <- NULL
-  # df$geo <- widget$geo[i]
   df$geo <- suppressWarnings(na.omit(unlist(widget$request$geo[i, ])))
 
   df$geo <- ifelse(is.null(df$geo), "world", df$geo)
@@ -182,7 +171,7 @@ create_geo_payload <- function(
 
   names(df) <- c("location", "hits", "keyword", "geo", "gprop")
 
-  return(df)
+  df
 }
 
 #' Interest by region with error handling
@@ -201,5 +190,6 @@ get_interest_by_region <- function(
     compared_breakdown,
     tz
   )
-  return(combine_region_results(region_results))
+  combine_region_results(region_results)
 }
+

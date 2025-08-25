@@ -149,16 +149,26 @@ parse_multirange_dates <- function(date_cols, tz) {
 
   # Daily format
   if (all(grepl("^[0-9]{4}-[0-9]{2}-[0-9]{2}$", sample_dates))) {
-    return(data.frame(lapply(date_cols, function(x) {
-      as.POSIXct(x, format = "%Y-%m-%d", tz = tz_string)
-    })))
+    return(
+      data.frame(lapply(
+        date_cols,
+        as.POSIXct,
+        format = "%Y-%m-%d",
+        tz = tz_string
+      ))
+    )
   }
 
   # Hourly format
   if (all(grepl("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}$", sample_dates))) {
-    return(data.frame(lapply(date_cols, function(x) {
-      as.POSIXct(x, format = "%Y-%m-%dT%H", tz = tz_string)
-    })))
+    return(
+      data.frame(lapply(
+        date_cols,
+        as.POSIXct,
+        format = "%Y-%m-%dT%H",
+        tz = tz_string
+      ))
+    )
   }
 
   # Full datetime format (clean and parse)
@@ -249,10 +259,11 @@ reshape_geographic_data <- function(df, widget, resolution, i) {
   df_long$geo <- suppressWarnings(na.omit(unlist(widget$request$geo[i, ])))
   df_long$geo <- ifelse(is.null(df_long$geo), "world", df_long$geo)
   df_long$gprop <- ifelse(
-    widget$request$requestOptions$property[i] == "",
+    !nzchar(widget$request$requestOptions$property[i]),
     "web",
     widget$request$requestOptions$property[i]
   )
+
   df_long$id <- NULL
 
   # Set proper column names

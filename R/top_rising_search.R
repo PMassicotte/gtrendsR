@@ -4,10 +4,10 @@
 #'
 #' @return A list with TOP and RISING data (if such data was found).
 extract_top_rising <- function(data) {
-  start_top <- which(grepl("TOP", data))[1]
-  start_rising <- which(grepl("RISING", data))[1]
+  start_top <- which(grepl("TOP", data))[1L]
+  start_rising <- which(grepl("RISING", data))[1L]
 
-  if (length(start_top) == 0 & length(start_rising) == 0) {
+  if (length(start_top) == 0L & length(start_rising) == 0L) {
     return(NULL) ## No data returned
   }
 
@@ -17,8 +17,12 @@ extract_top_rising <- function(data) {
 
   new_res <- NULL
 
-  if (length(start_top) > 0) {
-    end_top <- ifelse(length(start_rising) == 0, length(data), start_rising - 2)
+  if (length(start_top) > 0L) {
+    end_top <- ifelse(
+      length(start_rising) == 0L,
+      length(data),
+      start_rising - 2L
+    )
 
     # Make sure there are "RISING" data. If not, use the length of the vector
     # and the end index.
@@ -34,7 +38,7 @@ extract_top_rising <- function(data) {
     )
     top$subject <- rownames(top)
     rownames(top) <- NULL
-    top <- top[, c(2, 1)]
+    top <- top[, c(2L, 1L)]
     names(top) <- c("subject", "top")
 
     top <- reshape(
@@ -51,7 +55,7 @@ extract_top_rising <- function(data) {
 
   # Make sure there are "RISING" data.
 
-  if (length(start_rising) > 0 & !is.na(start_rising)) {
+  if (length(start_rising) > 0L & !is.na(start_rising)) {
     rising <- read.csv(
       textConnection(data[start_rising:length(data)]),
       row.names = NULL,
@@ -59,7 +63,7 @@ extract_top_rising <- function(data) {
     )
     rising$subject <- rownames(rising)
     rownames(rising) <- NULL
-    rising <- rising[, c(2, 1)]
+    rising <- rising[, c(2L, 1L)]
     names(rising) <- c("subject", "rising")
 
     rising <- reshape(

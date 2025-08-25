@@ -467,13 +467,13 @@ build_trends_url <- function(
   }
 
   # Build complete URL
-  url <- paste0(
+  trends_url <- paste0(
     URLencode(base_url),
     encoded_payload,
     URLencode(paste0("&token=", token, "&tz=", tz))
   )
 
-  return(url)
+  return(trends_url)
 }
 
 #' Download and parse CSV response from widget API

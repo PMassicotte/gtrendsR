@@ -10,7 +10,7 @@ related_topics <- function(widget, comparison_item, hl, tz) {
   )
   res <- do.call(rbind, res)
 
-  return(res)
+  res
 }
 
 
@@ -56,7 +56,7 @@ create_related_topics_payload <- function(i, widget, hl, tz) {
   res <- curl::curl_fetch_memory(url, handle = .pkgenv[["cookie_handler"]])
 
   # Something went wrong
-  if (res$status_code != 200) {
+  if (res$status_code != 200L) {
     stop(
       "Status code was not 200. Returned status code:",
       res$status_code
@@ -72,7 +72,7 @@ create_related_topics_payload <- function(i, widget, hl, tz) {
   res$geo <- unlist(payload2$restriction$geo, use.names = FALSE)
 
   if (
-    length(widget$request$restriction$complexKeywordsRestriction$operator) != 0
+    length(widget$request$restriction$complexKeywordsRestriction$operator) != 0L
   ) {
     if (
       is.na(widget$request$restriction$complexKeywordsRestriction$operator[[i]])
@@ -108,16 +108,16 @@ extract_related_topics <- function(i, raw_data) {
   )
   df$subject <- rownames(df)
   rownames(df) <- NULL
-  df <- df[, c(2, 1)]
-  names(df) <- c("subject", tolower(colnames(df)[1]))
+  df <- df[, c(2L, 1L)]
+  names(df) <- c("subject", tolower(colnames(df)[1L]))
 
   df <- reshape(
     df,
-    varying = tolower(colnames(df)[2]),
+    varying = tolower(colnames(df)[2L]),
     v.names = "value",
     direction = "long",
     timevar = "related_topics",
-    times = tolower(colnames(df)[2])
+    times = tolower(colnames(df)[2L])
   )
 }
 

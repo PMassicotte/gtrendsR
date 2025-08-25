@@ -1,9 +1,9 @@
 interest_over_time <- function(widget, comparison_item, tz) {
   # Build appropriate URL based on widget type
-  url <- build_interest_over_time_url(widget, tz)
+  interest_over_time_url <- build_interest_over_time_url(widget, tz)
 
   # Fetch data from Google Trends API
-  response <- fetch_trends_data(url)
+  response <- fetch_trends_data(interest_over_time_url)
 
   process_interest_over_time_response(response, comparison_item, widget, tz)
 }
@@ -83,3 +83,4 @@ process_interest_over_time_response <- function(
     return(reshape_interest_over_time(df, comparison_item, widget, tz))
   }
 }
+
