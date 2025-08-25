@@ -76,7 +76,7 @@ reshape_interest_over_time <- function(df, comparison_item, widget, tz) {
   df_long
 }
 
-#' Process multirange time series data with complex date handling
+#' Process multirange time series data with date handling
 #'
 #' @param df Data frame with multirange data
 #' @param comparison_item Data frame with query parameters

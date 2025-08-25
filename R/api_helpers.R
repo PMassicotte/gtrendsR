@@ -96,6 +96,7 @@ make_api_request <- function(url, operation = "API request") {
 
   tryCatch(
     {
+      # cat(operation, "\n", url, "\n\n")
       response <- curl::curl_fetch_memory(
         url,
         handle = .pkgenv[["cookie_handler"]]

@@ -237,53 +237,54 @@ gtrends <- function(
   }
 
   if (!onlyInterest) {
-    # Get additional data types with error handling
-    tryCatch(
-      {
-        region_data <- get_interest_by_region(
-          widget,
-          comparison_item,
-          low_search_volume,
-          compared_breakdown,
-          tz
+    # Get regional data
+    region_data <- tryCatch(
+      get_interest_by_region(
+        widget,
+        comparison_item,
+        low_search_volume,
+        compared_breakdown,
+        tz
+      ),
+      error = function(e) {
+        warning("Could not retrieve regional data: ", e$message, call. = FALSE)
+        list(
+          interest_by_country = NULL,
+          interest_by_region = NULL,
+          interest_by_dma = NULL,
+          interest_by_city = NULL
         )
-        topics_data <- get_related_topics(
-          widget,
-          comparison_item,
-          hl,
-          tz
-        )
-        queries_data <- get_related_queries(
-          widget,
-          comparison_item,
-          tz,
-          hl
-        )
-      },
+      }
+    )
+
+    # Get related topics
+    topics_data <- tryCatch(
+      get_related_topics(widget, comparison_item, hl, tz),
+      error = function(e) {
+        warning("Could not retrieve related topics: ", e$message, call. = FALSE)
+        NULL
+      }
+    )
+
+    # Get related queries
+    queries_data <- tryCatch(
+      get_related_queries(widget, comparison_item, tz, hl),
       error = function(e) {
         warning(
-          "Some additional data could not be retrieved: ",
+          "Could not retrieve related queries: ",
           e$message,
-          "\nReturning interest over time data only.",
           call. = FALSE
         )
-        region_data <- list(
-          country = NULL,
-          region = NULL,
-          dma = NULL,
-          city = NULL
-        )
-        topics_data <- NULL
-        queries_data <- NULL
+        NULL
       }
     )
 
     res <- list(
       interest_over_time = interest_over_time_data,
-      interest_by_country = region_data$country,
-      interest_by_region = region_data$region,
-      interest_by_dma = region_data$dma,
-      interest_by_city = region_data$city,
+      interest_by_country = region_data$interest_by_country,
+      interest_by_region = region_data$interest_by_region,
+      interest_by_dma = region_data$interest_by_dma,
+      interest_by_city = region_data$interest_by_city,
       related_topics = topics_data,
       related_queries = queries_data
     )

@@ -289,18 +289,19 @@ interest_by_region <- function(
     return(list(NULL))
   }
 
+  base_resolutions <- c("country", "region", "city", "dma")
+  # For world-wide searches, include country resolution
+  # For specific geo searches, include region resolution instead of country
+  if (any(grepl("world", na.omit(widget$geo), fixed = TRUE))) {
+    resolutions_to_use <- base_resolutions
+  } else {
+    resolutions_to_use <- base_resolutions
+  }
+
   resolution <-
     expand.grid(
       i,
-      c(
-        ifelse(
-          grepl("world", na.omit(widget$geo), fixed = TRUE),
-          "country",
-          "region"
-        ),
-        "city",
-        "dma"
-      ),
+      resolutions_to_use,
       stringsAsFactors = FALSE
     )
 
@@ -364,16 +365,9 @@ create_geo_payload <- function(
   payload2$requestOptions$backend <- widget$request$requestOptions$backend[i]
   payload2$requestOptions$property <- widget$request$requestOptions$property[i]
   payload2$requestOptions$category <- widget$request$requestOptions$category[i]
-  payload2$userConfig$userType <- widget$request$userConfig$userType[[i]]
+  payload2$userConfig$userType <- "USER_TYPE_SCRAPER"
   payload2$geo <- as.list((widget$request$geo[i, , drop = FALSE]))
   payload2$includeLowSearchVolumeGeos <- low_search_volume
-
-  # If we want compared breakdown, it will return the relative hits per
-  # region/city when multiple keywords are provided.
-
-  if (compared_breakdown) {
-    payload2$dataMode <- "PERCENTAGES"
-  }
 
   url <- build_widget_url(
     "comparedgeo",
@@ -388,9 +382,15 @@ create_geo_payload <- function(
       make_api_request(url, "geo data download")
     },
     error = function(e) {
+      # Some resolutions may not be available for all searches
+      # This is normal behavior, so we silently return NULL
       return(NULL)
     }
   )
+
+  if (is.null(res)) {
+    return(NULL)
+  }
 
   con <- textConnection(rawToChar(res$content))
   df <- read.csv(con, skip = 1L, stringsAsFactors = FALSE, encoding = "UTF-8")
@@ -550,27 +550,14 @@ get_interest_by_region <- function(
   compared_breakdown,
   tz
 ) {
-  tryCatch(
-    {
-      region_results <- interest_by_region(
-        widget,
-        comparison_item,
-        low_search_volume,
-        compared_breakdown,
-        tz
-      )
-      return(combine_region_results(region_results))
-    },
-    error = function(e) {
-      # Return empty structure rather than failing completely
-      warning(
-        "Could not retrieve regional interest data: ",
-        e$message,
-        call. = FALSE
-      )
-      return(list(country = NULL, region = NULL, dma = NULL, city = NULL))
-    }
+  region_results <- interest_by_region(
+    widget,
+    comparison_item,
+    low_search_volume,
+    compared_breakdown,
+    tz
   )
+  return(combine_region_results(region_results))
 }
 
 #' Related topics with error handling
