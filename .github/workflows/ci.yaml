@@ -7,7 +7,6 @@ on:
   pull_request:
 
 env:
-  USE_BSPM: "true"
   _R_CHECK_FORCE_SUGGESTS_: "false"
 
 jobs:
@@ -21,13 +20,10 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v7
 
-      - name: Bootstrap
-        run: |
-          curl -OLs https://eddelbuettel.github.io/r-ci/run.sh
-          chmod 0755 run.sh
-          ./run.sh bootstrap
+      - name: Setup
+        uses: eddelbuettel/github-actions/r-ci@master
 
       - name: Dependencies
         run: ./run.sh install_all
